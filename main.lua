@@ -1,6 +1,6 @@
 require "scenemanager"
 
--- json = require "json"
+json = require "json"
 love.graphics.setDefaultFilter("nearest", "nearest")
 
 function table.index(t,v)
@@ -16,10 +16,32 @@ function math.round(x)
     return math.floor(x+0.5)
 end
 
+function LoadMusic(fn)
+    local s,r = pcall(love.audio.newSource, "assets/music/Tutorial.ogg", "stream")
+    if not s then
+        return print("WARNING: Music " .. fn .. " not found; skipping")
+    end
+    Music = r
+    Music:setLooping(true)
+    Music:setVolume(Settings["Music Volume"]/100)
+    Music:play()
+end
+
+function StopMusic()
+    if Music then
+        Music:stop()
+    end
+end
+
 function love.load()
     Settings = {
-        ["UI Scale"] = 1.5
+        ["UI Scale"] = 1.5,
+        ["Sound Volume"] = 75,
+        ["Music Volume"] = 75
     }
+    if love.filesystem.getInfo("settings.json") then
+        Settings = json.decode(love.filesystem.read("settings.json"))
+    end
     SceneManager.LoadScene("scenes/menu", {})
 end
 

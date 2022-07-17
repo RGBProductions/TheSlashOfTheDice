@@ -9,6 +9,7 @@ local function rand(min, max)
 end
 
 function scene.load()
+    LoadMusic("assets/music/Tutorial.ogg")
     -- Load die images
     DieImages = {}
     for _,itm in pairs(love.filesystem.getDirectoryItems("assets/images/die")) do
@@ -115,16 +116,16 @@ function scene.load()
             criteria = {
                 ["Score"] = {
                     type = "greater",
-                    value = 10
+                    value = 5
                 }
             },
             messages = {
-                {text = "The game runs in waves of enemies just like the one you just defeated. As the game progresses, these enemies get stronger until you eventually cannot defeat them anymore.", pause = true},
+                {text = "The game spawns enemies, just like the one you just defeated, every few seconds. As the game progresses, these enemies get stronger until you eventually cannot defeat them anymore.", pause = true},
                 {text = "For the sake of the tutorial, the increasing strength mechanic has been disabled, and enemy attacks have been weakened.", pause = true},
                 {text = "The timer at the top shows how much time until the next enemy spawns. Once it reaches zero, another enemy spawns.", pause = true, onShow = function()
                     showTimer = true
                 end},
-                {text = "To complete the tutorial, defeat 10 more enemies!", onShow = function()
+                {text = "To complete the tutorial, defeat 5 more enemies!", onShow = function()
                     runTimer = true
                 end}
             }
@@ -190,12 +191,12 @@ function scene.load()
                         if rand(0,math.max(0,9-self:get("stats")["Luck"]/10)) == 0 then
                             dmg = dmg * 2
                             crit = true
-                            beep(1567.981743926997, 0, 8, 0.25)
+                            beep(1567.981743926997, 0, 8, 0.25*Settings["Sound Volume"]/100)
                         end
                         dmg = math.round(dmg)
                         ent.hp = ent.hp - dmg
                         ent.invincibility = 0.5
-                        boom(2, 0.005, 16, 0.5)
+                        boom(2, 0.005, 16, 0.5*Settings["Sound Volume"]/100)
                         AddDamageIndicator(ent.x, ent.y, dmg, (crit and {1,1,0}) or {1,1,1})
                     end
                 end
@@ -219,7 +220,7 @@ function scene.load()
                     self.vx = self.vx + ax*64
                     self.vy = self.vy + ay*64
                     self:set("slashTime", 0.25)
-                    sweep(1, 0, 32, 0.25)
+                    sweep(1, 0, 32, 0.25*Settings["Sound Volume"]/100)
                     TutorialValues["Slashes"] = TutorialValues["Slashes"] + 1
                 end
             end
@@ -348,7 +349,7 @@ function scene.update(dt)
     CharTime = CharTime + dt
     if CharTime >= 0.15 then
         if MessageProgress < #TutorialStages[Stage].messages[Message].text then
-            beep(1046.5022612023945, 0, 32, 0.125)
+            beep(1046.5022612023945, 0, 32, 1/16*Settings["Sound Volume"]/100)
             MessageProgress = math.min(#TutorialStages[Stage].messages[Message].text, MessageProgress + 1)
         end
     end
@@ -422,7 +423,7 @@ function scene.update(dt)
                                 dmg = math.round(dmg)
                                 ent.hp = ent.hp - dmg
                                 ent.invincibility = 0.5
-                                boom(2, 0.005, 16, 0.5)
+                                boom(2, 0.005, 16, 0.5*Settings["Sound Volume"]/100)
                                 AddDamageIndicator(ent.x, ent.y, dmg, {1,0,0})
                             end
                         end
@@ -457,9 +458,9 @@ function scene.update(dt)
                 end
                 Dice[i].applied = true
                 if Dice[i].operation == "add" or Dice[i].operation == "mul" then
-                    beep(1046.5022612023945, 0, 8, 0.25)
+                    beep(1046.5022612023945, 0, 8, 0.25*Settings["Sound Volume"]/100)
                 else
-                    boom(32, 0.01, 8, 0.25)
+                    boom(32, 0.01, 8, 0.25*Settings["Sound Volume"]/100)
                 end
             end
             if Dice[i].die.timeSinceCompletion >= 2 then
@@ -507,7 +508,7 @@ function scene.update(dt)
                     TutorialValues["Score"] = Score
                 end
                 table.remove(Entities, e)
-                boom(2, 0.005, 4, 0.5)
+                boom(2, 0.005, 4, 0.5*Settings["Sound Volume"]/100)
             else
                 e = e + 1
             end
@@ -522,14 +523,97 @@ function scene.keypressed(k)
     if k == "k" then
         if #GetEntitiesWithID("player") > 0 then
             table.remove(Entities, 1)
-            boom(2, 0.005, 4, 0.5)
+            boom(2, 0.005, 4, 0.5*Settings["Sound Volume"]/100)
         end
     end
     if k == "escape" then
         SceneManager.LoadScene("scenes/menu")
     end
     if k == "space" and #GetEntitiesWithID("player") == 0 then
-        SceneManager.LoadScene("scenes/game")
+        table.insert(Entities, 1, Game.Entity:new("player", 0, 0, 0, 0, 100, {["update"] = function(self, dt)
+            self:set("slashTime", self:get("slashTime")-dt)
+            if love.keyboard.isDown("a") then
+                self.vx = self.vx - 2
+            end
+            if love.keyboard.isDown("d") then
+                self.vx = self.vx + 2
+            end
+            if love.keyboard.isDown("w") then
+                self.vy = self.vy - 2
+            end
+            if love.keyboard.isDown("s") then
+                self.vy = self.vy + 2
+            end
+
+            self.vx = self.vx - self.vx/5
+            self.vy = self.vy - self.vy/5
+
+            self.x = self.x + self.vx*dt*60
+            self.y = self.y + self.vy*dt*60
+
+            TutorialValues["MovementTotal"] = TutorialValues["MovementTotal"] + math.sqrt((self.vx*dt*60)^2 + (self.vy*dt*60)^2)
+
+            Camera.tx = self.x
+            Camera.ty = self.y
+
+            if self:get("slashTime") > 0 then
+                local ox = self:get("lastPos")[1]-self.x
+                local oy = self:get("lastPos")[2]-self.y
+                local len = math.sqrt(ox^2+oy^2)/4
+                for i = 1, len do
+                    table.insert(SlashOrbs, Game.SlashOrb:new(self.x-ox*i/len, self.y-oy*i/len))
+                end
+                local ents = GetEntityCollisions(self)
+                for _,ent in pairs(ents) do
+                    if ent.invincibility <= 0 then
+                        local dmg = self:get("stats")["Attack"]/ent:get("stats")["Defense"]
+                        dmg = dmg * love.math.random(5, 10)
+                        local crit = false
+                        if rand(0,math.max(0,9-self:get("stats")["Luck"]/10)) == 0 then
+                            dmg = dmg * 2
+                            crit = true
+                            beep(1567.981743926997, 0, 8, 0.25*Settings["Sound Volume"]/100)
+                        end
+                        dmg = math.round(dmg)
+                        ent.hp = ent.hp - dmg
+                        ent.invincibility = 0.5
+                        boom(2, 0.005, 16, 0.5*Settings["Sound Volume"]/100)
+                        AddDamageIndicator(ent.x, ent.y, dmg, (crit and {1,1,0}) or {1,1,1})
+                    end
+                end
+            end
+
+            self:set("lastPos", {self.x, self.y})
+        end, ["keypressed"] = function(self, k) end, ["mousepressed"] = function(self, x, y, b)
+            if b == 1 then
+                if self:get("slashTime") <= 0 then
+                    local ax = x-love.graphics.getWidth()/2
+                    local ay = y-love.graphics.getHeight()/2
+                    local px = player.x - Camera.x
+                    local py = player.y - Camera.y
+                    ax = ax - px
+                    ay = ay - py
+                    local m = math.sqrt(ax^2+ay^2)
+                    if m > 0 then
+                        ax = ax / m
+                        ay = ay / m
+                    end
+                    self.vx = self.vx + ax*64
+                    self.vy = self.vy + ay*64
+                    self:set("slashTime", 0.25)
+                    sweep(1, 0, 32, 0.25*Settings["Sound Volume"]/100)
+                    TutorialValues["Slashes"] = TutorialValues["Slashes"] + 1
+                end
+            end
+        end}, {
+            ["slashTime"] = 0,
+            ["lastPos"] = {0,0},
+            ["stats"] = {
+                ["Defense"] = 1,
+                ["Attack"] = 1,
+                ["Luck"] = 0
+            }
+        }))
     end
     if k == "return" then
         AttemptTutorialAdvance(true)
@@ -683,7 +767,7 @@ function scene.draw()
         love.graphics.printf("You died!", 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2-xlfont:getHeight()*2, love.graphics.getWidth(), "center")
         love.graphics.setFont(lgfont)
         love.graphics.printf("Score: " .. Score, 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2, love.graphics.getWidth(), "center")
-        love.graphics.printf("Press space to play again", 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*2, love.graphics.getWidth(), "center")
+        love.graphics.printf("Press space to respawn", 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*2, love.graphics.getWidth(), "center")
         love.graphics.printf("Press escape to return to menu", 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*3, love.graphics.getWidth(), "center")
     end
 

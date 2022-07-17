@@ -20,9 +20,9 @@ function scene.load()
     
     SlashOrbs = {}
 
-    SpawnTimer = 15
+    SpawnTimer = 5
     Difficulty = 1
-    SpawnDelay = 15
+    SpawnDelay = 5
     
     dbg = true
 
@@ -204,9 +204,9 @@ function scene.update(dt)
     if player then
         if SpawnTimer >= SpawnDelay then
             SpawnTimer = 0
-            SpawnDelay = math.max(1,SpawnDelay - 0.5)
-            local x = love.math.random(-512, 512) + player.x
-            local y = love.math.random(-512, 512) + player.y
+            SpawnDelay = math.max(2, SpawnDelay - 0.5)
+            local x = love.math.random(-1024, 1024) + player.x
+            local y = love.math.random(-1024, 1024) + player.y
             table.insert(Entities, Game.Entity:new("enemy", x, y, 0, 0, nil, {
                 ["update"] = function(self, dt)
                     self:set("slashTime", self:get("slashTime")-dt)
@@ -251,13 +251,13 @@ function scene.update(dt)
                 end
             }, {
                 ["stats"] = {
-                    ["Defense"] = 1+(Difficulty-1)/5*rand(1,1.5),
-                    ["Attack"] = 1+(Difficulty-1)/5*rand(1,1.5)
+                    ["Defense"] = 1+(Difficulty-1)/5*rand(0.5,1),
+                    ["Attack"] = 1+(Difficulty-1)/5*rand(0.5,1)
                 },
                 ["slashTime"] = 0,
                 ["cooldown"] = 1
             }))
-            Difficulty = Difficulty * 1.15
+            Difficulty = Difficulty * 1.075
         end
         for _,die in pairs(Dice) do
             die.die:update(dt)
@@ -350,21 +350,7 @@ function scene.keypressed(k)
         SceneManager.LoadScene("scenes/menu")
     end
     if k == "space" and #GetEntitiesWithID("player") == 0 then
-        SceneManager.LoadScene("scenes/game")
-    end
-    if k == "b" then
-        Background = {
-            {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)},
-            {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)},
-            {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)}
-        }
-        while Background[1][1] == 0 and Background[2][1] == 0 and Background[3][1] == 0 do
-            Background = {
-                {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)},
-                {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)},
-                {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)}
-            }
-        end
+        SceneManager.LoadScene("scenes/enemyrush")
     end
 end
 
@@ -383,11 +369,7 @@ function scene.draw()
             local ry = y + math.floor(Camera.y/64)
             local ox = -32-Camera.x+(love.graphics.getWidth())/2+rx*64
             local oy = -32-Camera.y+(love.graphics.getHeight())/2+ry*64
-            love.graphics.setColor(
-                math.round((rx/Background[1][4]+ry/Background[1][5]+Background[1][3])%Background[1][2]*Background[1][1]),
-                math.round((rx/Background[2][4]+ry/Background[2][5]+Background[2][3])%Background[2][2]*Background[2][1]),
-                math.round((rx/Background[3][4]+ry/Background[3][5]+Background[3][3])%Background[3][2]*Background[3][1])
-            )
+            love.graphics.setColor((rx+ry+Background[1][3])%Background[1][2]*Background[1][1],(rx+ry+Background[1][3])%Background[2][2]*Background[2][1],(rx+ry+Background[1][3])%Background[3][2]*Background[3][1])
             if ox >= -64+dbgMargin.left and ox < love.graphics.getWidth()-dbgMargin.right and oy >= -64+dbgMargin.top and oy < love.graphics.getHeight()-dbgMargin.bottom then
                 love.graphics.rectangle("line", ox, oy, 64, 64)
                 objOnscreen = objOnscreen + 1
