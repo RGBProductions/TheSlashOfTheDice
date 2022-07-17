@@ -104,7 +104,7 @@ function scene.load()
                         }
                     }))
                 end, pause = true},
-                {text = "The more of these you kill, the higher your score goes! You can see your current score at the bottom right.", pause = true},
+                {text = "The more of these you kill, the higher your score goes! You can see your current score at the bottom left.", pause = true},
                 {text = "Your score right now is 0. Let's change that! Slash through the enemy until you defeat it."}
             }
         }, {
@@ -378,7 +378,7 @@ function scene.update(dt)
         end
     end
 
-    if runTimer and Spawned < 10 then
+    if runTimer and Spawned < 5 then
         SpawnTimer = SpawnTimer + dt
     end
     if player then
