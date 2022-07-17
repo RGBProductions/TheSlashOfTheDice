@@ -9,6 +9,7 @@ local function rand(min, max)
 end
 
 function scene.load()
+    LoadMusic("assets/music/Fight.ogg")
     -- Load die images
     DieImages = {}
     for _,itm in pairs(love.filesystem.getDirectoryItems("assets/images/die")) do

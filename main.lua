@@ -17,7 +17,7 @@ function math.round(x)
 end
 
 function LoadMusic(fn)
-    local s,r = pcall(love.audio.newSource, "assets/music/Tutorial.ogg", "stream")
+    local s,r = pcall(love.audio.newSource, fn, "stream")
     if not s then
         return print("WARNING: Music " .. fn .. " not found; skipping")
     end

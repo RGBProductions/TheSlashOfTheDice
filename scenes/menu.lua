@@ -5,6 +5,8 @@ lgfont = love.graphics.newFont(24)
 lrfont = love.graphics.newFont(32)
 xlfont = love.graphics.newFont(48)
 
+love.keyboard.setKeyRepeat(true)
+
 function SetMenu(m)
     Menu = m
     MenuSelection = 1
@@ -96,6 +98,30 @@ function scene.load()
         ["Settings"] = {
             label = "Settings",
             buttons = {
+                {
+                    label = {
+                        {type = "text", value = "UI Scale: "},
+                        {type = "fromcode", value = function()
+                            return Settings["UI Scale"]
+                        end}
+                    },
+                    callbacks = {
+                        ["left"] = function()
+                            local shift = 0.01
+                            if love.keyboard.isDown("lshift") then
+                                shift = 0.1
+                            end
+                            Settings["UI Scale"] = math.max(0.25, math.min(3, Settings["UI Scale"] - shift))
+                        end,
+                        ["right"] = function()
+                            local shift = 0.01
+                            if love.keyboard.isDown("lshift") then
+                                shift = 0.1
+                            end
+                            Settings["UI Scale"] = math.max(0.25, math.min(3, Settings["UI Scale"] + shift))
+                        end
+                    }
+                },
                 {
                     label = {
                         {type = "text", value = "Sound Volume: "},

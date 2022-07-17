@@ -3,6 +3,7 @@ SceneManager = {
 }
 
 function SceneManager.LoadScene(fn, args)
+    StopMusic()
     if love.filesystem.getInfo(fn .. ".lua") ~= nil then
         SceneManager.ActiveScene = require(fn)
         if SceneManager.ActiveScene.load ~= nil then

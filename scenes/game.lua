@@ -9,6 +9,7 @@ local function rand(min, max)
 end
 
 function scene.load()
+    LoadMusic("assets/music/Fight.ogg")
     -- Load die images
     DieImages = {}
     for _,itm in pairs(love.filesystem.getDirectoryItems("assets/images/die")) do
@@ -131,7 +132,7 @@ function scene.load()
         {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(-3,3), love.math.random(-3,3)},
         {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(-3,3), love.math.random(-3,3)}
     }
-    while Background[1][1] == 0 and Background[2][1] == 0 and Background[3][1] == 0 do
+    while Background[1][1] == 0 and Background[2][1] == 0 and Background[3][1] == 0 or (Background[1][4] == 0 or Background[2][4] == 0 or Background[3][4] == 0 or Background[1][5] == 0 or Background[2][5] == 0 or Background[3][5] == 0) do
         Background = {
             {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(-3,3), love.math.random(-3,3)},
             {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(-3,3), love.math.random(-3,3)},
@@ -351,20 +352,6 @@ function scene.keypressed(k)
     end
     if k == "space" and #GetEntitiesWithID("player") == 0 then
         SceneManager.LoadScene("scenes/game")
-    end
-    if k == "b" then
-        Background = {
-            {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)},
-            {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)},
-            {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)}
-        }
-        while Background[1][1] == 0 and Background[2][1] == 0 and Background[3][1] == 0 do
-            Background = {
-                {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)},
-                {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)},
-                {love.math.random(0,1), love.math.random(2,5), love.math.random(2,3), love.math.random(1,3), love.math.random(1,3)}
-            }
-        end
     end
 end
 

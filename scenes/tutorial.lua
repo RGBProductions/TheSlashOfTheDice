@@ -417,7 +417,7 @@ function scene.update(dt)
                     if self:get("slashTime") > 0 then
                         local ents = GetEntityCollisions(self)
                         for _,ent in pairs(ents) do
-                            if ent.invincibility <= 0 then
+                            if ent.id == "player" and ent.invincibility <= 0 then
                                 local dmg = self:get("stats")["Attack"]/ent:get("stats")["Defense"]
                                 dmg = dmg * love.math.random(5, 10)
                                 dmg = math.round(dmg)
@@ -614,6 +614,7 @@ function scene.keypressed(k)
                 ["Luck"] = 0
             }
         }))
+        player = GetEntitiesWithID("player")[1]
     end
     if k == "return" then
         AttemptTutorialAdvance(true)
