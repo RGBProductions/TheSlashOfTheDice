@@ -24,10 +24,36 @@ function Game.Die:newRoll()
 end
 
 function Game.Die:update(dt)
+    local die = GetPoolByID(Settings["Gameplay"]["Dice Weighing Mode"]).Die
+    if Settings["Gameplay"]["Dice Weighing Mode"] == 2 then
+        local Stats = player:get("stats")
+        die = {}
+        -- Calculate Total Statistic Score
+        local statscore = (Stats["Attack"]/150)*0.4 + (Stats["Defense"]/150)*0.4 + (Stats["Luck"]/90)*0.2
+        local istatscore = 1-statscore
+        for n = 1, istatscore*8 do
+            table.insert(die, 6)
+        end
+        for n = 1, istatscore*6 do
+            table.insert(die, 5)
+        end
+        for n = 1, istatscore*4 do
+            table.insert(die, 4)
+        end
+        for n = 1, statscore*8 do
+            table.insert(die, 1)
+        end
+        for n = 1, statscore*6 do
+            table.insert(die, 2)
+        end
+        for n = 1, statscore*4 do
+            table.insert(die, 3)
+        end
+    end
     if not self.doneRolling then
         self.time = self.time + dt
         if self.time >= 0.125 then
-            self.number = love.math.random(1,6)
+            self.number = die[love.math.random(1,#die)]
             self.rollIter = self.rollIter + 1
             self.time = 0
         end

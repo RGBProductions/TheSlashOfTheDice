@@ -47,7 +47,7 @@ function scene.load()
         {
             criteria = {},
             messages = {
-                {text = "Hello! Welcome to The Slash of the Dice! Press enter to continue.", pause = true},
+                {text = "Hello! Welcome to The Slash of the Dice! Press space to continue.", pause = true},
                 {text = "In this game, you must defeat endless waves of enemies while also enduring the test of luck!", pause = true},
                 {text = "But before we get into all the little gimmicks of this game, you should learn how to actually play!", pause = true},
                 {text = "If you already know how to play, you can exit the tutorial by pressing escape.", pause = true}
@@ -191,12 +191,12 @@ function scene.load()
                         if rand(0,math.max(0,9-self:get("stats")["Luck"]/10)) == 0 then
                             dmg = dmg * 2
                             crit = true
-                            beep(1567.981743926997, 0, 8, 0.25*Settings["Sound Volume"]/100)
+                            beep(1567.981743926997, 0, 8, 0.25*Settings["Audio"]["Sound Volume"]/100)
                         end
                         dmg = math.round(dmg)
                         ent.hp = ent.hp - dmg
                         ent.invincibility = 0.5
-                        boom(2, 0.005, 16, 0.5*Settings["Sound Volume"]/100)
+                        boom(2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
                         AddDamageIndicator(ent.x, ent.y, dmg, (crit and {1,1,0}) or {1,1,1})
                     end
                 end
@@ -220,7 +220,7 @@ function scene.load()
                     self.vx = self.vx + ax*64
                     self.vy = self.vy + ay*64
                     self:set("slashTime", 0.25)
-                    sweep(1, 0, 32, 0.25*Settings["Sound Volume"]/100)
+                    sweep(1, 0, 32, 0.25*Settings["Audio"]["Sound Volume"]/100)
                     TutorialValues["Slashes"] = TutorialValues["Slashes"] + 1
                 end
             end
@@ -349,7 +349,7 @@ function scene.update(dt)
     CharTime = CharTime + dt
     if CharTime >= 0.15 then
         if MessageProgress < #TutorialStages[Stage].messages[Message].text then
-            beep(1046.5022612023945, 0, 32, 1/16*Settings["Sound Volume"]/100)
+            beep(1046.5022612023945, 0, 32, 1/16*Settings["Audio"]["Sound Volume"]/100)
             MessageProgress = math.min(#TutorialStages[Stage].messages[Message].text, MessageProgress + 1)
         end
     end
@@ -423,7 +423,7 @@ function scene.update(dt)
                                 dmg = math.round(dmg)
                                 ent.hp = ent.hp - dmg
                                 ent.invincibility = 0.5
-                                boom(2, 0.005, 16, 0.5*Settings["Sound Volume"]/100)
+                                boom(2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
                                 AddDamageIndicator(ent.x, ent.y, dmg, {1,0,0})
                             end
                         end
@@ -458,9 +458,9 @@ function scene.update(dt)
                 end
                 Dice[i].applied = true
                 if Dice[i].operation == "add" or Dice[i].operation == "mul" then
-                    beep(1046.5022612023945, 0, 8, 0.25*Settings["Sound Volume"]/100)
+                    beep(1046.5022612023945, 0, 8, 0.25*Settings["Audio"]["Sound Volume"]/100)
                 else
-                    boom(32, 0.01, 8, 0.25*Settings["Sound Volume"]/100)
+                    boom(32, 0.01, 8, 0.25*Settings["Audio"]["Sound Volume"]/100)
                 end
             end
             if Dice[i].die.timeSinceCompletion >= 2 then
@@ -490,14 +490,35 @@ function scene.update(dt)
 
         for _,ent in pairs(Entities) do
             ent:update(dt)
-            ent.hp = math.min(ent.maxhp, ent.hp + dt*2)
+            if ent.id == "player" then
+                ent.hp = math.min(ent.maxhp, ent.hp + dt*2)
+            end
         end
 
         local stats = {}
         for t,v in pairs(Stats) do
             table.insert(stats, t)
         end
-        local ops = {"add","add","add","add", "mul","mul","mul", "sub", "div"}
+        local pool = GetPoolByID(Settings["Gameplay"]["Dice Weighing Mode"])
+        local ops = pool.Operators
+        if Settings["Gameplay"]["Dice Weighing Mode"] == 2 then
+            ops = {"add","mul","sub","div"}
+            -- Calculate Total Statistic Score
+            local statscore = (Stats["Attack"]/150)*0.4 + (Stats["Defense"]/150)*0.4 + (Stats["Luck"]/90)*0.2
+            local istatscore = 1-statscore
+            for n = 1, istatscore*16 do
+                table.insert(ops, "add")
+            end
+            for n = 1, istatscore*10 do
+                table.insert(ops, "mul")
+            end
+            for n = 1, statscore*10 do
+                table.insert(ops, "sub")
+            end
+            for n = 1, statscore*7 do
+                table.insert(ops, "div")
+            end
+        end
 
         local e = 1
         while e <= #Entities do
@@ -508,7 +529,7 @@ function scene.update(dt)
                     TutorialValues["Score"] = Score
                 end
                 table.remove(Entities, e)
-                boom(2, 0.005, 4, 0.5*Settings["Sound Volume"]/100)
+                boom(2, 0.005, 4, 0.5*Settings["Audio"]["Sound Volume"]/100)
             else
                 e = e + 1
             end
@@ -523,7 +544,7 @@ function scene.keypressed(k)
     if k == "k" then
         if #GetEntitiesWithID("player") > 0 then
             table.remove(Entities, 1)
-            boom(2, 0.005, 4, 0.5*Settings["Sound Volume"]/100)
+            boom(2, 0.005, 4, 0.5*Settings["Audio"]["Sound Volume"]/100)
         end
     end
     if k == "escape" then
@@ -572,12 +593,12 @@ function scene.keypressed(k)
                         if rand(0,math.max(0,9-self:get("stats")["Luck"]/10)) == 0 then
                             dmg = dmg * 2
                             crit = true
-                            beep(1567.981743926997, 0, 8, 0.25*Settings["Sound Volume"]/100)
+                            beep(1567.981743926997, 0, 8, 0.25*Settings["Audio"]["Sound Volume"]/100)
                         end
                         dmg = math.round(dmg)
                         ent.hp = ent.hp - dmg
                         ent.invincibility = 0.5
-                        boom(2, 0.005, 16, 0.5*Settings["Sound Volume"]/100)
+                        boom(2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
                         AddDamageIndicator(ent.x, ent.y, dmg, (crit and {1,1,0}) or {1,1,1})
                     end
                 end
@@ -601,7 +622,7 @@ function scene.keypressed(k)
                     self.vx = self.vx + ax*64
                     self.vy = self.vy + ay*64
                     self:set("slashTime", 0.25)
-                    sweep(1, 0, 32, 0.25*Settings["Sound Volume"]/100)
+                    sweep(1, 0, 32, 0.25*Settings["Audio"]["Sound Volume"]/100)
                     TutorialValues["Slashes"] = TutorialValues["Slashes"] + 1
                 end
             end
@@ -616,9 +637,21 @@ function scene.keypressed(k)
         }))
         player = GetEntitiesWithID("player")[1]
     end
-    if k == "return" then
+    if k == "space" then
         AttemptTutorialAdvance(true)
     end
+    -- if k == "b" then
+    --     player = GetEntitiesWithID("player")[1]
+    --     local Stats = player:get("stats")
+    --     local stats = {}
+    --     for t,v in pairs(Stats) do
+    --         table.insert(stats, t)
+    --     end
+    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "add"})
+    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "mul"})
+    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "sub"})
+    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "div"})
+    -- end
 end
 
 function scene.mousepressed(x, y, b)
@@ -630,19 +663,29 @@ end
 function scene.draw()
     local objOnscreen = 0
     local entOnscreen = 0
+    local lw = love.graphics.getLineWidth()
+    love.graphics.setLineWidth(2)
     for x = -math.ceil(love.graphics.getWidth()/2/64+1), math.ceil(love.graphics.getWidth()/2/64+1) do
         for y = -math.ceil(love.graphics.getHeight()/2/64+1), math.ceil(love.graphics.getHeight()/2/64+1) do
             local rx = x + math.floor(Camera.x/64)
             local ry = y + math.floor(Camera.y/64)
             local ox = -32-Camera.x+(love.graphics.getWidth())/2+rx*64
             local oy = -32-Camera.y+(love.graphics.getHeight())/2+ry*64
-            love.graphics.setColor((rx+ry+Background[1][3])%Background[1][2]*Background[1][1],(rx+ry+Background[1][3])%Background[2][2]*Background[2][1],(rx+ry+Background[1][3])%Background[3][2]*Background[3][1])
-            if ox >= -64+dbgMargin.left and ox < love.graphics.getWidth()-dbgMargin.right and oy >= -64+dbgMargin.top and oy < love.graphics.getHeight()-dbgMargin.bottom then
-                love.graphics.rectangle("line", ox, oy, 64, 64)
-                objOnscreen = objOnscreen + 1
+            love.graphics.setColor(
+                (rx+ry+Background[1][3])%Background[1][2]*Background[1][1],
+                (rx+ry+Background[1][3])%Background[2][2]*Background[2][1],
+                (rx+ry+Background[1][3])%Background[3][2]*Background[3][1]
+            )
+            local r,g,b,a = love.graphics.getColor()
+            if not (r == 0 and g == 0 and b == 0) then
+                if ox >= -64+dbgMargin.left and ox < love.graphics.getWidth()-dbgMargin.right and oy >= -64+dbgMargin.top and oy < love.graphics.getHeight()-dbgMargin.bottom then
+                    love.graphics.rectangle("line", ox, oy, 64, 64)
+                    objOnscreen = objOnscreen + 1
+                end
             end
         end
     end
+    love.graphics.setLineWidth(lw)
     for _,orb in pairs(SlashOrbs) do
         love.graphics.setColor(1,1,1)
         love.graphics.circle("fill", orb.x-Camera.x+love.graphics.getWidth()/2, orb.y-Camera.y+love.graphics.getHeight()/2, (0.5-(love.timer.getTime()-orb.time))*16)
@@ -688,14 +731,26 @@ function scene.draw()
     end
 
     for i,die in ipairs(Dice) do
-        local s = math.max(1, DiceDisplayPosition*64*Settings["UI Scale"]/love.graphics.getWidth())
+        local s = math.max(1, DiceDisplayPosition*64*Settings["Video"]["UI Scale"]/love.graphics.getWidth())
         local ds = (1-math.max(0, math.min(1, 2*(die.die.timeSinceCompletion-1))))^5
         local ny = 1-(1-math.max(0, math.min(1, 2*(die.die.timeSinceCompletion))))^5
-        local x = love.graphics.getWidth()-((DiceDisplayPosition-(i)+1)*64*Settings["UI Scale"]/s) + 32*Settings["UI Scale"]/s
-        local y = love.graphics.getHeight()-32*Settings["UI Scale"]/s
+        local x = love.graphics.getWidth()-((DiceDisplayPosition-(i)+1)*64*Settings["Video"]["UI Scale"]/s) + 32*Settings["Video"]["UI Scale"]/s
+        local y = love.graphics.getHeight()-32*Settings["Video"]["UI Scale"]/s
         local r,g,b = 1,1,1
-        if die.operation == "div" or die.operation == "sub" then
-            r,g,b = 1,0,0
+        if Settings["Video"]["Color by Operator"] then
+            if die.operation == "mul" then
+                r,g,b = 0,1,0
+            end
+            if die.operation == "sub" then
+                r,g,b = 1,0.875,0.05
+            end
+            if die.operation == "div" then
+                r,g,b = 1,0,0
+            end
+        else
+            if die.operation == "div" or die.operation == "sub" then
+                r,g,b = 1,0,0
+            end
         end
 
         if die.die:getNumber() then
@@ -717,13 +772,13 @@ function scene.draw()
         
             love.graphics.setColor(r,g,b)
             love.graphics.setFont(smfont)
-            love.graphics.printf(st .. op .. die.die.number, x, y+32*Settings["UI Scale"]/s-love.graphics.getFont():getHeight()*Settings["UI Scale"]/s/2-ny*48*Settings["UI Scale"]/s, 64, "center", 0, Settings["UI Scale"]/s*ds, Settings["UI Scale"]/s*ds, 32, 32)
+            love.graphics.printf(st .. op .. die.die.number, x, y+32*Settings["Video"]["UI Scale"]/s-love.graphics.getFont():getHeight()*Settings["Video"]["UI Scale"]/s/2-ny*48*Settings["Video"]["UI Scale"]/s, 64, "center", 0, Settings["Video"]["UI Scale"]/s*ds, Settings["Video"]["UI Scale"]/s*ds, 32, 32)
         end
         love.graphics.setColor(r,g,b,1)
         if not die.die:getNumber() then
             love.graphics.setColor(r,g,b,0.5)
         end
-        love.graphics.draw(DieImages[die.die.number], x, y, 0, Settings["UI Scale"]/s*ds, Settings["UI Scale"]/s*ds, 32, 32)
+        love.graphics.draw(DieImages[die.die.number], x, y, 0, Settings["Video"]["UI Scale"]/s*ds, Settings["Video"]["UI Scale"]/s*ds, 32, 32)
     end
 
     love.graphics.setColor(1,1,1)
