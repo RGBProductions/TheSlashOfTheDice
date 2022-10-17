@@ -8,4 +8,4 @@ jobs:
     steps:
       - name: Setup LOVE File
         run: |
-          zip -r TheSlashOfTheDice.love *
+          zip -r TheSlashOfTheDice.love ./*
