@@ -114,7 +114,7 @@ function CheckForUpdates()
     end
 end
 
-CheckForUpdates()
+local s,r = pcall(CheckForUpdates)
 
 function table.index(t,v)
     for n,i in pairs(t) do
