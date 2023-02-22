@@ -1,6 +1,7 @@
-love.filesystem.write("https.so", love.filesystem.read("https.so"))
+-- https module didn't upload
+--[[love.filesystem.write("https.so", love.filesystem.read("https.so"))
 love.filesystem.write("https.dll", love.filesystem.read("https.dll"))
-local https = require "https"
+local https = require "https"]]
 require "scenemanager"
 require "pools"
 
