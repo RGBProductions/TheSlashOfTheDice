@@ -3,13 +3,22 @@ SceneManager = {
 }
 
 function SceneManager.LoadScene(fn, args)
-    StopMusic()
-    if love.filesystem.getInfo(fn .. ".lua") ~= nil then
-        SceneManager.ActiveScene = require(fn)
-        if SceneManager.ActiveScene.load ~= nil then
-            SceneManager.ActiveScene.load(args)
+    local sceneLoadEvent = {
+        path = fn,
+        args = args,
+        cancelled = false
+    }
+    Events.fire("loadscene", sceneLoadEvent)
+    if not sceneLoadEvent.cancelled then
+        StopMusic()
+        if love.filesystem.getInfo(fn .. ".lua") ~= nil then
+            SceneManager.ActiveScene = require(fn)
+            if SceneManager.ActiveScene.load ~= nil then
+                SceneManager.ActiveScene.load(args)
+            end
         end
     end
+    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
 function SceneManager.Update(dt)
@@ -57,5 +66,29 @@ end
 function SceneManager.Focus(f)
     if SceneManager.ActiveScene.focus ~= nil then
         SceneManager.ActiveScene.focus(f)
+    end
+end
+
+function SceneManager.TouchPressed(...)
+    if SceneManager.ActiveScene.touchpressed ~= nil then
+        SceneManager.ActiveScene.touchpressed(...)
+    end
+end
+
+function SceneManager.TouchMoved(...)
+    if SceneManager.ActiveScene.touchmoved ~= nil then
+        SceneManager.ActiveScene.touchmoved(...)
+    end
+end
+
+function SceneManager.TouchReleased(...)
+    if SceneManager.ActiveScene.touchreleased ~= nil then
+        SceneManager.ActiveScene.touchreleased(...)
+    end
+end
+
+function SceneManager.GamepadPressed(stick,button)
+    if SceneManager.ActiveScene.gamepadpressed ~= nil then
+        SceneManager.ActiveScene.gamepadpressed(stick,button)
     end
 end

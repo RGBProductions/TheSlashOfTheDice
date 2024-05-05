@@ -1,12 +1,111 @@
--- https module didn't upload
---[[love.filesystem.write("https.so", love.filesystem.read("https.so"))
-love.filesystem.write("https.dll", love.filesystem.read("https.dll"))
-local https = require "https"]]
-require "scenemanager"
-require "pools"
-
+do
+    local s,r = pcall(require, "websocket")
+    if s then
+        websocket = r
+    end
+end
 json = require "json"
-love.graphics.setDefaultFilter("nearest", "nearest")
+
+love.filesystem.getInfo = love.filesystem.getInfo or function() return nil end
+
+-- hehe
+AprilFoolsMode = false
+do
+    local date = os.date("*t")
+    if date.month == 4 and date.day <= 3 then
+        AprilFoolsMode = true
+    end
+end
+
+ViewScale = 1
+ViewMargin = 0
+FontScale = IsMobile and 1.5 or 1
+-- ViewMargin = 0
+
+SlashIcon = love.graphics.newImage("assets/images/ui/slash.png")
+PauseIcon = love.graphics.newImage("assets/images/ui/pause.png")
+BackIcon = love.graphics.newImage("assets/images/ui/back.png")
+ForwardIcon = love.graphics.newImage("assets/images/ui/forward.png")
+FastBackIcon = love.graphics.newImage("assets/images/ui/fastback.png")
+FastForwardIcon = love.graphics.newImage("assets/images/ui/fastforward.png")
+
+Trophy = love.graphics.newImage("assets/images/ui/cubetrophy.png")
+
+local _gh = love.graphics.getHeight
+
+---@diagnostic disable-next-line: duplicate-set-field
+function love.graphics.getHeight()
+    return _gh()-ViewMargin
+end
+
+local enableHttps = not IsMobile
+if love.filesystem.getInfo("https.so") and love.filesystem.getInfo("https.dll") then
+    enableHttps = true
+end
+enableHttps = not IsMobile
+if enableHttps then
+    love.filesystem.write("https.so", love.filesystem.read("https.so"))
+    love.filesystem.write("https.dll", love.filesystem.read("https.dll"))
+    local s,r = pcall(require, "https")
+    if not s then
+        print("Failed to load HTTPS module, ignoring")
+        enableHttps = false
+    else
+        https = r
+    end
+end
+
+if love.filesystem.getInfo("discord-rpc.dll") then
+    love.filesystem.write("discord-rpc.dll", love.filesystem.read("discord-rpc.dll"))
+    love.filesystem.write("libdiscord-rpc.dll", love.filesystem.read("discord-rpc.dll"))
+end
+if love.filesystem.getInfo("discord-rpc.so") then
+    love.filesystem.write("discord-rpc.so", love.filesystem.read("discord-rpc.so"))
+    love.filesystem.write("libdiscord-rpc.so", love.filesystem.read("discord-rpc.so"))
+end
+
+do
+    local s,r = pcall(require, "lib.discordRPC")
+    if s then
+        DiscordRPC = r
+    else
+        print("i couldnt load discord rpc because " .. tostring(r))
+        DiscordRPC = nil
+    end
+end
+
+if DiscordRPC then
+    function DiscordRPC.joinGame(secret)
+        print("Join Game: " .. secret)
+    end
+
+    function DiscordRPC.joinRequest(user)
+        print("Join Request: " .. user)
+    end
+else
+    print("Discord RPC was not initialized.")
+end
+
+smfont = love.graphics.getFont()
+mdfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*FontScale)
+lgfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*FontScale)
+lrfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32*FontScale)
+xlfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48*FontScale)
+SusMode = false
+
+function timerString(time)
+    local hr = tostring(math.floor(time/3600))
+    local min = tostring(math.floor(time/60)%60)
+    local sec = tostring(math.floor(time)%60)
+    local t = sec
+    if min ~= "0" then
+        t = min .. ":" .. ("0"):rep(2-#t) .. t
+    end
+    if hr ~= "0" then
+        t = hr .. ":" .. ("0"):rep(5-#t) .. t
+    end
+    return t
+end
 
 function string.split(text, delimiter)
     local result = {}
@@ -43,6 +142,28 @@ function table.join(t, s)
     return res
 end
 
+AchievementUnlocks = {}
+
+function UnlockAchievement(id, titleText)
+    table.insert(AchievementUnlocks, {achievement = id, time = 0, titleText = titleText})
+end
+
+require "events"
+require "pools"
+require "game"
+require "lang"
+require "entitytypes"
+require "sounds"
+require "scenemanager"
+require "network"
+require "achievements"
+
+if not love.filesystem.getInfo("achievements.txt") then
+    Achievements.Save("achievements.txt")
+end
+Achievements.Load("achievements.txt")
+love.graphics.setDefaultFilter("nearest", "nearest")
+
 function RecursiveDelete( item )
     if love.filesystem.getInfo( item , "directory" ) then
         for _, child in pairs( love.filesystem.getDirectoryItems( item )) do
@@ -60,25 +181,13 @@ version = curver[1]
 version_number = curver[2]
 update = {false, version}
 beta = false
---how do you feel rn--
--- local vals = string.split_plain("1.0-JAM", ".")
--- local t = string.split_plain(vals[#vals], "-")
--- for i,v in ipairs(vals) do
---     vals[i] = string.split_plain(v, "-")[1]
--- end
--- print("Major: " .. vals[1])
--- print("Minor: " .. vals[2])
--- print("Revision: " .. (vals[3] or 0))
--- print("Type: " .. (t[2] or "RELEASE"))
--- print("Full version: " .. vals[1] .. "." .. vals[2] .. "." .. (vals[3] or 0) .. "-" .. (t[2] or "RELEASE"))
--- print("Actual version: " .. table.join(vals, "."))
 
 function CompareVersions(a,b)
     local t1 = string.split_plain(a, ".")
     local t2 = string.split_plain(b, ".")
     for i,v in ipairs(t1) do
         t1[i] = string.split_plain(v, "-")[1]
-    end     
+    end
     for i,v in ipairs(t2) do
         t2[i] = string.split_plain(v, "-")[1]
     end
@@ -96,26 +205,25 @@ end
 
 UpdateCheckFailed = 0
 
--- MichaelEpicA's Method
+-- File method
 function CheckForUpdates()
-    -- local code,data,headers,unknown = https.request("https://github.com/TheFuryBumblebee/TheSlashOfTheDice/releases/latest")
-    local code,data,headers = https.request("https://github.com/TheFuryBumblebee/TheSlashOfTheDice/releases/latest", {method = "get"})
-    local location = headers.location
-    if not headers.location then
-        location = headers.Location -- Windows
+    local versionUrl = "https://raw.githubusercontent.com/RGBProductions/TheSlashOfTheDice/main/version.txt"
+    local code,data,headers = https.request(versionUrl, {method = "get"})
+    if code ~= 200 then return end
+    local lines = data:split("\n")
+    local cmp = 0
+    if #lines > 1 then
+        cmp = (tonumber(lines[2]) > tonumber(version_number) and 1) or (tonumber(lines[2]) < tonumber(version_number) and -1) or 0
+    else
+        print("No version code exists. Comparing via name instead")
+        cmp = CompareVersions(version, lines[1])
     end
-    local real_url = location:sub(2,-1)
-    local spl = real_url:split("/")
-    local tag = spl[#spl]
-    local cmp = CompareVersions(version, tag:sub(2,-1))
     if cmp == 1 then
         beta = true
     elseif cmp == -1 then
-        update = {true, tag}
+        update = {true, lines[1]}
     end
 end
-
-local s,r = pcall(CheckForUpdates)
 
 function table.index(t,v)
     for n,i in pairs(t) do
@@ -140,6 +248,7 @@ function LoadMusic(fn)
         return print("WARNING: Music " .. fn .. " not found; skipping")
     end
     Music = r
+    CurrentMusic = fn
     Music:setLooping(true)
     Music:setVolume(Settings["Audio"]["Music Volume"]/100)
     Music:play()
@@ -151,46 +260,51 @@ function StopMusic()
     end
 end
 
-function deepcopy(orig, copies)
-    copies = copies or {}
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        if copies[orig] then
-            copy = copies[orig]
-        else
-            copy = {}
-            copies[orig] = copy
-            for orig_key, orig_value in next, orig, nil do
-                copy[deepcopy(orig_key, copies)] = deepcopy(orig_value, copies)
-            end
-            setmetatable(copy, deepcopy(getmetatable(orig), copies))
-        end
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
-
-function RecursiveOverwrite(t1, t2)
-    for k,v in pairs(t2) do
-        if type(v) == "table" then
-            t1[k] = {}
-            t1[k] = RecursiveOverwrite(t1[k], v)
-        else
-            t1[k] = v
-        end
-    end
-    return t1
-end
-
 function table.merge(t, m)
-    local res = deepcopy(t)
-    return RecursiveOverwrite(res, m)
+    t = t or {}
+    for k,v in pairs(m) do
+        if type(v) == "table" then
+            table.merge(t[k],v)
+        else
+            t[k] = v
+        end
+    end
+    return t
 end
+
+function math.dot(a,b)
+    local sum = 0
+    for i = 1, math.max(#a,#b) do
+        sum = sum + (a[i] or 0)*(b[i] or 0)
+    end
+    return sum
+end
+
+function math.norm(v)
+    local m = 0
+    for i = 1, #v do
+        m = m + v[i]^2
+    end
+    m = math.sqrt(m)
+    if m == 0 then return v end
+    local r = {}
+    for i = 1, #v do
+        table.insert(r, v[i]/m)
+    end
+    return r
+end
+
+DiscordPresence = {
+    details = "Launching",
+    startTimestamp = os.time(),
+    largeImageKey = "main_icon"
+}
 
 function love.load()
+    if DiscordRPC then DiscordRPC.initialize("1124036737413435502", true) end
     Settings = {
+        ["Language"] = "en_US",
+        
         ["Video"] = {
             ["UI Scale"] = 1.5,
             ["Color by Operator"] = true
@@ -202,44 +316,175 @@ function love.load()
         },
 
         ["Gameplay"] = {
-            ["Dice Weighing Mode"] = 2
+            ["Dice Weighing Mode"] = 2,
+            ["Auto Aim"] = IsMobile,
+            ["Auto Aim Limit"] = 45
+        },
+
+        ["Customization"] = {
+            ["PlayerR"] = 0,
+            ["PlayerG"] = 1,
+            ["PlayerB"] = 1
         }
     }
     if love.filesystem.getInfo("settings.json") then
         local itms = json.decode(love.filesystem.read("settings.json"))
         Settings = table.merge(Settings, itms)
     end
-    SceneManager.LoadScene("scenes/menu", {})
+
+    MenuBG = love.graphics.newImage("assets/images/ui/background.png")
+    MenuBG:setWrap("repeat", "repeat", "repeat")
+    BGShader = love.graphics.newShader("assets/shaders/menu.glsl")
+    BGShader:send("tex", MenuBG)
+    BGShader:send("texSize", {MenuBG:getDimensions()})
+    BGShader:send("time", (GlobalTime-600)*48)
+    MenuBGMobile = love.graphics.newImage("assets/images/ui/background-mobile.png")
+    MenuBGMobile:setWrap("repeat", "repeat", "repeat")
 end
 
+local frame = 0
+local saveTime = 0
+
+GlobalTime = 0
+local presenceTimer = 0
+
 function love.update(dt)
-    SceneManager.Update(dt)
+    Net.Update()
+    saveTime = saveTime + dt
+    if saveTime >= 30 then
+        Achievements.Save("achievements.txt")
+        saveTime = 0
+    end
+    presenceTimer = presenceTimer + dt
+    if presenceTimer >= 2 then
+        if DiscordRPC then DiscordRPC.updatePresence(DiscordPresence) end
+        presenceTimer = 0
+    end
+    if Music then
+        if Paused then
+            Music:setVolume((Settings["Audio"]["Music Volume"]/100)*0.5)
+        else
+            Music:setVolume(Settings["Audio"]["Music Volume"]/100)
+        end
+    end
+    frame = frame + 1
+    if frame == 2 then
+        if enableHttps then pcall(CheckForUpdates) end
+    
+        Events.fire("modPreInit")
+        Events.fire("modPostInit")
+        
+        SceneManager.LoadScene("scenes/menu", {})
+    end
+    if frame > 3 then
+        SceneManager.Update(dt)
+    end
+    GlobalTime = GlobalTime + dt
+    if #AchievementUnlocks >= 1 then
+        AchievementUnlocks[1].time = AchievementUnlocks[1].time + dt
+        if AchievementUnlocks[1].time >= 3 then
+            table.remove(AchievementUnlocks, 1)
+        end
+    end
 end
 
 function love.mousemoved(x, y, dx, dy)
-    SceneManager.MouseMoved(x, y, dx, dy)
+    if frame > 3 then
+        SceneManager.MouseMoved(x, y, dx, dy)
+    end
 end
 
 function love.wheelmoved(x, y)
-    SceneManager.WheelMoved(x, y)
+    if frame > 3 then
+        SceneManager.WheelMoved(x, y)
+    end
 end
 
 function love.focus(f)
-    SceneManager.Focus(f)
+    if frame > 3 then
+        SceneManager.Focus(f)
+    end
+    if not f then
+        Achievements.Save("achievements.txt")
+    end
 end
 
 function love.keypressed(k)
-    SceneManager.KeyPressed(k)
+    if k == "f11" then
+        love.window.setFullscreen(not love.window.getFullscreen())
+    end
+    if frame > 3 then
+        SceneManager.KeyPressed(k)
+    end
 end
 
 function love.textinput(t)
-    SceneManager.TextInput(t)
+    if frame > 3 then
+        SceneManager.TextInput(t)
+    end
 end
 
 function love.mousepressed(x,y,b)
-    SceneManager.MousePressed(x,y,b)
+    if frame > 3 then
+        SceneManager.MousePressed(x,y,b)
+    end
+end
+
+function love.gamepadpressed(stick,b)
+    SceneManager.GamepadPressed(stick,b)
+end
+
+function love.touchpressed(...)
+    if frame > 3 then
+        SceneManager.TouchPressed(...)
+    end
+end
+
+function love.touchmoved(...)
+    if frame > 3 then
+        SceneManager.TouchMoved(...)
+    end
+end
+
+function love.touchreleased(...)
+    if frame > 3 then
+        SceneManager.TouchReleased(...)
+    end
 end
 
 function love.draw()
-    SceneManager.Draw()
+    if frame > 3 then
+        SceneManager.Draw()
+    else
+        love.graphics.setFont(xlfont)
+        love.graphics.printf(Localize("update.retrieving"), 0, (love.graphics.getHeight()-xlfont:getHeight())/2, love.graphics.getWidth(), "center")
+    end
+    if #AchievementUnlocks >= 1 then
+        local txt = Achievements.Achievements[AchievementUnlocks[1].achievement].name or AchievementUnlocks[1].achievement
+        local w = math.max(lrfont:getWidth(AchievementUnlocks[1].titleText or "Achievement Unlocked!"), lgfont:getWidth(txt))
+        local h = lrfont:getHeight()+lgfont:getHeight()
+        local icon = Achievements.Achievements[AchievementUnlocks[1].achievement].icon
+        love.graphics.setColor(0.1,0.1,0.1,math.min(1,(3-AchievementUnlocks[1].time)*2))
+        love.graphics.rectangle("fill", love.graphics.getWidth()-h-w-4, love.graphics.getHeight()-h-4, w+h+4, h+4)
+        love.graphics.setColor(1,1,1,math.min(1,(3-AchievementUnlocks[1].time)*2))
+        love.graphics.setFont(lrfont)
+        love.graphics.draw(icon, love.graphics.getWidth()-w-h-8-2, love.graphics.getHeight()-h-2, 0, h/icon:getWidth(), h/icon:getHeight())
+        love.graphics.print("Achievement Unlocked!", love.graphics.getWidth()-w-2, love.graphics.getHeight()-h-2)
+        love.graphics.setFont(lgfont)
+        love.graphics.print(txt, love.graphics.getWidth()-w-2, love.graphics.getHeight()-h-2+lrfont:getHeight())
+        love.graphics.setColor(0,0,0,math.min(1,(3-AchievementUnlocks[1].time)*2))
+        love.graphics.setLineWidth(2)
+        love.graphics.rectangle("line", love.graphics.getWidth()-h-8-w-3, love.graphics.getHeight()-h-3, w+h+8, h)
+    end
+
+    love.graphics.setFont(smfont)
+    love.graphics.setColor(1,1,1)
+    local txt = love.timer.getFPS() .. " FPS"
+    local w = smfont:getWidth(txt)
+    love.graphics.print(txt, love.graphics.getWidth()-w, 0)
+end
+
+function love.quit()
+    Achievements.Save("achievements.txt")
+    if DiscordRPC then DiscordRPC.shutdown() end
 end

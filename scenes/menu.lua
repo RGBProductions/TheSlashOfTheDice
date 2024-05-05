@@ -1,19 +1,20 @@
 local scene = {}
 
-smfont = love.graphics.getFont()
-lgfont = love.graphics.newFont(24)
-lrfont = love.graphics.newFont(32)
-xlfont = love.graphics.newFont(48)
-
 love.keyboard.setKeyRepeat(true)
 
 function SetMenu(m)
-    Menu = m
+    CurrentMenu = m
     MenuSelection = 1
 end
 
 function scene.load()
     StopMusic()
+    SusCombo = 0
+    Sus = "sus"
+    EnterTheSus = love.audio.newSource("assets/music/SUS.ogg", "stream")
+    ExitTheSus = love.audio.newSource("assets/music/UNSUS.ogg", "stream")
+    SusKill = love.audio.newSource("assets/music/AKill.ogg", "stream")
+    MenuTime = 0
 
     Conversion = {
         ["w"] = "up",
@@ -26,529 +27,104 @@ function scene.load()
     Logo = love.graphics.newImage("assets/images/ui/logo-updated.png")
     LogoPos = love.graphics.getHeight()
 
-    Menu = "MainMenu"
+    CurrentMenu = "Main"
     MenuSelection = 1
 
     WeighingModes = {
         "Legacy",
         "Even",
         "Situational",
-        "Unfair (NOT RECOMMENDED)"
+        "Unfair (NOT RECOMMENDED)",
+        "[Secret] Blessed"
     }
 
-    Menus = {
-        ["MainMenu"] = {
-            buttons = {
-                {
-                    label = "Play",
-                    callbacks = {
-                        ["return"] = function()
-                            SetMenu("Play")
-                        end
-                    }
-                },
-                {
-                    label = "Settings",
-                    callbacks = {
-                        ["return"] = function()
-                            SetMenu("Settings")
-                        end
-                    }
-                },
-                {
-                    label = "Credits",
-                    callbacks = {
-                        ["return"] = function()
-                            SceneManager.LoadScene("scenes/credits")
-                        end
-                    }
-                },
-                {
-                    label = "Quit",
-                    callbacks = {
-                        ["return"] = function()
-                            love.event.push("quit")
-                        end
-                    }
-                }
-            }
-        },
-        ["Play"] = {
-            label = "Select Game Mode",
-            buttons = {
-                {
-                    label = "Tutorial",
-                    callbacks = {
-                        ["return"] = function()
-                            SceneManager.LoadScene("scenes/tutorial")
-                        end
-                    }
-                },
-                {
-                    label = "Default",
-                    callbacks = {
-                        ["return"] = function()
-                            SceneManager.LoadScene("scenes/game")
-                        end
-                    }
-                },
-                {
-                    label = "Enemy Rush",
-                    callbacks = {
-                        ["return"] = function()
-                            SceneManager.LoadScene("scenes/enemyrush")
-                        end
-                    }
-                },
-                {label = ""},
-                {
-                    label = "Back",
-                    callbacks = {
-                        ["return"] = function()
-                            SetMenu("MainMenu")
-                        end
-                    }
-                }
-            }
-        },
-        ["Settings"] = {
-            label = "Settings",
-            buttons = {
-                {
-                    label = "Video",
-                    callbacks = {
-                        ["return"] = function()
-                            SetMenu("S_Video")
-                        end
-                    }
-                },
-                {
-                    label = "Audio",
-                    callbacks = {
-                        ["return"] = function()
-                            SetMenu("S_Audio")
-                        end
-                    }
-                },
-                {
-                    label = "Gameplay",
-                    callbacks = {
-                        ["return"] = function()
-                            SetMenu("S_Gameplay")
-                        end
-                    }
-                },
-                {label = ""},
-                {
-                    label = "All Settings",
-                    callbacks = {
-                        ["return"] = function()
-                            SetMenu("S_All")
-                        end
-                    }
-                },
-                {label = ""},
-                {
-                    label = "Back",
-                    callbacks = {
-                        ["return"] = function()
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                            SetMenu("MainMenu")
-                        end
-                    }
-                }
-            }
-        },
-        ["S_Gameplay"] = {
-            label = "Gameplay Settings",
-            buttons = {
-                {
-                    label = {
-                        {type = "text", value = "Dice Weighing Mode: "},
-                        {type = "fromcode", value = function()
-                            return WeighingModes[Settings["Gameplay"]["Dice Weighing Mode"]+1]
-                        end}
-                    },
-                    callbacks = {
-                        ["left"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Gameplay"]["Dice Weighing Mode"] = math.max(0, math.min(#WeighingModes-1, Settings["Gameplay"]["Dice Weighing Mode"] - shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end,
-                        ["right"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Gameplay"]["Dice Weighing Mode"] = math.max(0, math.min(#WeighingModes-1, Settings["Gameplay"]["Dice Weighing Mode"] + shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end
-                    }
-                },
-                {label = ""},
-                {
-                    label = "Back",
-                    callbacks = {
-                        ["return"] = function()
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                            SetMenu("Settings")
-                        end
-                    }
-                },
-                {
-                    label = "Return to Menu",
-                    callbacks = {
-                        ["return"] = function()
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                            SetMenu("MainMenu")
-                        end
-                    }
-                }
-            }
-        },
-        ["S_Audio"] = {
-            label = "Audio Settings",
-            buttons = {
-                {
-                    label = {
-                        {type = "text", value = "Sound Volume: "},
-                        {type = "fromcode", value = function()
-                            return Settings["Audio"]["Sound Volume"]
-                        end}
-                    },
-                    callbacks = {
-                        ["left"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Audio"]["Sound Volume"] = math.max(0, math.min(100, Settings["Audio"]["Sound Volume"] - shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end,
-                        ["right"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Audio"]["Sound Volume"] = math.max(0, math.min(100, Settings["Audio"]["Sound Volume"] + shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end
-                    }
-                },
-                {
-                    label = {
-                        {type = "text", value = "Music Volume: "},
-                        {type = "fromcode", value = function()
-                            return Settings["Audio"]["Music Volume"]
-                        end}
-                    },
-                    callbacks = {
-                        ["left"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Audio"]["Music Volume"] = math.max(0, math.min(100, Settings["Audio"]["Music Volume"] - shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end,
-                        ["right"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Audio"]["Music Volume"] = math.max(0, math.min(100, Settings["Audio"]["Music Volume"] + shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end
-                    }
-                },
-                {label = ""},
-                {
-                    label = "Back",
-                    callbacks = {
-                        ["return"] = function()
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                            SetMenu("Settings")
-                        end
-                    }
-                },
-                {
-                    label = "Return to Menu",
-                    callbacks = {
-                        ["return"] = function()
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                            SetMenu("MainMenu")
-                        end
-                    }
-                }
-            }
-        },
-        ["S_Video"] = {
-            label = "Video Settings",
-            buttons = {
-                {
-                    label = {
-                        {type = "text", value = "UI Scale: "},
-                        {type = "fromcode", value = function()
-                            return Settings["Video"]["UI Scale"]
-                        end}
-                    },
-                    callbacks = {
-                        ["left"] = function()
-                            local shift = 0.01
-                            if love.keyboard.isDown("lshift") then
-                                shift = 0.1
-                            end
-                            Settings["Video"]["UI Scale"] = math.max(0.25, math.min(3, Settings["Video"]["UI Scale"] - shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end,
-                        ["right"] = function()
-                            local shift = 0.01
-                            if love.keyboard.isDown("lshift") then
-                                shift = 0.1
-                            end
-                            Settings["Video"]["UI Scale"] = math.max(0.25, math.min(3, Settings["Video"]["UI Scale"] + shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end
-                    }
-                },
-                {
-                    label = {
-                        {type = "text", value = "Color by Operator: "},
-                        {type = "fromcode", value = function()
-                            return (Settings["Video"]["Color by Operator"] and "On") or "Off"
-                        end}
-                    },
-                    callbacks = {
-                        ["left"] = function()
-                            if Settings["Video"]["Color by Operator"] then
-                                Settings["Video"]["Color by Operator"] = false
-                                love.filesystem.write("settings.json", json.encode(Settings))
-                            end
-                        end,
-                        ["right"] = function()
-                            if not Settings["Video"]["Color by Operator"] then
-                                Settings["Video"]["Color by Operator"] = true
-                                love.filesystem.write("settings.json", json.encode(Settings))
-                            end
-                        end,
-                        ["return"] = function()
-                            Settings["Video"]["Color by Operator"] = not Settings["Video"]["Color by Operator"]
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end
-                    }
-                },
-                {label = ""},
-                {
-                    label = "Back",
-                    callbacks = {
-                        ["return"] = function()
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                            SetMenu("Settings")
-                        end
-                    }
-                },
-                {
-                    label = "Return to Menu",
-                    callbacks = {
-                        ["return"] = function()
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                            SetMenu("MainMenu")
-                        end
-                    }
-                }
-            }
-        },
-        ["S_All"] = {
-            label = "All Settings",
-            buttons = {
-                {
-                    label = {
-                        {type = "text", value = "UI Scale: "},
-                        {type = "fromcode", value = function()
-                            return Settings["Video"]["UI Scale"]
-                        end}
-                    },
-                    callbacks = {
-                        ["left"] = function()
-                            local shift = 0.01
-                            if love.keyboard.isDown("lshift") then
-                                shift = 0.1
-                            end
-                            Settings["Video"]["UI Scale"] = math.max(0.25, math.min(3, Settings["Video"]["UI Scale"] - shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end,
-                        ["right"] = function()
-                            local shift = 0.01
-                            if love.keyboard.isDown("lshift") then
-                                shift = 0.1
-                            end
-                            Settings["Video"]["UI Scale"] = math.max(0.25, math.min(3, Settings["Video"]["UI Scale"] + shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end
-                    }
-                },
-                {
-                    label = {
-                        {type = "text", value = "Color by Operator: "},
-                        {type = "fromcode", value = function()
-                            return (Settings["Video"]["Color by Operator"] and "On") or "Off"
-                        end}
-                    },
-                    callbacks = {
-                        ["left"] = function()
-                            if Settings["Video"]["Color by Operator"] then
-                                Settings["Video"]["Color by Operator"] = false
-                                love.filesystem.write("settings.json", json.encode(Settings))
-                            end
-                        end,
-                        ["right"] = function()
-                            if not Settings["Video"]["Color by Operator"] then
-                                Settings["Video"]["Color by Operator"] = true
-                                love.filesystem.write("settings.json", json.encode(Settings))
-                            end
-                        end,
-                        ["return"] = function()
-                            Settings["Video"]["Color by Operator"] = not Settings["Video"]["Color by Operator"]
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end
-                    }
-                },
-                {label = ""},
-                {
-                    label = {
-                        {type = "text", value = "Sound Volume: "},
-                        {type = "fromcode", value = function()
-                            return Settings["Audio"]["Sound Volume"]
-                        end}
-                    },
-                    callbacks = {
-                        ["left"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Audio"]["Sound Volume"] = math.max(0, math.min(100, Settings["Audio"]["Sound Volume"] - shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end,
-                        ["right"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Audio"]["Sound Volume"] = math.max(0, math.min(100, Settings["Audio"]["Sound Volume"] + shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end
-                    }
-                },
-                {
-                    label = {
-                        {type = "text", value = "Music Volume: "},
-                        {type = "fromcode", value = function()
-                            return Settings["Audio"]["Music Volume"]
-                        end}
-                    },
-                    callbacks = {
-                        ["left"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Audio"]["Music Volume"] = math.max(0, math.min(100, Settings["Audio"]["Music Volume"] - shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end,
-                        ["right"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Audio"]["Music Volume"] = math.max(0, math.min(100, Settings["Audio"]["Music Volume"] + shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end
-                    }
-                },
-                {label = ""},
-                {
-                    label = {
-                        {type = "text", value = "Dice Weighing Mode: "},
-                        {type = "fromcode", value = function()
-                            return WeighingModes[Settings["Gameplay"]["Dice Weighing Mode"]+1]
-                        end}
-                    },
-                    callbacks = {
-                        ["left"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Gameplay"]["Dice Weighing Mode"] = math.max(0, math.min(#WeighingModes-1, Settings["Gameplay"]["Dice Weighing Mode"] - shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end,
-                        ["right"] = function()
-                            local shift = 1
-                            if love.keyboard.isDown("lshift") then
-                                shift = 10
-                            end
-                            Settings["Gameplay"]["Dice Weighing Mode"] = math.max(0, math.min(#WeighingModes-1, Settings["Gameplay"]["Dice Weighing Mode"] + shift))
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                        end
-                    }
-                },
-                {label = ""},
-                {
-                    label = "Back",
-                    callbacks = {
-                        ["return"] = function()
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                            SetMenu("Settings")
-                        end
-                    }
-                },
-                {
-                    label = "Return to Menu",
-                    callbacks = {
-                        ["return"] = function()
-                            love.filesystem.write("settings.json", json.encode(Settings))
-                            SetMenu("MainMenu")
-                        end
-                    }
-                }
-            }
-        }
+    PlayModes = {
+        {"Tutorial", "tutorial"},
+        {"Default", "default"},
+        {"Enemy Rush", "enemy_rush"}
     }
+    if Achievements.IsUnlocked("default_30_waves") then
+        table.insert(PlayModes, {"Calm Mode", "calm"})
+    end
+    if DebugMode then
+        table.insert(PlayModes, {"[DBG] MP - Co-op", "coop"})
+        table.insert(PlayModes, {"[DBG] MP - FFA", "ffa"})
+        table.insert(PlayModes, {"[DBG] MP - TDM", "tdm"})
+    end
+    Events.fire("gamemodeInit")
+
+    Menus = require "menus"
+
+    -- for _,mode in ipairs(PlayModes) do
+    --     table.insert(Menus.Singleplayer.buttons, #Menus.Singleplayer.buttons-1, {
+    --         label = mode[1],
+    --         callbacks = {
+    --             ["return"] = function()
+    --                 SceneManager.LoadScene("scenes/game", {mode=mode[2]})
+    --             end
+    --         }
+    --     })
+    -- end
+    
+    local major,minor,rev,name = love.getVersion()
+    MenuVersions = {
+        {name = "The Slash of the Dice", version = tostring(version)}
+    }
+
+    Events.fire("menuloaded")
+    DiscordPresence.details = "In the Menu"
+    DiscordPresence.state = nil
+    DiscordPresence.startTimestamp = DiscordPresence.currentScene == "menu" and DiscordPresence.startTimestamp or os.time()
+    DiscordPresence.currentScene = "menu"
+
+    if DebugMode then
+    end
+
+    table.insert(MenuVersions, {name = "LÖVE", version = major .. "." .. minor .. " (" .. name .. ")"})
 end
 
 function scene.update(dt)
-    LogoPos = LogoPos - ((LogoPos-16)/8)
+    MenuTime = MenuTime + dt
+    Achievements.SetMax("nothing_1_hr", MenuTime)
+    Achievements.SetMax("nothing_2_hr", MenuTime)
+    Achievements.SetMax("nothing_10_hr", MenuTime)
+    local blend = math.pow(1/(16^3), dt)
+    LogoPos = blend*(LogoPos-16)+16
+    -- LogoPos = LogoPos - ((LogoPos-16)/8)
 end
 
 function scene.draw()
     love.graphics.setColor(1,1,1)
+    if not IsMobile then
+        love.graphics.setShader(BGShader)
+        BGShader:send("time", GlobalTime*48)
+        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+        love.graphics.setShader()
+    else
+        love.graphics.draw(MenuBGMobile, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
+    end
     love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos, 0, Settings["Video"]["UI Scale"], Settings["Video"]["UI Scale"], Logo:getWidth()/2, 0)
     love.graphics.setFont(xlfont)
-    if Menus[Menu].label then
-        love.graphics.printf(Menus[Menu].label, 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight(), love.graphics.getWidth(), "center")
-    end
     love.graphics.setFont(lrfont)
-    local offset = 0
-    if (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2 + LogoPos + lrfont:getHeight()*(#Menus[Menu].buttons) > love.graphics.getHeight()-lrfont:getHeight() then
-        offset = love.graphics.getHeight() - ((love.graphics.getHeight()-love.graphics.getFont():getHeight())/2 + LogoPos + lrfont:getHeight()*(#Menus[Menu].buttons)) - lrfont:getHeight()
+    local c = "arrow"
+    if Menus[CurrentMenu].draw then
+        Menus[CurrentMenu]:draw()
     end
-    for i,v in ipairs(Menus[Menu].buttons) do
-        love.graphics.setColor(1,1,1,0.5)
-        if i == MenuSelection then
-            love.graphics.setColor(1,1,1)
-        end
-        love.graphics.printf(ParseLabel(v.label), 0, offset + (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2 + LogoPos + lrfont:getHeight()*(i-1), love.graphics.getWidth(), "center")
-    end
+    c = Menus[CurrentMenu]:getCursor(love.mouse.getPosition()) or c
+    love.mouse.setCursor(love.mouse.getSystemCursor(c))
 
-    love.graphics.setFont(smfont)
     love.graphics.setColor(1,1,1)
-    love.graphics.print("The Slash of the Dice v" .. tostring(version), 0, love.graphics.getHeight() - smfont:getHeight()*2)
-    local major,minor,rev,name = love.getVersion()
-    love.graphics.print("LÖVE v" .. major .. "." .. minor .. " (" .. name .. ")", 0, love.graphics.getHeight() - smfont:getHeight())
+    if Achievements.IsUnlocked("default_50_waves") then
+        love.graphics.draw(Trophy, 32, love.graphics.getHeight()-32-128-32, 0, 128/Trophy:getWidth(), 128/Trophy:getHeight())
+    end
+    
+    love.graphics.setFont(smfont)
+    for i,v in ipairs(MenuVersions) do
+        love.graphics.print(v.name .. " v" .. v.version .. (v.extra and (" - " .. table.concat(v.extra, ", "))or ""), 0, love.graphics.getHeight() - smfont:getHeight()*(#MenuVersions-i+1))
+    end
+    -- love.graphics.print("The Slash of the Dice v" .. tostring(version), 0, love.graphics.getHeight() - smfont:getHeight()*2)
+    -- local major,minor,rev,name = love.getVersion()
+    -- love.graphics.print("LÖVE v" .. major .. "." .. minor .. " (" .. name .. ")", 0, love.graphics.getHeight() - smfont:getHeight())
 
     if UpdateCheckFailed ~= 0 then
         love.graphics.setColor(1,0,0)
@@ -575,7 +151,14 @@ end
 function ParseLabel(v)
     if type(v) == "string" then return v end
     local res = ""
+    local color = {1,1,1}
     for _,i in pairs(v) do
+        if i.type == "color" then
+            color = i.color
+            if type(color) == "function" then
+                color = color()
+            end
+        end
         if i.type == "text" then
             res = res .. i.value
         end
@@ -583,69 +166,49 @@ function ParseLabel(v)
             res = res .. tostring(i.value())
         end
     end
-    return res
+    return res,color
 end
 
 function scene.keypressed(k)
+    if k == Sus:sub(SusCombo+1,SusCombo+1) then
+        SusCombo = SusCombo + 1
+        if SusCombo == #Sus then
+            SusCombo = 0
+            SusMode = not SusMode
+            if SusMode then
+                EnterTheSus:setVolume(Settings["Audio"]["Sound Volume"]/100)
+                EnterTheSus:stop()
+                EnterTheSus:play()
+                Achievements.Advance("sus")
+            else
+                ExitTheSus:setVolume(Settings["Audio"]["Sound Volume"]/100)
+                ExitTheSus:stop()
+                ExitTheSus:play()
+            end
+        end
+    end
     if Conversion[k] then
         k = Conversion[k]
     end
-    MenuSelection = MenuSelection - 1
-    if k == "down" then
-        MenuSelection = (MenuSelection+1)%(#Menus[Menu].buttons)
-        if not Menus[Menu].buttons[MenuSelection+1].callbacks then
-            MenuSelection = (MenuSelection+1)%(#Menus[Menu].buttons)
-        end
-    end
-    if k == "up" then
-        MenuSelection = (MenuSelection-1)%(#Menus[Menu].buttons)
-        if not Menus[Menu].buttons[MenuSelection+1].callbacks then
-            MenuSelection = (MenuSelection-1)%(#Menus[Menu].buttons)
-        end
-    end
-    MenuSelection = MenuSelection + 1
-
-    if MenuSelection > 0 and MenuSelection <= #Menus[Menu].buttons then
-        if Menus[Menu].buttons[MenuSelection].callbacks then
-            if k ~= "down" and k ~= "up" then
-                local callback = Menus[Menu].buttons[MenuSelection].callbacks[k]
-                if callback then
-                    callback()
-                end
-            end
-        end
-    end
+    
 end
 
 function scene.mousemoved(x, y, dx, dy)
-    local offset = 0
-    if (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2 + LogoPos + lrfont:getHeight()*(#Menus[Menu].buttons) > love.graphics.getHeight()-lrfont:getHeight() then
-        offset = love.graphics.getHeight() - ((love.graphics.getHeight()-love.graphics.getFont():getHeight())/2 + LogoPos + lrfont:getHeight()*(#Menus[Menu].buttons)) - lrfont:getHeight()
-    end
-    MenuSelection = math.floor((y-(offset + (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2 + LogoPos))/lrfont:getHeight())+1
+
 end
 
 function scene.mousepressed(x, y)
-    if MenuSelection > 0 and MenuSelection <= #Menus[Menu].buttons then
-        if Menus[Menu].buttons[MenuSelection].callbacks then
-            local callback = Menus[Menu].buttons[MenuSelection].callbacks["return"]
-            if callback then
-                callback()
-            end
-            MenuSelection = math.floor((y-((love.graphics.getHeight()-love.graphics.getFont():getHeight())/2 + LogoPos))/lrfont:getHeight())+1
+    local hit,element,cx,cy = Menus[CurrentMenu]:click(x,y)
+    if hit then
+        if (element or {}).onclick then
+            element:onclick(cx,cy)
         end
     end
 end
 
 function scene.wheelmoved(x, y)
-    if MenuSelection > 0 and MenuSelection <= #Menus[Menu].buttons then
-        if Menus[Menu].buttons[MenuSelection].callbacks then
-            local k = (math.sign(y) == -1 and "left") or "right"
-            local callback = Menus[Menu].buttons[MenuSelection].callbacks[k]
-            if callback then
-                callback()
-            end
-        end
+    if Menus[CurrentMenu] then
+        Menus[CurrentMenu]:scroll(love.mouse.getX(), love.mouse.getY(), x, y)
     end
 end
 

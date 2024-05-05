@@ -7,5 +7,11 @@
     {"type": "name", "label": "RGB Productions"},
 
     {"type": "header", "label": "Music"},
-    {"type": "name", "label": "Henderythmix"}
+    {"type": "name", "label": "Henderythmix"},
+
+    {"type": "header", "label": "Testing"},
+    {"type": "name", "label": "TotallyNotFrisk"},
+    
+    {"type": "header", "label": "And thank YOU"},
+    {"type": "name", "label": "for playing this game!"}
 ]

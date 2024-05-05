@@ -1,0 +1,208 @@
+RocketSprite = love.graphics.newImage("assets/images/entities/rocket.png")
+
+EntityTypes = {
+    enemy = {
+        update = function(self, dt)
+            self:set("slashTime", self:get("slashTime")-dt)
+            self:set("cooldown", self:get("cooldown")-dt)
+            local closest
+            local dist = math.huge
+            for _,p in ipairs(GetEntitiesWithID("player")) do
+                local d = math.sqrt((p.x - self.x)^2+(p.y - self.y)^2)
+                if d < dist and p.hp > 0 then
+                    closest = p
+                    dist = d
+                end
+            end
+            local ox,oy = 0,0
+            local m = 64*4
+            closest = closest or player
+            if closest.hp > 0 or (not IsMultiplayer) then
+                ox = closest.x - self.x
+                oy = closest.y - self.y
+                m = math.sqrt(ox^2+oy^2)
+                if m > 0 then
+                    ox = ox / m
+                    oy = oy / m
+                end
+            end
+
+            if (IsMultiplayer and Net.Hosting) or (not IsMultiplayer) then
+                self.vx = self.vx + ox*dt*60
+                self.vy = self.vy + oy*dt*60
+            end
+
+            local blend = math.pow(1/(16^5),dt)
+            self.vx = blend*(self.vx)+0
+            self.vy = blend*(self.vy)+0
+
+            self.x = self.x + self.vx*dt*60
+            self.y = self.y + self.vy*dt*60
+
+            if (IsMultiplayer and Net.Hosting) or (not IsMultiplayer) then
+                if m <= 3*64 and self:get("slashTime") <= 0 and self:get("cooldown") <= 0 then
+                    self.vx = self.vx + ox*64
+                    self.vy = self.vy + oy*64
+                    self:set("slashTime", 0.25)
+                    self:set("cooldown", 1.5)
+                end
+            end
+
+            if self:get("slashTime") > 0 then
+                local ents = GetEntityCollisions(self)
+                for _,ent in pairs(ents) do
+                    if ent.id == "player" and ent.invincibility <= 0 then
+                        local dmg = self:get("stats")["Attack"]/ent:get("stats")["Defense"]
+                        dmg = dmg * love.math.random(5, 10)
+                        dmg = math.round(dmg)
+                        ent.hp = ent.hp - dmg
+                        ent.invincibility = 0.5
+                        ent.data.lastAttacker = self.uid
+                        boom("hit", 2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
+                        AddDamageIndicator(ent.x, ent.y, dmg, {1,0,0})
+                    end
+                end
+            end
+
+            if Net.Hosting then
+                Net.Broadcast({type = "modify_entity", uid = self.uid, x = self.x, y = self.y, vx = self.vx, vy = self.vy, hp = self.hp,data = self.data})
+            end
+        end
+    },
+    rocket_enemy = {
+        update = function(self, dt)
+            self:set("link", self:get("link") or love.math.random(0,99999))
+            self:set("slashTime", self:get("slashTime")-dt)
+            self:set("cooldown", self:get("cooldown")-dt)
+            self:set("scooldown", (self:get("scooldown") or self:get("cooldown"))-dt)
+            local ox = player.x - self.x
+            local oy = player.y - self.y
+            local m = math.sqrt(ox^2+oy^2)
+            if m > 0 then
+                ox = ox / m
+                oy = oy / m
+            end
+            self.vx = self.vx + ox
+            self.vy = self.vy + oy
+
+            local blend = math.pow(1/(16^5),dt)
+            self.vx = blend*(self.vx)+0
+            self.vy = blend*(self.vy)+0
+
+            self.x = self.x + self.vx*dt*60
+            self.y = self.y + self.vy*dt*60
+
+            if m <= 1.5*64 and self:get("slashTime") <= 0 and self:get("scooldown") <= 0 then
+                self.vx = self.vx + ox*16
+                self.vy = self.vy + oy*16
+                self:set("slashTime", 0.25)
+                self:set("scooldown", 1.5)
+            end
+
+            if self:get("slashTime") > 0 then
+                local ents = GetEntityCollisions(self)
+                for _,ent in pairs(ents) do
+                    if ent.id == "player" and ent.invincibility <= 0 then
+                        local dmg = (self:get("stats")["Attack"]/2)/ent:get("stats")["Defense"]
+                        dmg = dmg * love.math.random(5, 10)
+                        dmg = math.round(dmg)
+                        ent.hp = ent.hp - dmg
+                        ent.invincibility = 0.5
+                        boom("hit", 2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
+                        AddDamageIndicator(ent.x, ent.y, dmg, {1,0,0})
+                    end
+                end
+            end
+
+            if m <= 16*64 and self:get("cooldown") <= 0 then
+                local rocket = Game.Entity:new("rocket", self.x, self.y, ox*8, oy*8, 8000, {
+                    update = EntityTypes.rocket.update,
+                    draw = EntityTypes.rocket.draw
+                }, {
+                    lifetime = 0,
+                    owner = self:get("link"),
+                    stats = {
+                        Attack = self:get("stats")["Attack"]
+                    }
+                })
+                local a = math.atan2(ox,-oy)
+                rocket.angle = a
+                table.insert(Entities, rocket)
+                self:set("cooldown", 5)
+            end
+        end
+    },
+    rocket = {
+        draw = function(self)
+            local scale = 16
+            local x = self.x-Camera.x+(love.graphics.getWidth()-scale)/2
+            local y = self.y-Camera.y+(love.graphics.getHeight()-scale)/2+ViewMargin
+            if x >= -scale and x < love.graphics.getWidth() and y >= -scale and y < love.graphics.getHeight() then
+                -- local ox = player.x - self.x
+                -- local oy = player.y - self.y
+                -- local a = math.atan2(ox,-oy)
+                love.graphics.setColor(1,1,1)
+                love.graphics.draw(RocketSprite, x, y, self.angle, 2, 2, 16, 16)
+            end
+        end,
+        update = function(self, dt)
+            table.insert(Particles, Game.Particle:new(self.x+(love.math.random()*2-1)*8, self.y+(love.math.random()*2-1)*8, 2))
+            local ox = player.x - self.x
+            local oy = player.y - self.y
+            local m = math.sqrt(ox^2+oy^2)
+            if m > 0 then
+                ox = ox / m
+                oy = oy / m
+            end
+            local a = math.atan2(ox,-oy)
+            local diff = ((a-self.angle)+math.pi*3)%(2*math.pi)-math.pi
+            if math.abs(diff) >= dt*4 then
+                self.angle = self.angle + diff*dt*4
+            end
+            self.vx = self.vx + math.sin(self.angle)
+            self.vy = self.vy - math.cos(self.angle)
+
+            self.vx = self.vx - self.vx/16
+            self.vy = self.vy - self.vy/16
+
+            self.x = self.x + self.vx*dt*60
+            self.y = self.y + self.vy*dt*60
+
+            self:set("lifetime", self:get("lifetime") + dt)
+            if m <= 2*64 or self:get("lifetime") >= 5 then
+                local killed = 0
+                for _,ent in pairs(Entities) do
+                    if ent ~= self and ent.id ~= "rocket" then
+                        if ent.id == "player" then
+                            Achievements.Advance("rocket_enemy")
+                        end
+                        local mx,my = ent.x - self.x,ent.y - self.y
+                        local dist = math.sqrt(mx*mx + my*my)
+                        if ent.invincibility <= 0 and dist <= 4*64 then
+                            local atk = math.max(0,math.min(1,1-dist/256))*60*self:get("stats")["Attack"]
+                            local dmg = atk/ent:get("stats")["Defense"]
+                            dmg = math.round(dmg)
+                            ent.hp = ent.hp - dmg
+                            if ent.hp <= 0 then
+                                if ent:get("link") == self:get("owner") then
+                                    Achievements.Advance("rocket_defeat_enemy")
+                                end
+                                if ent.id == "enemy" then
+                                    killed = killed + 1
+                                end
+                            end
+                            ent.invincibility = 0.5
+                            AddDamageIndicator(ent.x, ent.y, dmg, {1,0,0})
+                        end
+                    end
+                end
+                Achievements.SetMax("rocket_defeat_multiple", killed)
+                for _=1,32 do
+                    table.insert(Particles, Game.Particle:new(self.x,self.y,1,(love.math.random()*2-1)*32,(love.math.random()*2-1)*32,16))
+                end
+                boom("explosion", 128, 0.000, 1, 0.5*Settings["Audio"]["Sound Volume"]/100)
+                self:destroy()
+            end
+        end
+    }
+}

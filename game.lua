@@ -1,12 +1,12 @@
 Game = {
     Die = {},
     Entity = {},
-    SlashOrb = {}
+    Particle = {}
 }
 
-function Game.Die:new()
+function Game.Die:new(delay)
     local d = {}
-    d.rollIter = 0
+    d.rollIter = -(delay or 0)
     d.time = 0
     d.number = 1
     d.doneRolling = false
@@ -88,6 +88,13 @@ function Game.Entity:new(id, x, y, vx, vy, maxhp, callbacks, data)
     return e
 end
 
+function Game.Entity:destroy()
+    local i = table.index(Entities, self)
+    if i then
+        table.remove(Entities, i)
+    end
+end
+
 function Game.Entity:get(value)
     return self.data[value]
 end
@@ -99,13 +106,18 @@ end
 function Game.Entity:update(dt)
     if self.callbacks["update"] ~= nil then
         self.callbacks["update"](self, dt)
+    elseif (EntityTypes[self.id] or {}).update ~= nil then
+        (EntityTypes[self.id] or {}).update(self, dt)
     end
     self.invincibility = self.invincibility - dt
 end
 
 function Game.Entity:keypressed(k)
-    if not self.callbacks["keypressed"] then return end
-    self.callbacks["keypressed"](self, k)
+    if self.callbacks["keypressed"] ~= nil then
+        self.callbacks["keypressed"](self, k)
+    elseif (EntityTypes[self.id] or {}).keypressed ~= nil then
+        (EntityTypes[self.id] or {}).keypressed(self, k)
+    end
 end
 
 function Game.Entity:mousepressed(x, y, b)
@@ -114,13 +126,24 @@ function Game.Entity:mousepressed(x, y, b)
 end
 
 
-function Game.SlashOrb:new(x, y)
+function Game.Particle:new(x, y, lifespan, vx, vy, damp)
     local o = {}
     o.x = x
     o.y = y
+    o.vx = vx or 0
+    o.vy = vy or 0
+    o.damp = damp or 5
+    o.lifespan = lifespan or 0.5
     o.time = love.timer.getTime()
 
     setmetatable(o, self)
     self.__index = self
     return o
+end
+
+function Game.Particle:update(dt)
+    self.vx = self.vx - (self.vx/self.damp)
+    self.vy = self.vy - (self.vy/self.damp)
+    self.x = self.x + self.vx*dt*60
+    self.y = self.y + self.vy*dt*60
 end

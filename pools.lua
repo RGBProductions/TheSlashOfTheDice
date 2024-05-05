@@ -14,6 +14,11 @@ Pools = {
     Unfair = {
         Operators = {"sub","sub","sub","sub", "div","div","div", "add", "mul"},
         Die = {1,1,1,1,1,2,2,2,2,3,3,3,3,4,5,6}
+    },
+    -- No negative outcomes
+    Blessed = {
+        Operators = {"add", "mul"},
+        Die = {4,5,6}
     }
 }
 
@@ -29,5 +34,8 @@ function GetPoolByID(id)
     end
     if id == 3 then
         return Pools.Unfair -- pain
+    end
+    if id == 4 then
+        return Pools.Blessed -- Secret Mode
     end
 end
