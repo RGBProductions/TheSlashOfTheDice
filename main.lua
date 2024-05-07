@@ -39,13 +39,12 @@ function love.graphics.getHeight()
 end
 
 local enableHttps = not IsMobile
-if love.filesystem.getInfo("https.so") and love.filesystem.getInfo("https.dll") then
-    enableHttps = true
-end
-enableHttps = not IsMobile
+-- if love.filesystem.getInfo("https.so") or love.filesystem.getInfo("https.dll") then
+--     enableHttps = true
+-- end
 if enableHttps then
-    love.filesystem.write("https.so", love.filesystem.read("https.so"))
-    love.filesystem.write("https.dll", love.filesystem.read("https.dll"))
+    -- if love.filesystem.getInfo("https.so") then love.filesystem.write("https.so", love.filesystem.read("https.so")) end
+    -- if love.filesystem.getInfo("https.dll") then love.filesystem.write("https.dll", love.filesystem.read("https.dll")) end
     local s,r = pcall(require, "https")
     if not s then
         print("Failed to load HTTPS module, ignoring")
@@ -55,21 +54,21 @@ if enableHttps then
     end
 end
 
-if love.filesystem.getInfo("discord-rpc.dll") then
-    love.filesystem.write("discord-rpc.dll", love.filesystem.read("discord-rpc.dll"))
-    love.filesystem.write("libdiscord-rpc.dll", love.filesystem.read("discord-rpc.dll"))
-end
-if love.filesystem.getInfo("discord-rpc.so") then
-    love.filesystem.write("discord-rpc.so", love.filesystem.read("discord-rpc.so"))
-    love.filesystem.write("libdiscord-rpc.so", love.filesystem.read("discord-rpc.so"))
-end
+-- if love.filesystem.getInfo("discord-rpc.dll") then
+--     love.filesystem.write("discord-rpc.dll", love.filesystem.read("discord-rpc.dll"))
+--     love.filesystem.write("libdiscord-rpc.dll", love.filesystem.read("discord-rpc.dll"))
+-- end
+-- if love.filesystem.getInfo("discord-rpc.so") then
+--     love.filesystem.write("discord-rpc.so", love.filesystem.read("discord-rpc.so"))
+--     love.filesystem.write("libdiscord-rpc.so", love.filesystem.read("discord-rpc.so"))
+-- end
 
 do
     local s,r = pcall(require, "lib.discordRPC")
     if s then
         DiscordRPC = r
     else
-        print("i couldnt load discord rpc because " .. tostring(r))
+        print("Couldn't load Discord RPC: " .. tostring(r))
         DiscordRPC = nil
     end
 end
@@ -264,7 +263,7 @@ function table.merge(t, m)
     t = t or {}
     for k,v in pairs(m) do
         if type(v) == "table" then
-            table.merge(t[k],v)
+            t[k] = table.merge(t[k],v)
         else
             t[k] = v
         end
