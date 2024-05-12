@@ -1,7 +1,7 @@
 [
     {"type": "header", "label": "Programming"},
-    {"type": "name", "label": "Lead Programmer - RGB Productions"},
-    {"type": "name", "label": "Update Checker - MichaelEpicA"},
+    {"type": "name", "label": "RGB Productions"},
+    {"type": "name", "label": "MichaelEpicA"},
 
     {"type": "header", "label": "Graphics"},
     {"type": "name", "label": "RGB Productions"},
@@ -9,7 +9,7 @@
     {"type": "header", "label": "Music"},
     {"type": "name", "label": "Henderythmix"},
 
-    {"type": "header", "label": "Testing"},
+    {"type": "header", "label": "UI Design"},
     {"type": "name", "label": "TotallyNotFrisk"},
     
     {"type": "header", "label": "And thank YOU"},
