@@ -1,6 +1,199 @@
 RocketSprite = love.graphics.newImage("assets/images/entities/rocket.png")
 
+local blendAmt = 1/((5/4)^60)
+local tutorialBounds = 1024
+
 EntityTypes = {
+    player = {
+        update = function(self, dt)
+            self:set("slashTime", self:get("slashTime")-dt)
+            local speed = love.keyboard.isDown("lshift") and (AprilFoolsMode and 3 or 2) or 2
+            local usedWASD = false
+            if love.keyboard.isDown("a") then
+                self.vx = self.vx - speed * dt * 60
+                Moved = true
+                usedWASD = true
+            end
+            if love.keyboard.isDown("d") then
+                self.vx = self.vx + speed * dt * 60
+                Moved = true
+                usedWASD = true
+            end
+            if love.keyboard.isDown("w") then
+                self.vy = self.vy - speed * dt * 60
+                Moved = true
+                usedWASD = true
+            end
+            if love.keyboard.isDown("s") then
+                self.vy = self.vy + speed * dt * 60
+                Moved = true
+                usedWASD = true
+            end
+    
+            ---@type love.Joystick
+            local joystick = nil
+            for _,stick in ipairs(love.joystick.getJoysticks()) do
+                if stick:isGamepad() then
+                    joystick = stick
+                end
+            end
+    
+            if not usedWASD then
+                local x = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"])*speed
+                local y = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"])*speed
+                if joystick then
+                    x = joystick:getGamepadAxis("leftx")
+                    y = joystick:getGamepadAxis("lefty")
+                    local m = math.sqrt(x*x+y*y)
+                    if m <= 0.2 then
+                        x = 0
+                        y = 0
+                    end
+                    x = x*speed
+                    y = y*speed
+                end
+                self.vx = self.vx + x * dt * 60
+                self.vy = self.vy + y * dt * 60
+                if Thumbstick.x ~= 0 or Thumbstick.y ~= 0 then
+                    Moved = true
+                end
+            end
+    
+            local blend = math.pow(blendAmt,dt)
+            self.vx = blend*(self.vx)
+            self.vy = blend*(self.vy)
+    
+            self.x = self.x + self.vx*dt*60
+            if Gamemode == "tutorial" and (self.x < -tutorialBounds or self.x > tutorialBounds) then
+                self.x = math.max(-tutorialBounds,math.min(tutorialBounds,self.x))
+                self.vx = 0
+            end
+            for _,entity in ipairs(Entities) do
+                if entity ~= self and entity:get("Collision") then
+                    local collision = entity:get("Collision")
+                    if BoxCollision(self.x-32, self.y-32, 64, 64, entity.x-collision[3]/2+collision[1], entity.y-collision[4]/2+collision[2], collision[3], collision[4]) then
+                        if math.sign(self.vx) == 1 then -- Moving right
+                            self.x = entity.x+collision[1] - collision[3]/2 + 32
+                            self.vx = 0
+                        end
+                        if math.sign(self.vx) == -1 then -- Moving left
+                            self.x = entity.x+collision[1] + collision[3]/2 + 32
+                            self.vx = 0
+                        end
+                    end
+                end
+            end
+            self.y = self.y + self.vy*dt*60
+            if Gamemode == "tutorial" and (self.y < -tutorialBounds or self.y > tutorialBounds) then
+                self.y = math.max(-tutorialBounds,math.min(tutorialBounds,self.y))
+                self.vy = 0
+            end
+            for _,entity in ipairs(Entities) do
+                if entity ~= self and entity:get("Collision") then
+                    local collision = entity:get("Collision")
+                    if BoxCollision(self.x-32, self.y-32, 64, 64, entity.x-collision[3]/2+collision[1], entity.y-collision[4]/2+collision[2], collision[3], collision[4]) then
+                        if math.sign(self.vy) == 1 then -- Moving down
+                            self.y = entity.y+collision[2] - collision[4]/2 + 32
+                        end
+                        if math.sign(self.vy) == -1 then -- Moving up
+                            self.y = entity.y+collision[2] + collision[4]/2 + 32
+                        end
+                    end
+                end
+            end
+    
+            TutorialValues["MovementTotal"] = TutorialValues["MovementTotal"] + math.sqrt((self.vx*dt*60)^2 + (self.vy*dt*60)^2)
+    
+            Camera.tx = self.x
+            Camera.ty = self.y
+    
+            if self:get("slashTime") > 0 then
+                local ox = self:get("lastPos")[1]-self.x
+                local oy = self:get("lastPos")[2]-self.y
+                local len = math.sqrt(ox^2+oy^2)/4
+                for i = 1, len do
+                    table.insert(Particles, Game.Particle:new(self.x-ox*i/len, self.y-oy*i/len))
+                end
+                local ents = GetEntityCollisions(self)
+                for _,ent in pairs(ents) do
+                    if ent.invincibility <= 0 and ent.id ~= "rocket" and ((not (ent.id == "player" and (not MultiplayerSetup.friendlyFire))) or (MultiplayerSetup.friendlyFire)) then
+                        local dmg = self:get("stats")["Attack"]/ent:get("stats")["Defense"]
+                        dmg = dmg * love.math.random(5, 10)
+                        local crit = false
+                        if rand(0,math.max(0,9-self:get("stats")["Luck"]/10)) == 0 then
+                            dmg = dmg * 2
+                            crit = true
+                            beep("crit", 1567.981743926997, 0, 8, 0.25*Settings["Audio"]["Sound Volume"]/100)
+                        end
+                        dmg = math.round(dmg)
+                        ent.hp = ent.hp - dmg
+                        ent.invincibility = 0.5
+                        ent.data.lastAttacker = self.uid
+                        boom("hit", 2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
+                        AddDamageIndicator(ent.x, ent.y, dmg, (crit and {1,1,0}) or {1,1,1})
+                    end
+                end
+            end
+    
+            self:set("lastPos", {self.x, self.y})
+    
+            if IsMultiplayer then
+                Net.Send({type = "player_update", x = self.x, y = self.y, vx = self.vx, vy = self.vy, stats = self:get("stats")})
+            end
+        end,
+        mousepressed = function(self, x, y, b)
+            if b == 1 then
+                if self:get("slashTime") <= 0 then
+                    local ax = x-love.graphics.getWidth()/2
+                    local ay = y-love.graphics.getHeight()/2
+                    local px = player.x - Camera.x
+                    local py = player.y - Camera.y
+                    ax = ax - px
+                    ay = ay - py
+                    local m = math.sqrt(ax^2+ay^2)
+                    if m > 0 then
+                        ax = ax / m
+                        ay = ay / m
+                    end
+                    if Settings["Gameplay"]["Auto Aim"] then
+                        local consider = {}
+                        local t = math.cos(math.rad(Settings["Gameplay"]["Auto Aim Limit"]))
+                        for _,entity in ipairs(GetEntitiesWithID("enemy")) do
+                            local evec = math.norm({entity.x-self.x, entity.y-self.y})
+                            local svec = {ax,ay}
+                            if math.dot(evec,svec) >= t then
+                                table.insert(consider, entity)
+                            end
+                        end
+                        local dist = math.huge
+                        local ent = 0
+                        local spos = {x+Camera.x-love.graphics.getWidth()/2,y+Camera.y-love.graphics.getHeight()/2}
+                        for i,entity in ipairs(consider) do
+                            local d = math.sqrt((entity.x-spos[1])^2+(entity.y-spos[2])^2)
+                            if d <= dist then
+                                dist = d
+                                ent = i
+                            end
+                        end
+                        if ent ~= 0 then
+                            local evec = math.norm({consider[ent].x-self.x, consider[ent].y-self.y})
+                            ax = evec[1]
+                            ay = evec[2]
+                        end
+                    end
+                    self.vx = self.vx + ax*64
+                    self.vy = self.vy + ay*64
+                    self:set("slashTime", 0.25)
+                    sweep("slash", 1, 0, 32, 0.25*Settings["Audio"]["Sound Volume"]/100)
+                    TutorialValues["Slashes"] = TutorialValues["Slashes"] + 1
+    
+                    if IsMultiplayer then
+                        Net.Send({type = "slash", vx = self.vx, vy = self.vy})
+                    end
+                end
+            end
+        end
+    },
     enemy = {
         update = function(self, dt)
             self:set("slashTime", self:get("slashTime")-dt)
@@ -32,7 +225,7 @@ EntityTypes = {
                 self.vy = self.vy + oy*dt*60
             end
 
-            local blend = math.pow(1/(16^5),dt)
+            local blend = math.pow(blendAmt,dt)
             self.vx = blend*(self.vx)+0
             self.vy = blend*(self.vy)+0
 
@@ -85,7 +278,7 @@ EntityTypes = {
             self.vx = self.vx + ox
             self.vy = self.vy + oy
 
-            local blend = math.pow(1/(16^5),dt)
+            local blend = math.pow(blendAmt,dt)
             self.vx = blend*(self.vx)+0
             self.vy = blend*(self.vy)+0
 
