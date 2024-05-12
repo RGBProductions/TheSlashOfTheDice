@@ -4,11 +4,13 @@ Game = {
     Particle = {}
 }
 
-function Game.Die:new(delay)
+function Game.Die:new(delay,number)
+    local pool = GetPoolByID(Settings["Gameplay"]["Dice Weighing Mode"])
     local d = {}
     d.rollIter = -(delay or 0)
     d.time = 0
-    d.number = 1
+    d.number = pool.Die[love.math.random(1,#pool.Die)]
+    d.finalNumber = number or pool.Die[love.math.random(1,#pool.Die)]
     d.doneRolling = false
     d.timeSinceCompletion = 0
 
@@ -25,31 +27,6 @@ end
 
 function Game.Die:update(dt)
     local die = GetPoolByID(Settings["Gameplay"]["Dice Weighing Mode"]).Die
-    if Settings["Gameplay"]["Dice Weighing Mode"] == 2 then
-        local Stats = player:get("stats")
-        die = {}
-        -- Calculate Total Statistic Score
-        local statscore = (Stats["Attack"]/150)*0.4 + (Stats["Defense"]/150)*0.4 + (Stats["Luck"]/90)*0.2
-        local istatscore = 1-statscore
-        for n = 1, istatscore*8 do
-            table.insert(die, 6)
-        end
-        for n = 1, istatscore*6 do
-            table.insert(die, 5)
-        end
-        for n = 1, istatscore*4 do
-            table.insert(die, 4)
-        end
-        for n = 1, statscore*8 do
-            table.insert(die, 1)
-        end
-        for n = 1, statscore*6 do
-            table.insert(die, 2)
-        end
-        for n = 1, statscore*4 do
-            table.insert(die, 3)
-        end
-    end
     if not self.doneRolling then
         self.time = self.time + dt
         if self.time >= 0.125 then
@@ -59,6 +36,7 @@ function Game.Die:update(dt)
         end
         if self.rollIter > 8 then
             self.doneRolling = true
+            self.number = self.finalNumber
         end
     else
         self.timeSinceCompletion = self.timeSinceCompletion + dt
