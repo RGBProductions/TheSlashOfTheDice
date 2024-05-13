@@ -1,15 +1,9 @@
 utf8 = require "utf8"
 
-function utf8.sub(s, start, length)
-    local byteoffset = utf8.offset(s, start)
-    if not byteoffset then
-        return ""
-    end
-    local byteend = utf8.offset(s, start + length)
-    if not byteend then
-        return s:sub(byteoffset)
-    end
-    return s:sub(byteoffset, byteend - 1)
+function utf8.sub(txt, i, j)
+    local o1 = (utf8.offset(txt,i) or (#txt))-1
+    local o2 = (utf8.offset(txt,j+1) or (#txt+1))-1
+    return txt:sub(o1,o2)
 end
 
 do
