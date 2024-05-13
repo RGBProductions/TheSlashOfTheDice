@@ -85,9 +85,6 @@ end
 
 function scene.update(dt)
     MenuTime = MenuTime + dt
-    Achievements.SetMax("nothing_1_hr", MenuTime)
-    Achievements.SetMax("nothing_2_hr", MenuTime)
-    Achievements.SetMax("nothing_10_hr", MenuTime)
     local blend = math.pow(1/(16^3), dt)
     LogoPos = blend*(LogoPos-16)+16
     -- LogoPos = LogoPos - ((LogoPos-16)/8)

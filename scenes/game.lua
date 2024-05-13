@@ -158,12 +158,12 @@ function scene.load(args)
     Thumbstick = {
         x = 0,
         y = 0,
-        outerRad = 96,
-        innerRad = 48,
+        outerRad = 64,
+        innerRad = 32,
         pressed = nil
     }
     Slashstick = {
-        radius = 96
+        radius = 64
     }
     Pausebutton = {
         size = 64
@@ -175,13 +175,11 @@ function scene.load(args)
     Spectating = false
     IsDead = false
     Gamemode = args.mode
-    print(Gamemode)
 
     IsMultiplayer = args.multiplayer ~= nil
     MultiplayerSetup = args.multiplayer or {}
-    SyncTime = 0
 
-    LoadMusic(Gamemode == "tutorial" and "assets/music/Tutorial.ogg" or "assets/music/Fight" .. (SusMode and "Sus" or "") .. ".ogg")
+    LoadMusic(Gamemode == "tutorial" and "assets/music/Tutorial.ogg" or ("assets/music/Fight" .. (SusMode and "Sus" or "") .. ".ogg"))
     -- Load die images
     DieImages = {}
     for _,itm in pairs(love.filesystem.getDirectoryItems("assets/images/die")) do
@@ -485,25 +483,21 @@ end
 
 local frame = 0
 function scene.update(dt)
-    if IsMultiplayer and Net.Hosting then
-        SyncTime = SyncTime + dt
-        if SyncTime >= 0.25 then
-            local rlow,rhigh = love.math.getRandomSeed()
-            local rstate = love.math.getRandomState()
-            Net.Broadcast({type = "sync_random", rlow = rlow, rhigh = rhigh, rstate = rstate})
-            SyncTime = 0
-        end
-    end
     frame = frame + 1
     if not (Paused and not IsMultiplayer) then
         if Gamemode == "tutorial" then
             CharTime = CharTime + dt
             local txt = Localize(TutorialStages[Stage].messages[Message].text)
-            if CharTime >= 0.15 then
+            local beeped = false
+            while CharTime >= 1/40 do
                 if MessageProgress < #txt then
-                    beep("tutorial_text", 1046.5022612023945, 0, 32, 1/16*Settings["Audio"]["Sound Volume"]/100)
+                    if not beeped then
+                        beep("tutorial_text", 1046.5022612023945, 0, 32, 1/16*Settings["Audio"]["Sound Volume"]/100)
+                        beeped = true
+                    end
                     MessageProgress = math.min(#txt, MessageProgress + 1)
                 end
+                CharTime = CharTime - 1/40
             end
             MessageProgress = math.min(#txt, MessageProgress)
             TutorialText = txt:sub(1, MessageProgress)
@@ -655,7 +649,7 @@ function scene.update(dt)
             for t,v in pairs(Stats) do
                 table.insert(stats, t)
             end
-            
+
             local pool = GetPoolByID(Settings["Gameplay"]["Dice Weighing Mode"])
             local ops = pool.Operators
 
@@ -748,6 +742,7 @@ function scene.keypressed(k)
     if k == "space" and #GetEntitiesWithID("player") == 0 and not Spectating then
         if GameSetups[Gamemode].canRespawn then
             AddNewPlayer({Settings["Customization"]["PlayerR"] or 0,Settings["Customization"]["PlayerG"] or 1,Settings["Customization"]["PlayerB"] or 1}, Gamemode == "calm")
+            IsDead = false
         elseif IsMultiplayer then
             Spectating = true
         else
@@ -771,6 +766,7 @@ function scene.mousepressed(x, y, b)
             if itm == 0 then
                 if GameSetups[Gamemode].canRespawn then
                     AddNewPlayer({Settings["Customization"]["PlayerR"] or 0,Settings["Customization"]["PlayerG"] or 1,Settings["Customization"]["PlayerB"] or 1}, Gamemode == "calm")
+                    IsDead = false
                 elseif IsMultiplayer then
                     Spectating = true
                 else
@@ -1076,6 +1072,7 @@ function scene.gamepadpressed(stick,b)
         else
             if GameSetups[Gamemode].canRespawn then
                 AddNewPlayer({Settings["Customization"]["PlayerR"] or 0,Settings["Customization"]["PlayerG"] or 1,Settings["Customization"]["PlayerB"] or 1}, Gamemode == "calm")
+                IsDead = false
             elseif IsMultiplayer then
                 Spectating = true
             else

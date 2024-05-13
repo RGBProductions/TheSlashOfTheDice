@@ -22,8 +22,10 @@ function Achievements.Load(path)
         end
         local spl = line:split(" ")
         local id = spl[1]
-        local progress = tonumber(spl[2])
-        Achievements.Achievements[id].progress = math.min(Achievements.Achievements[id].maxProgress, progress)
+        if Achievements.Achievements[id] then
+            local progress = tonumber(spl[2])
+            Achievements.Achievements[id].progress = math.min(Achievements.Achievements[id].maxProgress, progress)
+        end
         ::continue::
     end
 end
@@ -110,9 +112,6 @@ Achievements.Register("die_early", "How Did That Happen", "Die with a score of 0
 Achievements.Register("die_tutorial", "Pathetic", "Die in the tutorial.", 1)
 
 Achievements.Register("no_movement", "Menacing Aura", "Defeat a wave without using WASD.", 1, true)
-Achievements.Register("nothing_1_hr", "Couch Potato", "Spend 1 hour on the menu... for some reason.", 3600, true)
-Achievements.Register("nothing_2_hr", "BRB Mom's Calling", "Spend 2 hours on the menu... probably AFK.", 7200, true)
-Achievements.Register("nothing_10_hr", "Lo-Fi Hip-Hop Beats to Do Nothing to", "Spend 10 hours on the menu... do you really have nothing better to do?", 36000, true)
 Achievements.Register("sus", "Something Suspicious", "get out of my head get out of my head get out of my head get out of my head get out of my head", 1, true)
 Achievements.Register("extreme_luck", "Rigged", "Roll a 6 five times in a row.", 5, true)
 Achievements.Register("singularity", "Singularity", "Wait long enough for 50 enemies to spawn.", 50, true)
