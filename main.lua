@@ -1,3 +1,17 @@
+utf8 = require "utf8"
+
+function utf8.sub(s, start, length)
+    local byteoffset = utf8.offset(s, start)
+    if not byteoffset then
+        return ""
+    end
+    local byteend = utf8.offset(s, start + length)
+    if not byteend then
+        return s:sub(byteoffset)
+    end
+    return s:sub(byteoffset, byteend - 1)
+end
+
 do
     local s,r = pcall(require, "websocket")
     if s then
@@ -459,8 +473,8 @@ function love.draw()
         love.graphics.printf(Localize("update.retrieving"), 0, (love.graphics.getHeight()-xlfont:getHeight())/2, love.graphics.getWidth(), "center")
     end
     if #AchievementUnlocks >= 1 then
-        local txt = Achievements.Achievements[AchievementUnlocks[1].achievement].name or AchievementUnlocks[1].achievement
-        local w = math.max(lrfont:getWidth(AchievementUnlocks[1].titleText or "Achievement Unlocked!"), lgfont:getWidth(txt))
+        local txt = Localize(AchievementUnlocks[1].achievement)
+        local w = math.max(lrfont:getWidth(Localize(AchievementUnlocks[1].titleText or "achievement_unlocked")), lgfont:getWidth(txt))
         local h = lrfont:getHeight()+lgfont:getHeight()
         local icon = Achievements.Achievements[AchievementUnlocks[1].achievement].icon
         love.graphics.setColor(0.1,0.1,0.1,math.min(1,(3-AchievementUnlocks[1].time)*2))

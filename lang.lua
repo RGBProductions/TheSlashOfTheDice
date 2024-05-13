@@ -13,3 +13,8 @@ function Localize(text)
     local lang = Settings["Language"] or "en_US"
     return ((Languages[lang] or {}).text or {})[text] or text
 end
+
+function GetTextDelay()
+    local lang = Settings["Language"] or "en_US"
+    return (Languages[lang] or {}).textDelay or (1/40)
+end

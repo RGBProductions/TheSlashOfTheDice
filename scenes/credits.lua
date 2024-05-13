@@ -16,10 +16,10 @@ function scene.draw()
         love.graphics.draw(MenuBGMobile, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
     end
     love.graphics.setFont(xlfont)
-    love.graphics.printf("Credits", 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight() - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
+    love.graphics.printf(Localize("title.credits"), 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight() - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)
     if not IsMobile then
-        love.graphics.printf("Press escape to go back", 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight()*2+ViewMargin - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("key.goback"), 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight()*2+ViewMargin - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     else
         love.graphics.draw(BackIcon, 64, 64, 0, 64/BackIcon:getWidth()*Settings["Video"]["UI Scale"], 64/BackIcon:getHeight()*Settings["Video"]["UI Scale"])
     end
@@ -34,7 +34,7 @@ function scene.draw()
         if Credits[i]["type"] == "name" then
             love.graphics.setFont(lrfont)
         end
-        love.graphics.printf(Credits[i]["label"], 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight()*3 + pos - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize(Credits[i]["label"]), 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight()*3 + pos - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
         pos = pos + love.graphics.getFont():getHeight()
         lastType = Credits[i]["type"]
     end

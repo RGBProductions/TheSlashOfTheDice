@@ -3,9 +3,9 @@ Achievements = {
     Order = {}
 }
 
-function Achievements.Register(id, name, description, maxProgress, hidden)
+function Achievements.Register(id, maxProgress, hidden)
     table.insert(Achievements.Order, id)
-    Achievements.Achievements[id] = {name = name, description = description, maxProgress = maxProgress, progress = 0, hidden = hidden}
+    Achievements.Achievements[id] = {maxProgress = maxProgress, progress = 0, hidden = hidden}
     if love.filesystem.getInfo("assets/images/achievements/" .. id .. ".png") then
         Achievements.Achievements[id].icon = love.graphics.newImage("assets/images/achievements/" .. id .. ".png")
     else
@@ -94,26 +94,26 @@ function Achievements.IsUnlocked(id)
     return false
 end
 
-Achievements.Register("complete_tutorial", "Certified Slasher", "Complete the tutorial.", 1)
-Achievements.Register("complete_tutorial_5", "I am worthy!", "Complete the tutorial 5 times.", 5)
-Achievements.Register("complete_tutorial_10", "Okay, that's enough", "Complete the tutorial 10 times.", 10)
-Achievements.Register("default_6_waves", "A Die's Worth", "Defeat 6 waves in Default.", 6)
-Achievements.Register("default_10_waves", "Count on Two Hands", "Defeat 10 waves in Default.", 10)
-Achievements.Register("default_30_waves", "Unstoppable", "Defeat 30 waves in Default.", 30)
-Achievements.Register("rocket_enemy", "KABOOM!", "Experience the wrath of the rocket enemy.", 1)
-Achievements.Register("rocket_defeat_enemy", "Right Back At You", "Blow up a rocket enemy with its own rocket.", 1)
-Achievements.Register("rocket_defeat_multiple", "Group Hug", "Blow up three or more rocket enemies with one rocket.", 3)
-Achievements.Register("max_attack", "Iron Fist", "Reach the maximum of 150 Attack.", 150)
-Achievements.Register("max_defense", "Immovable", "Reach the maximum of 150 Defense.", 150)
-Achievements.Register("max_luck", "Four-Leaf", "Reach the maximum of 90 Luck.", 90)
-Achievements.Register("max_stats", "A True Force", "Reach the maximum in all three stats.", 390)
-Achievements.Register("low_defense", "Deteriorated", "Fall below 1 Defense.", 1)
-Achievements.Register("die_early", "How Did That Happen", "Die with a score of 0.", 1)
-Achievements.Register("die_tutorial", "Pathetic", "Die in the tutorial.", 1)
+Achievements.Register("complete_tutorial", 1)
+Achievements.Register("complete_tutorial_5", 5)
+Achievements.Register("complete_tutorial_10", 10)
+Achievements.Register("default_6_waves", 6)
+Achievements.Register("default_10_waves", 10)
+Achievements.Register("default_30_waves", 30)
+Achievements.Register("rocket_enemy", 1)
+Achievements.Register("rocket_defeat_enemy", 1)
+Achievements.Register("rocket_defeat_multiple", 3)
+Achievements.Register("max_attack", 150)
+Achievements.Register("max_defense", 150)
+Achievements.Register("max_luck", 90)
+Achievements.Register("max_stats", 390)
+Achievements.Register("low_defense", 1)
+Achievements.Register("die_early", 1)
+Achievements.Register("die_tutorial", 1)
 
-Achievements.Register("no_movement", "Menacing Aura", "Defeat a wave without using WASD.", 1, true)
-Achievements.Register("sus", "Something Suspicious", "get out of my head get out of my head get out of my head get out of my head get out of my head", 1, true)
-Achievements.Register("extreme_luck", "Rigged", "Roll a 6 five times in a row.", 5, true)
-Achievements.Register("singularity", "Singularity", "Wait long enough for 50 enemies to spawn.", 50, true)
-Achievements.Register("default_50_waves", "Superhuman", "With all your strength, defeat 50 waves in Default.", 50, true)
-Achievements.Register("hackerman", "Hackerman", "Prove you're a skilled programmer by unlocking this achievement.", 1, true)
+Achievements.Register("no_movement", 1, true)
+Achievements.Register("sus", 1, true)
+Achievements.Register("extreme_luck", 5, true)
+Achievements.Register("singularity", 50, true)
+Achievements.Register("default_50_waves", 50, true)
+Achievements.Register("hackerman", 1, true)

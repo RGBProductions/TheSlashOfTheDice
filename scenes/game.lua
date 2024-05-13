@@ -192,8 +192,8 @@ function scene.load(args)
     Particles = {}
 
     TimerDisplay = {
-        match = "Time remaining: ",
-        enemy = "Next enemy: "
+        match = "timer.remaining",
+        enemy = "timer.enemy"
     }
 
     Events.fire("loadmodes")
@@ -463,8 +463,8 @@ end
 
 function AttemptTutorialAdvance(fromKey)
     local txt = Localize(TutorialStages[Stage].messages[Message].text)
-    if MessageProgress < #txt and fromKey then
-        MessageProgress = #txt
+    if MessageProgress < utf8.len(txt) and fromKey then
+        MessageProgress = utf8.len(txt)
         return
     end
     if TutorialStages[Stage].messages[Message].pause and not fromKey then return end
@@ -489,19 +489,19 @@ function scene.update(dt)
             CharTime = CharTime + dt
             local txt = Localize(TutorialStages[Stage].messages[Message].text)
             local beeped = false
-            while CharTime >= 1/40 do
-                if MessageProgress < #txt then
+            while CharTime >= GetTextDelay() do
+                if MessageProgress < utf8.len(txt) then
                     if not beeped then
                         beep("tutorial_text", 1046.5022612023945, 0, 32, 1/16*Settings["Audio"]["Sound Volume"]/100)
                         beeped = true
                     end
-                    MessageProgress = math.min(#txt, MessageProgress + 1)
+                    MessageProgress = math.min(utf8.len(txt), MessageProgress+1)
                 end
-                CharTime = CharTime - 1/40
+                CharTime = CharTime - GetTextDelay()
             end
-            MessageProgress = math.min(#txt, MessageProgress)
-            TutorialText = txt:sub(1, MessageProgress)
-            if MessageProgress >= #txt then
+            MessageProgress = math.min(utf8.len(txt), MessageProgress)
+            TutorialText = utf8.sub(txt, 1, MessageProgress)
+            if MessageProgress >= utf8.len(txt) then
                 AttemptTutorialAdvance()
             end
         end
@@ -964,22 +964,22 @@ function scene.draw()
     end
 
     love.graphics.setColor(1,1,1)
-    local str = ""
     if player then
         local Stats = player:get("stats")
-        for name,value in pairs(Stats) do
-            str = str .. name .. ": " .. math.round(value*100)/100 .. "\n"
-        end
         love.graphics.setFont(lgfont)
-        love.graphics.print(str, 0, 0)
+        local pos = 0
+        for name,value in pairs(Stats) do
+            love.graphics.print(Localize("stat." .. name:lower()):format(math.round(value*100)/100), 0, pos)
+            pos = pos + lgfont:getHeight()
+        end
     end
     
-    love.graphics.print("Score: " .. Score, 0, love.graphics.getHeight()-lgfont:getHeight())
+    love.graphics.print(Localize("score"):format(Score), 0, love.graphics.getHeight()-lgfont:getHeight())
 
     love.graphics.setFont(lgfont)
     local pos = 0
     if showTimer then
-        love.graphics.printf((TimerDisplay[timerType] or "") .. timerString(math.ceil((SpawnDelay - SpawnTimer))), 0, 0, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize(TimerDisplay[timerType] or ""):format(timerString(math.ceil((SpawnDelay - SpawnTimer)))), 0, 0, love.graphics.getWidth(), "center")
         local fill = 1-(SpawnTimer/SpawnDelay)
         love.graphics.setColor(0.25,0.25,0.25)
         local barWidth = IsMobile and 1024 or 512
@@ -996,15 +996,15 @@ function scene.draw()
     love.graphics.setFont(lgfont)
     if Gamemode == "tutorial" then
         love.graphics.setColor(0,0,0)
-        love.graphics.printf(TutorialText, 148, pos-2, love.graphics.getWidth()-300, "center")
-        love.graphics.printf(TutorialText, 152, pos-2, love.graphics.getWidth()-300, "center")
-        love.graphics.printf(TutorialText, 152, pos+2, love.graphics.getWidth()-300, "center")
-        love.graphics.printf(TutorialText, 148, pos+2, love.graphics.getWidth()-300, "center")
+        pcall(love.graphics.printf, TutorialText, 148, pos-2, love.graphics.getWidth()-300, "center")
+        pcall(love.graphics.printf, TutorialText, 152, pos-2, love.graphics.getWidth()-300, "center")
+        pcall(love.graphics.printf, TutorialText, 152, pos+2, love.graphics.getWidth()-300, "center")
+        pcall(love.graphics.printf, TutorialText, 148, pos+2, love.graphics.getWidth()-300, "center")
         love.graphics.setColor(1,1,1)
-        love.graphics.printf(TutorialText, 150, pos, love.graphics.getWidth()-300, "center")
+        pcall(love.graphics.printf, TutorialText, 150, pos, love.graphics.getWidth()-300, "center")
 
         local txt = Localize(TutorialStages[Stage].messages[Message].text)
-        if MessageProgress >= #txt and TutorialStages[Stage].messages[Message].pause then
+        if MessageProgress >= utf8.len(txt) and TutorialStages[Stage].messages[Message].pause then
             local w,l = lgfont:getWrap(txt, love.graphics.getWidth()-300)
             local h = #l*lgfont:getHeight()
             local advance = Localize("tutorial.advance." .. (IsMobile and "mobile" or "desktop"))

@@ -1,8 +1,8 @@
 {
     "name": "日本語 (日本)",
+    "textDelay": 0.05,
     "text": {
-        "tutorial.intro1.desktop": "こんにちは! The Slash of the Dice へようこそ! 続行するにはスペースを押してください。",
-        "tutorial.intro1.mobile": "こんにちは! The Slash of the Dice へようこそ! 続行するにはどこでもタップしてください。",
+        "tutorial.intro1": "こんにちは! The Slash of the Dice へようこそ!",
         "tutorial.intro2": "このゲームでは、運の試練に耐えながら、無限に押し寄せる敵を倒さなければなりません!",
         "tutorial.intro3": "しかし、このゲームの小さなギミックをすべて説明する前に、実際のプレイ方法を学ぶ必要があります!",
         "tutorial.intro4.desktop": "休憩する必要がある場合は、Esc キーを押してゲームを一時停止できます。",
@@ -30,6 +30,9 @@
         "tutorial.end4": "チュートリアルを完了するには、さらに 5 人の敵を倒してください!",
         "tutorial.complete": "よくやった!\nチュートリアルは完了しました。タイトルに戻ってプレイを開始してください!",
 
+        "tutorial.advance.desktop": "続行するにはスペースを押してください。",
+        "tutorial.advance.mobile": "続行するにはどこでもタップしてください。",
+
         "title.menu.play": "ゲームをプレイ",
         "button.back": "戻る",
         "button.cancel": "キャンセル",
@@ -43,6 +46,13 @@
         "button.mods": "修正",
         "button.quit": "終了",
         "button.singleplayer": "シングルプレイヤー",
-        "button.multiplayer": "マルチプレイヤー"
+        "button.multiplayer": "マルチプレイヤー",
+        
+        "stat.attack": "攻撃力：%s",
+        "stat.defense": "防御力：%s",
+        "stat.luck": "運：%s",
+
+        "score": "スコア：%s",
+        "timer.enemy": "次の敵：%s"
     }
 }
