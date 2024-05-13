@@ -33,6 +33,9 @@
         "tutorial.advance.mobile": "Tap anywhere to continue.",
 
         "title.menu.play": "Play Game",
+        "title.menu.singleplayer": "Play Game",
+        "title.menu.multiplayer": "Multiplayer",
+
         "button.back": "Back",
         "button.cancel": "Cancel",
         "button.apply": "Apply",
@@ -49,6 +52,13 @@
 
         "stat.attack": "Attack",
         "stat.defense": "Defense",
-        "stat.luck": "Luck"
+        "stat.luck": "Luck",
+
+        "gamemode.tutorial": "Tutorial",
+        "gamemode.default": "Default",
+        "gamemode.enemy_rush": "Enemy Rush",
+        "gamemode.calm": "Calm",
+
+        "update.retrieving": "Loading..."
     }
 }
