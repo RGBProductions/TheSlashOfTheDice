@@ -55,13 +55,31 @@
         "button.singleplayer": "Singleplayer",
         "button.multiplayer": "Multiplayer",
 
-        "stat.attack": "Attack: %s",
-        "stat.defense": "Defense: %s",
-        "stat.luck": "Luck: %s",
+        "stat.attack": "Attack",
+        "stat.defense": "Defense",
+        "stat.luck": "Luck",
+        
+        "stat.display": "%s: %s",
 
         "score": "Score: %s",
         "timer.enemy": "Next Enemy: %s",
         "timer.remaining": "Time Remaining: %s",
+
+        "gameover.title": "You died!",
+        "gameover.respawn": "Respawn",
+        "gameover.spectate": "Spectate",
+        "gameover.retry": "Play Again",
+        "gameover.exit": "Return to Title",
+
+        "paused.title": "Game Paused",
+        "paused.resume": "Resume",
+        "paused.restart": "Restart",
+        "paused.exit": "Return to Title",
+        
+        "dice.add": "%s +%s",
+        "dice.sub": "%s -%s",
+        "dice.mul": "%s ×%s",
+        "dice.div": "%s ÷%s",
 
         "gamemode.tutorial": "Tutorial",
         "gamemode.default": "Default",

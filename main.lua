@@ -93,7 +93,8 @@ else
     print("Discord RPC was not initialized.")
 end
 
-smfont = love.graphics.getFont()
+-- smfont = love.graphics.getFont()
+smfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12)
 mdfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*FontScale)
 lgfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*FontScale)
 lrfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32*FontScale)

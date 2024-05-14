@@ -936,25 +936,9 @@ function scene.draw()
         end
 
         if die.die:getNumber() then
-            local op = "+"
-            if die.operation == "mul" then
-                op = "×"
-            end
-            if die.operation == "sub" then
-                op = "-"
-            end
-            if die.operation == "div" then
-                op = "÷"
-            end
-
-            local st = ""
-            if die.stat then
-                st = die.stat .. " "
-            end
-        
             love.graphics.setColor(r,g,b)
             love.graphics.setFont(smfont)
-            love.graphics.printf(st .. op .. die.die.number, x, y+32*Settings["Video"]["UI Scale"]/s-love.graphics.getFont():getHeight()*Settings["Video"]["UI Scale"]/s/2-ny*48*Settings["Video"]["UI Scale"]/s, 64, "center", 0, Settings["Video"]["UI Scale"]/s*ds, Settings["Video"]["UI Scale"]/s*ds, 32, 32)
+            love.graphics.printf(Localize("dice."..die.operation):format(Localize("stat." .. (die.stat or ""):lower()), die.die.number), x, y+32*Settings["Video"]["UI Scale"]/s-love.graphics.getFont():getHeight()*Settings["Video"]["UI Scale"]/s/2-ny*48*Settings["Video"]["UI Scale"]/s, 64, "center", 0, Settings["Video"]["UI Scale"]/s*ds, Settings["Video"]["UI Scale"]/s*ds, 32, 32)
         end
         love.graphics.setColor(r,g,b,1)
         if not die.die:getNumber() then
@@ -969,7 +953,7 @@ function scene.draw()
         love.graphics.setFont(lgfont)
         local pos = 0
         for name,value in pairs(Stats) do
-            love.graphics.print(Localize("stat." .. name:lower()):format(math.round(value*100)/100), 0, pos)
+            love.graphics.print(Localize("stat.display"):format(Localize("stat." .. name:lower()),math.round(value*100)/100), 0, pos)
             pos = pos + lgfont:getHeight()
         end
     end
@@ -1039,11 +1023,11 @@ function scene.draw()
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
         love.graphics.setColor(1,1,1)
         love.graphics.setFont(xlfont)
-        love.graphics.printf("You died!", 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2-xlfont:getHeight()*2, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("gameover.title"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2-xlfont:getHeight()*2, love.graphics.getWidth(), "center")
         love.graphics.setFont(lgfont)
-        love.graphics.printf("Score: " .. Score, 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2, love.graphics.getWidth(), "center")
-        love.graphics.printf(GameSetups[Gamemode].canRespawn and "Respawn" or (IsMultiplayer and "Spectate" or "Play Again"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*2+lrfont:getHeight()*0, love.graphics.getWidth(), "center")
-        love.graphics.printf("Return to Title", 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*2+lrfont:getHeight()*1, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("score"):format(Score), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize(GameSetups[Gamemode].canRespawn and "gameover.respawn" or (IsMultiplayer and "gameover.spectate" or "gameover.retry")), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*2+lrfont:getHeight()*0, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("gameover.exit"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*2+lrfont:getHeight()*1, love.graphics.getWidth(), "center")
     end
 
     if ShowGameMenu then
@@ -1051,11 +1035,11 @@ function scene.draw()
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
         love.graphics.setColor(1,1,1)
         love.graphics.setFont(xlfont)
-        love.graphics.printf("Game Paused", 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2-xlfont:getHeight()*2, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("paused.title"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2-xlfont:getHeight()*2, love.graphics.getWidth(), "center")
         love.graphics.setFont(lgfont)
-        love.graphics.printf("Resume", 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*0, love.graphics.getWidth(), "center")
-        love.graphics.printf("Restart", 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*1, love.graphics.getWidth(), "center")
-        love.graphics.printf("Return to Title", 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*2, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("paused.resume"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*0, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("paused.restart"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*1, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("paused.exit"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*2, love.graphics.getWidth(), "center")
     end
     
     love.graphics.setColor(1,1,1)

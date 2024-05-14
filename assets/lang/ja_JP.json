@@ -5,10 +5,10 @@
         "tutorial.intro1": "こんにちは! The Slash of the Dice へようこそ!",
         "tutorial.intro2": "このゲームでは、運の試練に耐えながら、無限に押し寄せる敵を倒さなければなりません!",
         "tutorial.intro3": "しかし、このゲームの小さなギミックをすべて説明する前に、実際のプレイ方法を学ぶ必要があります!",
-        "tutorial.intro4.desktop": "休憩する必要がある場合は、Esc キーを押してゲームを一時停止できます。",
+        "tutorial.intro4.desktop": "休憩する必要がある場合は、%s キーを押してゲームを一時停止できます。",
         "tutorial.intro4.mobile": "休憩する必要がある場合は、右上の一時停止ボタンを押してゲームを一時停止できます。",
         "tutorial.intro5": "一時停止メニューの「タイトルに戻る」を押すと、いつでもチュートリアルを終了できます。",
-        "tutorial.movement.desktop": "移動するには、W、A、S、D キーを使用します。試してみてください。",
+        "tutorial.movement.desktop": "移動するには、%s、%s、%s、%s キーを使用します。試してみてください。",
         "tutorial.movement.mobile": "移動するには、左下のサムスティックを使用します。試してみてください。",
         "tutorial.slash1": "素晴らしい仕事です!",
         "tutorial.slash2": "このゲームでは、スラッシュ能力があります。この能力はあなたを前方に突進させ、その進路にあるものに害を与えます!",
@@ -48,9 +48,16 @@
         "button.singleplayer": "シングルプレイヤー",
         "button.multiplayer": "マルチプレイヤー",
         
-        "stat.attack": "攻撃力：%s",
-        "stat.defense": "防御力：%s",
-        "stat.luck": "運：%s",
+        "stat.attack": "攻撃力",
+        "stat.defense": "防御力",
+        "stat.luck": "運",
+        
+        "stat.display": "%s：%s",
+        
+        "dice.add": "%s +%s",
+        "dice.sub": "%s -%s",
+        "dice.mul": "%s ×%s",
+        "dice.div": "%s ÷%s",
 
         "score": "スコア：%s",
         "timer.enemy": "次の敵：%s"
