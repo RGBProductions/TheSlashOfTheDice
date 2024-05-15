@@ -14,17 +14,19 @@ local tutorialBounds = 1024
 
 function AddNewPlayer(forceColor,keepStats,netinfo,isOwn)
     player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["update"] = EntityTypes.player.update, ["keypressed"] = function(self, k) end, ["mousepressed"] = EntityTypes.player.mousepressed}, {
-        ["slashTime"] = 0,
-        ["lastPos"] = {0,0},
-        ["stats"] = keepStats and (Stats or {
-            ["Defense"] = 1,
-            ["Attack"] = 1,
-            ["Luck"] = 0
+        slashTime = 0,
+        lastPos = {0,0},
+        stats = keepStats and (Stats or {
+            Defense = 1,
+            Attack = 1,
+            Luck = 0
         }) or {
-            ["Defense"] = 1,
-            ["Attack"] = 1,
-            ["Luck"] = 0
+            Defense = 1,
+            Attack = 1,
+            Luck = 0
         },
+        damageFactor = love.math.random(5, 10),
+        critFactor = love.math.random(),
         isOwn = isOwn,
         color = forceColor
     })
@@ -33,6 +35,9 @@ function AddNewPlayer(forceColor,keepStats,netinfo,isOwn)
     end
     player.uid = math.floor(love.timer.getTime()*10000)
     table.insert(Entities, player)
+    if isOwn then
+        IsDead = false
+    end
     return player
 end
 
@@ -550,7 +555,8 @@ function scene.update(dt)
                                 ["Attack"] = (Gamemode ~= "tutorial" and 1+(Difficulty-1)/5*rand(0.96875,1.5) or 1)
                             },
                             ["slashTime"] = 0,
-                            ["cooldown"] = 1
+                            ["cooldown"] = 1,
+                            ["damageFactor"] = love.math.random(5, 10)
                         })
                         ent.uid = math.floor(love.timer.getTime()*10000)
                         table.insert(Entities, ent)

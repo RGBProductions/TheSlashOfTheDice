@@ -118,9 +118,9 @@ EntityTypes = {
                 for _,ent in pairs(ents) do
                     if ent.invincibility <= 0 and ent.id ~= "rocket" and ((not (ent.id == "player" and (not MultiplayerSetup.friendlyFire))) or (MultiplayerSetup.friendlyFire)) then
                         local dmg = self:get("stats")["Attack"]/ent:get("stats")["Defense"]
-                        dmg = dmg * love.math.random(5, 10)
+                        dmg = dmg * self:get("damageFactor")
                         local crit = false
-                        if rand(0,math.max(0,9-self:get("stats")["Luck"]/10)) == 0 then
+                        if math.floor(self:get("critFactor")*math.max(0,9-self:get("stats")["Luck"]/10)) == 0 then
                             dmg = dmg * 2
                             crit = true
                             beep("crit", 1567.981743926997, 0, 8, 0.25*Settings["Audio"]["Sound Volume"]/100)
@@ -131,6 +131,8 @@ EntityTypes = {
                         ent.data.lastAttacker = self.uid
                         boom("hit", 2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
                         AddDamageIndicator(ent.x, ent.y, dmg, (crit and {1,1,0}) or {1,1,1})
+                        self:set("damageFactor", love.math.random(5, 10))
+                        self:set("critFactor", love.math.random())
                     end
                 end
             end
@@ -246,13 +248,14 @@ EntityTypes = {
                 for _,ent in pairs(ents) do
                     if ent.id == "player" and ent.invincibility <= 0 then
                         local dmg = self:get("stats")["Attack"]/ent:get("stats")["Defense"]
-                        dmg = dmg * love.math.random(5, 10)
+                        dmg = dmg * self:get("damageFactor")
                         dmg = math.round(dmg)
                         ent.hp = ent.hp - dmg
                         ent.invincibility = 0.5
                         ent.data.lastAttacker = self.uid
                         boom("hit", 2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
                         AddDamageIndicator(ent.x, ent.y, dmg, {1,0,0})
+                        self:set("damageFactor", love.math.random(5, 10))
                     end
                 end
             end
