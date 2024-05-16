@@ -9,6 +9,7 @@ end
 
 function scene.load()
     StopMusic()
+    InGame = false
     SusCombo = 0
     Sus = "sus"
     EnterTheSus = love.audio.newSource("assets/music/SUS.ogg", "stream")

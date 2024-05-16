@@ -131,8 +131,10 @@ EntityTypes = {
                         ent.data.lastAttacker = self.uid
                         boom("hit", 2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
                         AddDamageIndicator(ent.x, ent.y, dmg, (crit and {1,1,0}) or {1,1,1})
-                        self:set("damageFactor", love.math.random(5, 10))
-                        self:set("critFactor", love.math.random())
+                        if IsHosting() then
+                            self:set("damageFactor", love.math.random(5, 10))
+                            self:set("critFactor", love.math.random())
+                        end
                     end
                 end
             end
@@ -255,7 +257,9 @@ EntityTypes = {
                         ent.data.lastAttacker = self.uid
                         boom("hit", 2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
                         AddDamageIndicator(ent.x, ent.y, dmg, {1,0,0})
-                        self:set("damageFactor", love.math.random(5, 10))
+                        if IsHosting() then
+                            self:set("damageFactor", love.math.random(5, 10))
+                        end
                     end
                 end
             end

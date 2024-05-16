@@ -163,12 +163,12 @@ function scene.load(args)
     Thumbstick = {
         x = 0,
         y = 0,
-        outerRad = 64,
+        outerRad = 80,
         innerRad = 32,
         pressed = nil
     }
     Slashstick = {
-        radius = 64
+        radius = 80
     }
     Pausebutton = {
         size = 64
@@ -179,6 +179,7 @@ function scene.load(args)
     ShowGameMenu = false
     Spectating = false
     IsDead = false
+    InGame = true
     Gamemode = args.mode
 
     IsMultiplayer = args.multiplayer ~= nil
@@ -1108,7 +1109,7 @@ function scene.touchpressed(id,x,y)
             local barWidth = 1024
             local barHeight = 32
             local skipX, skipY = (love.graphics.getWidth()+barWidth)/2 + barHeight, lgfont:getHeight()-barHeight/2
-            if x >= skipX and x < skipX + barHeight*2 and y >= skipY and y < skipY + barHeight*2 then
+            if x >= skipX-16 and x < skipX + barHeight*2 + 16 and y >= skipY-16 and y < skipY + barHeight*2 + 16 then
                 if (runTimer and Spawned < 5) then
                     SpawnTimer = SpawnDelay
                 end

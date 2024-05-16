@@ -25,6 +25,10 @@ do
     end
 end
 
+ShowDebugInfo = false
+DrawTime = 0
+UpdateTime = 0
+
 ViewScale = 1
 ViewMargin = 0
 FontScale = IsMobile and 1.5 or 1
@@ -38,6 +42,10 @@ FastBackIcon = love.graphics.newImage("assets/images/ui/fastback.png")
 FastForwardIcon = love.graphics.newImage("assets/images/ui/fastforward.png")
 
 Trophy = love.graphics.newImage("assets/images/ui/cubetrophy.png")
+
+function IsHosting()
+    return InGame and ((not IsMultiplayer) or Net.Hosting)
+end
 
 local _gh = love.graphics.getHeight
 
@@ -357,6 +365,8 @@ GlobalTime = 0
 local presenceTimer = 0
 
 function love.update(dt)
+    local t = love.timer.getTime()
+
     Net.Update()
     saveTime = saveTime + dt
     if saveTime >= 30 then
@@ -394,6 +404,8 @@ function love.update(dt)
             table.remove(AchievementUnlocks, 1)
         end
     end
+
+    UpdateTime = love.timer.getTime() - t
 end
 
 function love.mousemoved(x, y, dx, dy)
@@ -420,6 +432,9 @@ end
 function love.keypressed(k)
     if k == "f11" then
         love.window.setFullscreen(not love.window.getFullscreen())
+    end
+    if k == "f3" then
+        ShowDebugInfo = not ShowDebugInfo
     end
     if frame > 3 then
         SceneManager.KeyPressed(k)
@@ -461,6 +476,8 @@ function love.touchreleased(...)
 end
 
 function love.draw()
+    local t = love.timer.getTime()
+
     if frame > 3 then
         SceneManager.Draw()
     else
@@ -490,6 +507,25 @@ function love.draw()
     local txt = love.timer.getFPS() .. " FPS"
     local w = smfont:getWidth(txt)
     love.graphics.print(txt, love.graphics.getWidth()-w, 0)
+    
+    DrawTime = love.timer.getTime()-t
+
+    if ShowDebugInfo then
+        love.graphics.setColor(0,0,0,0.5)
+        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), smfont:getHeight()*16)
+        love.graphics.setColor(1,1,1)
+        love.graphics.setFont(smfont)
+        love.graphics.print("The Slash of the Dice v" .. version, 0, smfont:getHeight()*0)
+        local major,minor,rev,name = love.getVersion()
+        love.graphics.print("LÖVE v" .. major .. "." .. minor .. " (" .. name .. ")", 0, smfont:getHeight()*1)
+        love.graphics.print("Render Time: " .. math.ceil(DrawTime*1000) .. " ms (" .. math.floor(1/DrawTime) .. " FPS)", 0, smfont:getHeight()*3)
+        love.graphics.print("Update Time: " .. math.ceil(UpdateTime*1000) .. " ms (" .. math.floor(1/UpdateTime) .. " FPS)", 0, smfont:getHeight()*4)
+        love.graphics.print("Total Frame Time: " .. math.ceil((UpdateTime+DrawTime)*1000) .. " ms (" .. math.floor(1/(UpdateTime+DrawTime)) .. " FPS)", 0, smfont:getHeight()*5)
+        
+        love.graphics.print("Is Game Host: " .. tostring(IsHosting()), 0, smfont:getHeight()*7)
+        love.graphics.print("Entities: " .. #(Entities or {}), 0, smfont:getHeight()*8)
+        love.graphics.print("Particles: " .. #(Particles or {}), 0, smfont:getHeight()*9)
+    end
 end
 
 function love.quit()
