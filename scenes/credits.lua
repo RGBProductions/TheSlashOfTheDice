@@ -59,6 +59,21 @@ function scene.update(dt)
     if not love.mouse.isDown(1) then
         CreditScroll = CreditScroll - scrollVelocity
     end
+
+    local pos = 0
+    local lastType = "header"
+    for i = 1, #Credits do
+        if Credits[i]["type"] == "header" and lastType == "name" then
+            pos = pos + lrfont:getHeight()
+        end
+        local font = xlfont
+        if Credits[i]["type"] == "name" then
+            font = lrfont
+        end
+        pos = pos + font:getHeight()
+        lastType = Credits[i]["type"]
+    end
+    CreditScroll = math.max(0,math.min(pos,CreditScroll))
 end
 
 function scene.keypressed(k)

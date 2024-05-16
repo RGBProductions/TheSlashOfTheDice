@@ -79,6 +79,16 @@ function scene.update(dt)
     if not love.mouse.isDown(1) then
         AchievementScroll = AchievementScroll - scrollVelocity
     end
+
+    local num = 0
+    for i,id in ipairs(Achievements.Order) do
+        if (Achievements.Achievements[id].hidden and Achievements.Achievements[id].progress >= Achievements.Achievements[id].maxProgress) or not Achievements.Achievements[id].hidden then
+            num = num + 1
+        end
+    end
+
+    local iconScale = lgfont:getHeight()+mdfont:getHeight()*2
+    AchievementScroll = math.max(0,math.min(iconScale*num+16*(num-1), AchievementScroll))
 end
 
 function scene.keypressed(k)
