@@ -13,7 +13,7 @@ local blendAmt = 1/((5/4)^60)
 local tutorialBounds = 1024
 
 function AddNewPlayer(forceColor,keepStats,netinfo,isOwn)
-    player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["update"] = EntityTypes.player.update, ["keypressed"] = function(self, k) end, ["mousepressed"] = EntityTypes.player.mousepressed}, {
+    player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["update"] = EntityTypes.player.update, ["keypressed"] = function(self, k) end, ["mousepressed"] = EntityTypes.player.mousepressed, ["draw"] = EntityTypes.player.draw}, {
         slashTime = 0,
         lastPos = {0,0},
         stats = keepStats and (Stats or {
@@ -820,6 +820,7 @@ function scene.draw()
     love.graphics.translate(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
     love.graphics.scale(ViewScale)
     love.graphics.translate(-love.graphics.getWidth()/2, -love.graphics.getHeight()/2)
+    local hit = {}
     for x = -math.ceil((love.graphics.getWidth()/ViewScale)/2/64+1), math.ceil((love.graphics.getWidth()/ViewScale)/2/64+1) do
         for y = -math.ceil((love.graphics.getHeight()/ViewScale)/2/64+1), math.ceil((love.graphics.getHeight()/ViewScale)/2/64+1) do
             local rx = x + math.floor(Camera.x/64)
@@ -829,7 +830,8 @@ function scene.draw()
             local show = true
             local color = {1,1,1}
             if Gamemode == "tutorial" and (rx*64 > tutorialBounds or ry*64 > tutorialBounds or rx*64 < -tutorialBounds or ry*64 < -tutorialBounds) then
-                color = {0.5,0.5,0.5}
+                local c = math.round(love.math.noise(rx/2,-ry/2))*0.5+0.5
+                color = {c,c,c}
                 local d = math.max(math.abs(rx*64)-tutorialBounds,math.abs(ry*64)-tutorialBounds)/64-3
                 local n = love.math.noise(rx/4,ry/4)*(1-d/16)
                 if n < 0.5 then
@@ -837,14 +839,19 @@ function scene.draw()
                 end
             end
             love.graphics.setColor(
-                color[1]*math.round((rx/Background[1][4]+ry/Background[1][5]+Background[1][3])%Background[1][2]*Background[1][1]),
-                color[2]*math.round((rx/Background[2][4]+ry/Background[2][5]+Background[2][3])%Background[2][2]*Background[2][1]),
-                color[3]*math.round((rx/Background[3][4]+ry/Background[3][5]+Background[3][3])%Background[3][2]*Background[3][1])
+                Settings["Video"]["Background Brightness"]*color[1]*math.min(1,math.round((rx/Background[1][4]+ry/Background[1][5]+Background[1][3])%Background[1][2]*Background[1][1])),
+                Settings["Video"]["Background Brightness"]*color[2]*math.min(1,math.round((rx/Background[2][4]+ry/Background[2][5]+Background[2][3])%Background[2][2]*Background[2][1])),
+                Settings["Video"]["Background Brightness"]*color[3]*math.min(1,math.round((rx/Background[3][4]+ry/Background[3][5]+Background[3][3])%Background[3][2]*Background[3][1]))
             )
             local r,g,b,a = love.graphics.getColor()
             if not (r == 0 and g == 0 and b == 0) then
                 if show and ox >= -64-((love.graphics.getWidth()/2)/ViewScale-love.graphics.getWidth()/2) and ox < love.graphics.getWidth()/ViewScale and oy >= -64-((love.graphics.getHeight()/2)/ViewScale-love.graphics.getHeight()/2) and oy < love.graphics.getHeight()/ViewScale then
-                    love.graphics.rectangle("line", ox, oy, 64, 64)
+                    if hit[ox..":"..oy] then
+                        love.graphics.rectangle("line", ox, oy, 32,32)
+                    else
+                        love.graphics.rectangle("line", ox, oy, 64, 64)
+                    end
+                    hit[ox..":"..oy] = true
                     objOnscreen = objOnscreen + 1
                 end
             end

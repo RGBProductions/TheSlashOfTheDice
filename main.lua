@@ -323,7 +323,8 @@ function love.load()
         
         ["Video"] = {
             ["UI Scale"] = 1.5,
-            ["Color by Operator"] = true
+            ["Color by Operator"] = true,
+            ["Background Brightness"] = 0.25,
         },
 
         ["Audio"] = {
@@ -485,7 +486,7 @@ function love.draw()
         love.graphics.printf(Localize("update.retrieving"), 0, (love.graphics.getHeight()-xlfont:getHeight())/2, love.graphics.getWidth(), "center")
     end
     if #AchievementUnlocks >= 1 then
-        local txt = Localize(AchievementUnlocks[1].achievement)
+        local txt = Localize("achievements."..AchievementUnlocks[1].achievement..".name")
         local w = math.max(lrfont:getWidth(Localize(AchievementUnlocks[1].titleText or "achievement_unlocked")), lgfont:getWidth(txt))
         local h = lrfont:getHeight()+lgfont:getHeight()
         local icon = Achievements.Achievements[AchievementUnlocks[1].achievement].icon
