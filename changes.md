@@ -5,6 +5,6 @@ Added localization
 Added achievements
 Added player customization
 Added Android support
-Updated menu
+Overhauled menu
 Updated dice sprites
 A few secrets have been added
