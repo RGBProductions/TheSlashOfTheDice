@@ -90,12 +90,24 @@ do
 end
 
 if DiscordRPC then
-    function DiscordRPC.joinGame(secret)
-        print("Join Game: " .. secret)
+    DiscordRPC.joinGame = function(secret)
+        print("Discord join game: " .. secret)
     end
 
-    function DiscordRPC.joinRequest(user)
-        print("Join Request: " .. user)
+    DiscordRPC.joinRequest = function(user)
+        print("Discord join request: " .. user)
+    end
+
+    DiscordRPC.ready = function(userId, username, discriminator, avatar)
+        print("Discord connected to user " .. username)
+    end
+
+    DiscordRPC.errored = function(errorCode, message)
+        print("Discord error: " .. message .. " (Code " .. errorCode .. ")")
+    end
+    
+    DiscordRPC.disconnected = function(errorCode, message)
+        print("Discord disconnected: " .. message .. " (Code " .. errorCode .. ")")
     end
 else
     print("Discord RPC was not initialized.")
@@ -317,38 +329,45 @@ DiscordPresence = {
     largeImageKey = "main_icon"
 }
 
+Settings = {
+    ["Language"] = "en_US",
+    
+    ["Video"] = {
+        ["UI Scale"] = 1.5,
+        ["Color by Operator"] = true,
+        ["Background Brightness"] = 0.25,
+        ["Menu Theme"] = {
+            ["Play Button"] = {
+                ["Background"] = "#403C1B",
+                ["Border"] = {color = "#FFFFFF", width = 0}
+            }
+        }
+    },
+
+    ["Audio"] = {
+        ["Sound Volume"] = 75,
+        ["Music Volume"] = 75
+    },
+
+    ["Gameplay"] = {
+        ["Dice Weighing Mode"] = 2,
+        ["Auto Aim"] = IsMobile,
+        ["Auto Aim Limit"] = 45
+    },
+
+    ["Customization"] = {
+        ["PlayerR"] = 0,
+        ["PlayerG"] = 1,
+        ["PlayerB"] = 1
+    }
+}
+if love.filesystem.getInfo("settings.json") then
+    local itms = json.decode(love.filesystem.read("settings.json"))
+    Settings = table.merge(Settings, itms)
+end
+
 function love.load()
     if DiscordRPC then DiscordRPC.initialize("1124036737413435502", true) end
-    Settings = {
-        ["Language"] = "en_US",
-        
-        ["Video"] = {
-            ["UI Scale"] = 1.5,
-            ["Color by Operator"] = true,
-            ["Background Brightness"] = 0.25,
-        },
-
-        ["Audio"] = {
-            ["Sound Volume"] = 75,
-            ["Music Volume"] = 75
-        },
-
-        ["Gameplay"] = {
-            ["Dice Weighing Mode"] = 2,
-            ["Auto Aim"] = IsMobile,
-            ["Auto Aim Limit"] = 45
-        },
-
-        ["Customization"] = {
-            ["PlayerR"] = 0,
-            ["PlayerG"] = 1,
-            ["PlayerB"] = 1
-        }
-    }
-    if love.filesystem.getInfo("settings.json") then
-        local itms = json.decode(love.filesystem.read("settings.json"))
-        Settings = table.merge(Settings, itms)
-    end
 
     MenuBG = love.graphics.newImage("assets/images/ui/background.png")
     MenuBG:setWrap("repeat", "repeat", "repeat")
@@ -368,6 +387,10 @@ local presenceTimer = 0
 
 function love.update(dt)
     local t = love.timer.getTime()
+
+    if DiscordRPC then
+        DiscordRPC.runCallbacks()
+    end
 
     Net.Update()
     saveTime = saveTime + dt
