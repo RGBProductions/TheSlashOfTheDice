@@ -106,9 +106,9 @@ function scene.draw()
     love.graphics.setFont(lrfont)
     local c = "arrow"
     if Menus[CurrentMenu].draw then
-        Menus[CurrentMenu]:draw()
+        -- Menus[CurrentMenu]:draw()
     end
-    c = Menus[CurrentMenu]:getCursor(love.mouse.getPosition()) or c
+    -- c = Menus[CurrentMenu]:getCursor(love.mouse.getPosition()) or c
     love.mouse.setCursor(love.mouse.getSystemCursor(c))
 
     love.graphics.setColor(1,1,1)
