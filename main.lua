@@ -173,6 +173,7 @@ require "sounds"
 require "scenemanager"
 require "network"
 require "achievements"
+require "ui"
 
 if not love.filesystem.getInfo("achievements.txt") then
     Achievements.Save("achievements.txt")
