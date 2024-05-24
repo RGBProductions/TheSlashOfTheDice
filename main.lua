@@ -279,7 +279,7 @@ function LoadMusic(fn)
     Music = r
     CurrentMusic = fn
     Music:setLooping(true)
-    Music:setVolume(Settings["audio"]["music_volume"]/100)
+    Music:setVolume(Settings.audio.music_volume/100)
     Music:play()
 end
 
@@ -332,33 +332,33 @@ DiscordPresence = {
 Settings = {
     language = "en_US",
 
-    ["video"] = {
-        ["ui_scale"] = 1.5,
-        ["color_by_operator"] = true,
-        ["background_brightness"] = 1,
-        ["menu_theme"] = {
-            ["button_primary"] = {
-                ["background"] = "#403C1B",
-                ["border"] = {color = "#FFFFFF", width = 0}
+    video = {
+        ui_scale = 1.5,
+        color_by_operator = true,
+        background_brightness = 1,
+        menu_theme = {
+            button_primary = {
+                background = "#403C1B",
+                border = {color = "#FFFFFF", width = 0}
             }
         }
     },
 
-    ["audio"] = {
-        ["sound_volume"] = 75,
-        ["music_volume"] = 75
+    audio = {
+        sound_volume = 75,
+        music_volume = 75
     },
 
-    ["gameplay"] = {
-        ["dice_mode"] = 2,
-        ["auto_aim_on"] = IsMobile,
-        ["auto_aim_limit"] = 45
+    gameplay = {
+        dice_mode = 2,
+        auto_aim_on = IsMobile,
+        auto_aim_limit = 45
     },
 
-    ["customization"] = {
-        ["color_r"] = 0,
-        ["color_g"] = 1,
-        ["color_b"] = 1
+    customization = {
+        color_r = 0,
+        color_g = 1,
+        color_b = 1
     }
 }
 if love.filesystem.getInfo("settings.json") then
@@ -405,9 +405,9 @@ function love.update(dt)
     end
     if Music then
         if Paused then
-            Music:setVolume((Settings["audio"]["music_volume"]/100)*0.5)
+            Music:setVolume((Settings.audio.music_volume/100)*0.5)
         else
-            Music:setVolume(Settings["audio"]["music_volume"]/100)
+            Music:setVolume(Settings.audio.music_volume/100)
         end
     end
     frame = frame + 1

@@ -465,7 +465,7 @@ function scene.load()
                         {type = "color", color = function()
                             return {
                                 Settings["customization"]["color_r"],
-                                Settings["customization"]["PlayerG"],
+                                Settings["customization"]["color_g"],
                                 Settings["customization"]["color_b"]
                             }
                         end},
@@ -503,7 +503,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Player Color (Green): "},
                         {type = "fromcode", value = function()
-                            return Settings["customization"]["PlayerG"]
+                            return Settings["customization"]["color_g"]
                         end}
                     },
                     callbacks = {
@@ -512,7 +512,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["customization"]["PlayerG"] = math.max(0, math.min(1, Settings["customization"]["PlayerG"] - shift))
+                            Settings["customization"]["color_g"] = math.max(0, math.min(1, Settings["customization"]["color_g"] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -520,7 +520,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["customization"]["PlayerG"] = math.max(0, math.min(1, Settings["customization"]["PlayerG"] + shift))
+                            Settings["customization"]["color_g"] = math.max(0, math.min(1, Settings["customization"]["color_g"] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
