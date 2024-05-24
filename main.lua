@@ -478,6 +478,10 @@ function love.mousepressed(x,y,b)
     end
 end
 
+function love.mousereleased(x,y,b)
+    -- for ui release events later
+end
+
 function love.gamepadpressed(stick,b)
     SceneManager.GamepadPressed(stick,b)
 end

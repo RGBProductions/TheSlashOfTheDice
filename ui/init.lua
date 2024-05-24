@@ -80,14 +80,13 @@ function UI.Element:click(mx,my,b)
         if type(child) == "table" and type(child.click) == "function" then
             local clicked = child:click(mx-x,my-y,b)
             if clicked then
-                child:clickInstance(mx-x,my-y,b)
                 return clicked,child
             end
         end
     end
     
     if mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2 then
-        self:clickInstance(mx-x,my-y,b)
+        if self.clickInstance then self:clickInstance(mx-x,my-y,b) end
         return true, self
     end
     return false, self
@@ -105,13 +104,15 @@ function UI.Element:release(mx,my,b)
     for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
         if type(child) == "table" and type(child.release) == "function" then
             local released = child:release(mx-x,my-y,b)
-            if released then
-                return released,child
-            end
+            -- if released then
+            --     return released,child
+            -- end
         end
     end
     
-    return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
+    self:releaseInstance(mx,my,b)
+    return true,self
+    -- return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
 end
 
 function UI.Element:releaseInstance(mx,my,b) end
@@ -153,6 +154,7 @@ function UI.Element:mousemove(mx,my,dx,dy)
         end
     end
     
+    self:mousemoveInstance(mx-x,my-y,dx,dy)
     return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
 end
 

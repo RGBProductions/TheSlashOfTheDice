@@ -131,7 +131,7 @@ function UI.Slider:drawInstance()
     love.graphics.setColor(barEmpty)
     love.graphics.rectangle("fill", -w/2, -h/2+(h-h*barWidth)/2, w, h*barWidth, barRoundness, barRoundness)
     love.graphics.setColor(barFill)
-    love.graphics.rectangle("fill", -w/2, -h/2+(h-h*barWidth)/2, w*((self.fill or 0)/(self.max or 1)), h*barWidth, barRoundness, barRoundness)
+    love.graphics.rectangle("fill", -w/2, -h/2+(h-h*barWidth)/2, w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0))), h*barWidth, barRoundness, barRoundness)
     if type(barEmptyBorder) == "table" and (barEmptyBorder.width or 0) > 0 then
         love.graphics.setColor(barEmptyBorder.color)
         love.graphics.setLineWidth(barEmptyBorder.width)
@@ -140,22 +140,22 @@ function UI.Slider:drawInstance()
     if type(barFillBorder) == "table" and (barFillBorder.width or 0) > 0 then
         love.graphics.setColor(barFillBorder.color)
         love.graphics.setLineWidth(barFillBorder.width)
-        love.graphics.rectangle("line", -w/2, -h/2+(h-h*barWidth)/2, w*((self.fill or 0)/(self.max or 1)), h*barWidth, barRoundness, barRoundness)
+        love.graphics.rectangle("line", -w/2, -h/2+(h-h*barWidth)/2, w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0))), h*barWidth, barRoundness, barRoundness)
     end
     
     love.graphics.setColor(thumbFill)
-    love.graphics.circle("fill", -w/2 + w*((self.fill or 0)/(self.max or 1)), 0, thumbSize/2*h)
+    love.graphics.circle("fill", -w/2 + w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0))), 0, thumbSize/2*h)
     if type(thumbBorder) == "table" and (thumbBorder.width or 0) > 0 then
         love.graphics.setColor(thumbBorder.color)
         love.graphics.setLineWidth(thumbBorder.width)
-        love.graphics.circle("line", -w/2 + w*((self.fill or 0)/(self.max or 1)), 0, thumbSize/2*h)
+        love.graphics.circle("line", -w/2 + w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0))), 0, thumbSize/2*h)
     end
 
     if ShowDebugInfo then
         love.graphics.setLineWidth(2)
         love.graphics.setColor(1,1,1)
         love.graphics.rectangle("line", -w/2, -h/2, w, h)
-        local thumbX = w*((self.fill or 0)/(self.max or 1))
+        local thumbX = w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0)))
         local thumbSize = self.thumbSize or 1
         love.graphics.rectangle("line", -w/2+thumbX-thumbSize/2*h, -thumbSize/2*h, (-w/2+thumbX+thumbSize/2*h)-(-w/2+thumbX-thumbSize/2*h), (thumbSize/2*h)-(-thumbSize/2*h))
     end
@@ -169,14 +169,34 @@ function UI.Slider:clickInstance(mx,my,b)
         local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
         local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
         
-        local thumbX = w*((self.fill or 0)/(self.max or 1))
+        local thumbX = w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0)))
         local thumbSize = self.thumbSize or 1
         if mx >= -w/2+thumbX-thumbSize/2*h and mx < -w/2+thumbX+thumbSize/2*h and my >= -thumbSize/2*h and my < thumbSize/2*h then
-            print("grabbed the thumb :3")
+            self.grabThumb = true
         else
-            print("didn't grab the thumb, but still hit the element!")
+            local pos = mx-(-w/2)
+            self.fill = math.max((self.min or 0),math.min((self.max or 1), ((self.max or 1)-(self.min or 0))*pos/w+(self.min or 0)))
+            if type(self.onvaluechanged) == "function" then
+                self:onvaluechanged(self.fill)
+            end
+            self.grabThumb = true
         end
     end
+end
+
+function UI.Slider:mousemoveInstance(mx,my,dx,dy)
+    if self.grabThumb then
+        local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+        local pos = mx-(-w/2)
+        self.fill = math.max((self.min or 0),math.min((self.max or 1), ((self.max or 1)-(self.min or 0))*pos/w+(self.min or 0)))
+        if type(self.onvaluechanged) == "function" then
+            self:onvaluechanged(self.fill)
+        end
+    end
+end
+
+function UI.Slider:release(mx,my,b)
+    self.grabThumb = false
 end
 
 --#endregion
