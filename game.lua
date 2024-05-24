@@ -5,7 +5,7 @@ Game = {
 }
 
 function Game.Die:new(delay,number)
-    local pool = GetPoolByID(Settings["Gameplay"]["Dice Weighing Mode"])
+    local pool = GetPoolByID(Settings["gameplay"]["dice_mode"])
     local d = {}
     d.rollIter = -(delay or 0)
     d.time = 0
@@ -26,7 +26,7 @@ function Game.Die:newRoll()
 end
 
 function Game.Die:update(dt)
-    local die = GetPoolByID(Settings["Gameplay"]["Dice Weighing Mode"]).Die
+    local die = GetPoolByID(Settings["gameplay"]["dice_mode"]).Die
     if not self.doneRolling then
         self.time = self.time + dt
         if self.time >= 0.125 then

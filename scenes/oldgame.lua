@@ -47,8 +47,8 @@ function AddNewPlayer(forceColor,keepStats,netid)
         end
 
         if not usedWASD then
-            local x = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"])*speed
-            local y = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"])*speed
+            local x = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])*speed
+            local y = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])*speed
             if joystick then
                 x = joystick:getGamepadAxis("leftx")
                 y = joystick:getGamepadAxis("lefty")
@@ -407,7 +407,7 @@ function scene.load(args)
     SixStreak = 0
 
     Entities = {}
-    player = AddNewPlayer({Settings["Customization"]["PlayerR"] or 0,Settings["Customization"]["PlayerG"] or 1,Settings["Customization"]["PlayerB"] or 1}, nil, IsMultiplayer and Net.ClientID)
+    player = AddNewPlayer({Settings["customization"]["color_r"] or 0,Settings["customization"]["PlayerG"] or 1,Settings["customization"]["color_b"] or 1}, nil, IsMultiplayer and Net.ClientID)
     if IsMultiplayer and Net.Hosting then
         for _,p in ipairs(Net.Room.players) do
             local stats = {Defense = 1, Attack = 1, Luck = 0}
@@ -896,8 +896,8 @@ function scene.update(dt)
             local mx = (love.keyboard.isDown("d") and 1 or 0) - (love.keyboard.isDown("a") and 1 or 0)
             local my = (love.keyboard.isDown("s") and 1 or 0) - (love.keyboard.isDown("w") and 1 or 0)
             if IsMobile then
-                mx = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"])
-                my = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"])
+                mx = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])
+                my = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])
             end
             Camera.tx = Camera.tx + mx*dt*64*6
             Camera.ty = Camera.ty + my*dt*64*6
@@ -950,7 +950,7 @@ function scene.keypressed(k)
     end
     if k == "space" and #GetEntitiesWithID("player") == 0 and not Spectating then
         if GameSetups[Gamemode].canRespawn then
-            AddNewPlayer({Settings["Customization"]["PlayerR"] or 0,Settings["Customization"]["PlayerG"] or 1,Settings["Customization"]["PlayerB"] or 1}, Gamemode == "calm")
+            AddNewPlayer({Settings["customization"]["color_r"] or 0,Settings["customization"]["PlayerG"] or 1,Settings["customization"]["color_b"] or 1}, Gamemode == "calm")
         elseif IsMultiplayer then
             Spectating = true
         else
@@ -973,7 +973,7 @@ function scene.mousepressed(x, y, b)
             local itm = math.floor((y-my)/lrfont:getHeight())
             if itm == 0 then
                 if GameSetups[Gamemode].canRespawn then
-                    AddNewPlayer({Settings["Customization"]["PlayerR"] or 0,Settings["Customization"]["PlayerG"] or 1,Settings["Customization"]["PlayerB"] or 1}, Gamemode == "calm")
+                    AddNewPlayer({Settings["customization"]["color_r"] or 0,Settings["customization"]["PlayerG"] or 1,Settings["customization"]["color_b"] or 1}, Gamemode == "calm")
                 elseif IsMultiplayer then
                     Spectating = true
                 else
@@ -1120,13 +1120,13 @@ function scene.draw()
     love.graphics.pop()
 
     for i,die in ipairs(Dice) do
-        local s = math.max(1, DiceDisplayPosition*64*Settings["Video"]["UI Scale"]/love.graphics.getWidth())
+        local s = math.max(1, DiceDisplayPosition*64*Settings["video"]["ui_scale"]/love.graphics.getWidth())
         local ds = (1-math.max(0, math.min(1, 2*(die.die.timeSinceCompletion-1))))^5
         local ny = 1-(1-math.max(0, math.min(1, 2*(die.die.timeSinceCompletion))))^5
-        local x = love.graphics.getWidth()-((DiceDisplayPosition-(i)+1)*64*Settings["Video"]["UI Scale"]/s) + 32*Settings["Video"]["UI Scale"]/s
-        local y = love.graphics.getHeight()-32*Settings["Video"]["UI Scale"]/s
+        local x = love.graphics.getWidth()-((DiceDisplayPosition-(i)+1)*64*Settings["video"]["ui_scale"]/s) + 32*Settings["video"]["ui_scale"]/s
+        local y = love.graphics.getHeight()-32*Settings["video"]["ui_scale"]/s
         local r,g,b = 1,1,1
-        if Settings["Video"]["Color by Operator"] then
+        if Settings["video"]["color_by_operator"] then
             if die.operation == "mul" then
                 r,g,b = 0,1,0
             end
@@ -1161,13 +1161,13 @@ function scene.draw()
         
             love.graphics.setColor(r,g,b)
             love.graphics.setFont(smfont)
-            love.graphics.printf(st .. op .. die.die.number, x, y+32*Settings["Video"]["UI Scale"]/s-love.graphics.getFont():getHeight()*Settings["Video"]["UI Scale"]/s/2-ny*48*Settings["Video"]["UI Scale"]/s, 64, "center", 0, Settings["Video"]["UI Scale"]/s*ds, Settings["Video"]["UI Scale"]/s*ds, 32, 32)
+            love.graphics.printf(st .. op .. die.die.number, x, y+32*Settings["video"]["ui_scale"]/s-love.graphics.getFont():getHeight()*Settings["video"]["ui_scale"]/s/2-ny*48*Settings["video"]["ui_scale"]/s, 64, "center", 0, Settings["video"]["ui_scale"]/s*ds, Settings["video"]["ui_scale"]/s*ds, 32, 32)
         end
         love.graphics.setColor(r,g,b,1)
         if not die.die:getNumber() then
             love.graphics.setColor(r,g,b,0.5)
         end
-        love.graphics.draw(DieImages[die.die.number], x, y, 0, Settings["Video"]["UI Scale"]/s*ds, Settings["Video"]["UI Scale"]/s*ds, 32, 32)
+        love.graphics.draw(DieImages[die.die.number], x, y, 0, Settings["video"]["ui_scale"]/s*ds, Settings["video"]["ui_scale"]/s*ds, 32, 32)
     end
 
     love.graphics.setColor(1,1,1)
@@ -1232,13 +1232,13 @@ function scene.draw()
 
     if IsMobile then
         love.graphics.setLineWidth(2)
-        love.graphics.circle("line", Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"]+64, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"]-64, Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"])
-        love.graphics.circle("fill", Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"]+64+Thumbstick.x, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"]-64+Thumbstick.y, Thumbstick.innerRad*ViewScale*Settings["Video"]["UI Scale"])
+        love.graphics.circle("line", Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"]+64, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"]-64, Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])
+        love.graphics.circle("fill", Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"]+64+Thumbstick.x, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"]-64+Thumbstick.y, Thumbstick.innerRad*ViewScale*Settings["video"]["ui_scale"])
         love.graphics.setLineWidth(8)
-        love.graphics.circle("line", love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings["Video"]["UI Scale"]-64, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings["Video"]["UI Scale"]-64, Slashstick.radius*ViewScale*Settings["Video"]["UI Scale"])
-        if not Spectating then love.graphics.draw(SlashIcon, love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings["Video"]["UI Scale"]-64, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings["Video"]["UI Scale"]-64, 0, (Slashstick.radius*Settings["Video"]["UI Scale"]*2)/SlashIcon:getWidth(), (Slashstick.radius*Settings["Video"]["UI Scale"]*2)/SlashIcon:getHeight(), SlashIcon:getWidth()/2, SlashIcon:getHeight()/2) end
-        love.graphics.rectangle("line", love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings["Video"]["UI Scale"]-64, 64, Pausebutton.size*ViewScale*Settings["Video"]["UI Scale"], Pausebutton.size*ViewScale*Settings["Video"]["UI Scale"])
-        love.graphics.draw(PauseIcon, love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings["Video"]["UI Scale"]-64, 64, 0, Pausebutton.size/PauseIcon:getWidth()*Settings["Video"]["UI Scale"], Pausebutton.size/PauseIcon:getHeight()*Settings["Video"]["UI Scale"])
+        love.graphics.circle("line", love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings["video"]["ui_scale"]-64, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings["video"]["ui_scale"]-64, Slashstick.radius*ViewScale*Settings["video"]["ui_scale"])
+        if not Spectating then love.graphics.draw(SlashIcon, love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings["video"]["ui_scale"]-64, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings["video"]["ui_scale"]-64, 0, (Slashstick.radius*Settings["video"]["ui_scale"]*2)/SlashIcon:getWidth(), (Slashstick.radius*Settings["video"]["ui_scale"]*2)/SlashIcon:getHeight(), SlashIcon:getWidth()/2, SlashIcon:getHeight()/2) end
+        love.graphics.rectangle("line", love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings["video"]["ui_scale"]-64, 64, Pausebutton.size*ViewScale*Settings["video"]["ui_scale"], Pausebutton.size*ViewScale*Settings["video"]["ui_scale"])
+        love.graphics.draw(PauseIcon, love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings["video"]["ui_scale"]-64, 64, 0, Pausebutton.size/PauseIcon:getWidth()*Settings["video"]["ui_scale"], Pausebutton.size/PauseIcon:getHeight()*Settings["video"]["ui_scale"])
     end
 
     if IsDead and not Spectating then
@@ -1278,7 +1278,7 @@ function scene.gamepadpressed(stick,b)
             ShowGameMenu = not ShowGameMenu
         else
             if GameSetups[Gamemode].canRespawn then
-                AddNewPlayer({Settings["Customization"]["PlayerR"] or 0,Settings["Customization"]["PlayerG"] or 1,Settings["Customization"]["PlayerB"] or 1}, Gamemode == "calm")
+                AddNewPlayer({Settings["customization"]["color_r"] or 0,Settings["customization"]["PlayerG"] or 1,Settings["customization"]["color_b"] or 1}, Gamemode == "calm")
             elseif IsMultiplayer then
                 Spectating = true
             else
@@ -1304,17 +1304,17 @@ end
 function scene.touchpressed(id,x,y)
     if frame < 2 then return end
     if Paused then return end
-    local tx,ty = x-(Thumbstick.outerRad*ViewScale*ViewScale*Settings["Video"]["UI Scale"]+64+Thumbstick.x),y-(love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*ViewScale*Settings["Video"]["UI Scale"]-64+Thumbstick.y)
-    if math.sqrt(tx*tx+ty*ty) <= Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"] then
+    local tx,ty = x-(Thumbstick.outerRad*ViewScale*ViewScale*Settings["video"]["ui_scale"]+64+Thumbstick.x),y-(love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*ViewScale*Settings["video"]["ui_scale"]-64+Thumbstick.y)
+    if math.sqrt(tx*tx+ty*ty) <= Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"] then
         Thumbstick.pressed = id
         return
     end
-    local sx,sy = x-(love.graphics.getWidth()-Slashstick.radius*ViewScale*ViewScale*Settings["Video"]["UI Scale"]-64),y-(love.graphics.getHeight()-Slashstick.radius*ViewScale*ViewScale*Settings["Video"]["UI Scale"]-64)
-    if math.sqrt(sx*sx+sy*sy) <= Slashstick.radius*ViewScale*Settings["Video"]["UI Scale"] and player then
+    local sx,sy = x-(love.graphics.getWidth()-Slashstick.radius*ViewScale*ViewScale*Settings["video"]["ui_scale"]-64),y-(love.graphics.getHeight()-Slashstick.radius*ViewScale*ViewScale*Settings["video"]["ui_scale"]-64)
+    if math.sqrt(sx*sx+sy*sy) <= Slashstick.radius*ViewScale*Settings["video"]["ui_scale"] and player then
         player:mousepressed(Thumbstick.x+love.graphics.getWidth()/2,Thumbstick.y+love.graphics.getHeight()/2,1)
         return
     end
-    if x >= love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings["Video"]["UI Scale"]-64 and x < love.graphics.getWidth()-64 and y >= 64 and y < Pausebutton.size*ViewScale*Settings["Video"]["UI Scale"]+64 then
+    if x >= love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings["video"]["ui_scale"]-64 and x < love.graphics.getWidth()-64 and y >= 64 and y < Pausebutton.size*ViewScale*Settings["video"]["ui_scale"]+64 then
         Paused = not Paused
         ShowGameMenu = not ShowGameMenu
         return
@@ -1345,10 +1345,10 @@ function scene.touchreleased(id,x,y)
 end
 
 function scene.touchmoved(id,x,y)
-    local tx,ty = x-(Thumbstick.outerRad*ViewScale*ViewScale*Settings["Video"]["UI Scale"]+64),y-(love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*ViewScale*Settings["Video"]["UI Scale"]-64)
+    local tx,ty = x-(Thumbstick.outerRad*ViewScale*ViewScale*Settings["video"]["ui_scale"]+64),y-(love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*ViewScale*Settings["video"]["ui_scale"]-64)
     if Thumbstick.pressed == id then
         local m = math.sqrt(tx*tx+ty*ty)
-        local n = math.min(Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"], m)
+        local n = math.min(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"], m)
         Thumbstick.x = tx/m*n
         Thumbstick.y = ty/m*n
     end

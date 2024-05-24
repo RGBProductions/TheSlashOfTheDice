@@ -312,7 +312,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Sound Volume: "},
                         {type = "fromcode", value = function()
-                            return Settings["Audio"]["Sound Volume"]
+                            return Settings["audio"]["sound_volume"]
                         end}
                     },
                     callbacks = {
@@ -321,7 +321,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 10
                             end
-                            Settings["Audio"]["Sound Volume"] = math.max(0, math.min(100, Settings["Audio"]["Sound Volume"] - shift))
+                            Settings["audio"]["sound_volume"] = math.max(0, math.min(100, Settings["audio"]["sound_volume"] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -329,7 +329,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 10
                             end
-                            Settings["Audio"]["Sound Volume"] = math.max(0, math.min(100, Settings["Audio"]["Sound Volume"] + shift))
+                            Settings["audio"]["sound_volume"] = math.max(0, math.min(100, Settings["audio"]["sound_volume"] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -338,7 +338,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Music Volume: "},
                         {type = "fromcode", value = function()
-                            return Settings["Audio"]["Music Volume"]
+                            return Settings["audio"]["music_volume"]
                         end}
                     },
                     callbacks = {
@@ -347,7 +347,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 10
                             end
-                            Settings["Audio"]["Music Volume"] = math.max(0, math.min(100, Settings["Audio"]["Music Volume"] - shift))
+                            Settings["audio"]["music_volume"] = math.max(0, math.min(100, Settings["audio"]["music_volume"] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -355,7 +355,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 10
                             end
-                            Settings["Audio"]["Music Volume"] = math.max(0, math.min(100, Settings["Audio"]["Music Volume"] + shift))
+                            Settings["audio"]["music_volume"] = math.max(0, math.min(100, Settings["audio"]["music_volume"] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -388,7 +388,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "UI Scale: "},
                         {type = "fromcode", value = function()
-                            return Settings["Video"]["UI Scale"]
+                            return Settings["video"]["ui_scale"]
                         end}
                     },
                     callbacks = {
@@ -397,7 +397,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.1
                             end
-                            Settings["Video"]["UI Scale"] = math.max(0.25, math.min(3, Settings["Video"]["UI Scale"] - shift))
+                            Settings["video"]["ui_scale"] = math.max(0.25, math.min(3, Settings["video"]["ui_scale"] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -405,7 +405,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.1
                             end
-                            Settings["Video"]["UI Scale"] = math.max(0.25, math.min(3, Settings["Video"]["UI Scale"] + shift))
+                            Settings["video"]["ui_scale"] = math.max(0.25, math.min(3, Settings["video"]["ui_scale"] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -414,24 +414,24 @@ function scene.load()
                     label = {
                         {type = "text", value = "Color by Operator: "},
                         {type = "fromcode", value = function()
-                            return (Settings["Video"]["Color by Operator"] and "On") or "Off"
+                            return (Settings["video"]["color_by_operator"] and "On") or "Off"
                         end}
                     },
                     callbacks = {
                         ["left"] = function(fast)
-                            if Settings["Video"]["Color by Operator"] then
-                                Settings["Video"]["Color by Operator"] = false
+                            if Settings["video"]["color_by_operator"] then
+                                Settings["video"]["color_by_operator"] = false
                                 love.filesystem.write("settings.json", json.encode(Settings))
                             end
                         end,
                         ["right"] = function(fast)
-                            if not Settings["Video"]["Color by Operator"] then
-                                Settings["Video"]["Color by Operator"] = true
+                            if not Settings["video"]["color_by_operator"] then
+                                Settings["video"]["color_by_operator"] = true
                                 love.filesystem.write("settings.json", json.encode(Settings))
                             end
                         end,
                         ["return"] = function()
-                            Settings["Video"]["Color by Operator"] = not Settings["Video"]["Color by Operator"]
+                            Settings["video"]["color_by_operator"] = not Settings["video"]["color_by_operator"]
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -464,9 +464,9 @@ function scene.load()
                     label = {
                         {type = "color", color = function()
                             return {
-                                Settings["Customization"]["PlayerR"],
-                                Settings["Customization"]["PlayerG"],
-                                Settings["Customization"]["PlayerB"]
+                                Settings["customization"]["color_r"],
+                                Settings["customization"]["PlayerG"],
+                                Settings["customization"]["color_b"]
                             }
                         end},
                         {type = "text", value = "Player Color Preview"}
@@ -477,7 +477,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Player Color (Red): "},
                         {type = "fromcode", value = function()
-                            return Settings["Customization"]["PlayerR"]
+                            return Settings["customization"]["color_r"]
                         end}
                     },
                     callbacks = {
@@ -486,7 +486,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["Customization"]["PlayerR"] = math.max(0, math.min(1, Settings["Customization"]["PlayerR"] - shift))
+                            Settings["customization"]["color_r"] = math.max(0, math.min(1, Settings["customization"]["color_r"] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -494,7 +494,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["Customization"]["PlayerR"] = math.max(0, math.min(1, Settings["Customization"]["PlayerR"] + shift))
+                            Settings["customization"]["color_r"] = math.max(0, math.min(1, Settings["customization"]["color_r"] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -503,7 +503,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Player Color (Green): "},
                         {type = "fromcode", value = function()
-                            return Settings["Customization"]["PlayerG"]
+                            return Settings["customization"]["PlayerG"]
                         end}
                     },
                     callbacks = {
@@ -512,7 +512,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["Customization"]["PlayerG"] = math.max(0, math.min(1, Settings["Customization"]["PlayerG"] - shift))
+                            Settings["customization"]["PlayerG"] = math.max(0, math.min(1, Settings["customization"]["PlayerG"] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -520,7 +520,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["Customization"]["PlayerG"] = math.max(0, math.min(1, Settings["Customization"]["PlayerG"] + shift))
+                            Settings["customization"]["PlayerG"] = math.max(0, math.min(1, Settings["customization"]["PlayerG"] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -529,7 +529,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Player Color (Blue): "},
                         {type = "fromcode", value = function()
-                            return Settings["Customization"]["PlayerB"]
+                            return Settings["customization"]["color_b"]
                         end}
                     },
                     callbacks = {
@@ -538,7 +538,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["Customization"]["PlayerB"] = math.max(0, math.min(1, Settings["Customization"]["PlayerB"] - shift))
+                            Settings["customization"]["color_b"] = math.max(0, math.min(1, Settings["customization"]["color_b"] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -546,7 +546,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["Customization"]["PlayerB"] = math.max(0, math.min(1, Settings["Customization"]["PlayerB"] + shift))
+                            Settings["customization"]["color_b"] = math.max(0, math.min(1, Settings["customization"]["color_b"] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -619,12 +619,12 @@ function scene.draw()
     else
         love.graphics.draw(MenuBGMobile, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
     end
-    love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos, 0, Settings["Video"]["UI Scale"], Settings["Video"]["UI Scale"], Logo:getWidth()/2, 0)
+    love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos, 0, Settings["video"]["ui_scale"], Settings["video"]["ui_scale"], Logo:getWidth()/2, 0)
     love.graphics.setFont(xlfont)
     if Menus[CurrentMenu].label then
-        love.graphics.printf(Menus[CurrentMenu].label, 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"], love.graphics.getWidth(), "center")
+        love.graphics.printf(Menus[CurrentMenu].label, 0, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"], love.graphics.getWidth(), "center")
         if Menus[CurrentMenu].icon then
-            love.graphics.draw(Menus[CurrentMenu].icon, (love.graphics.getWidth()-xlfont:getWidth(Menus[CurrentMenu].label))/2-xlfont:getHeight()*1.5, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"], 0, xlfont:getHeight()/Menus[CurrentMenu].icon:getWidth(), xlfont:getHeight()/Menus[CurrentMenu].icon:getHeight())
+            love.graphics.draw(Menus[CurrentMenu].icon, (love.graphics.getWidth()-xlfont:getWidth(Menus[CurrentMenu].label))/2-xlfont:getHeight()*1.5, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"], 0, xlfont:getHeight()/Menus[CurrentMenu].icon:getWidth(), xlfont:getHeight()/Menus[CurrentMenu].icon:getHeight())
         end
     end
     love.graphics.setFont(lrfont)
@@ -724,12 +724,12 @@ function scene.keypressed(k)
             SusCombo = 0
             SusMode = not SusMode
             if SusMode then
-                EnterTheSus:setVolume(Settings["Audio"]["Sound Volume"]/100)
+                EnterTheSus:setVolume(Settings["audio"]["sound_volume"]/100)
                 EnterTheSus:stop()
                 EnterTheSus:play()
                 Achievements.Advance("sus")
             else
-                ExitTheSus:setVolume(Settings["Audio"]["Sound Volume"]/100)
+                ExitTheSus:setVolume(Settings["audio"]["sound_volume"]/100)
                 ExitTheSus:stop()
                 ExitTheSus:play()
             end

@@ -11,7 +11,7 @@ function boom(source, base, rate, length, volume)
     Events.fire("sound", event)
     if not event.cancelled then
         if (source == "kill" or source == "kill_player") and SusMode then
-            SusKill:setVolume(Settings["Audio"]["Sound Volume"]/100)
+            SusKill:setVolume(Settings["audio"]["sound_volume"]/100)
             SusKill:stop()
             SusKill:play()
             return

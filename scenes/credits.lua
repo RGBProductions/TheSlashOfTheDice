@@ -16,12 +16,12 @@ function scene.draw()
         love.graphics.draw(MenuBGMobile, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
     end
     love.graphics.setFont(xlfont)
-    love.graphics.printf(Localize("title.credits"), 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight() - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
+    love.graphics.printf(Localize("title.credits"), 0, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"] + xlfont:getHeight() - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)
     if not IsMobile then
-        love.graphics.printf(Localize("key.goback"), 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight()*2+ViewMargin - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("key.goback"), 0, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"] + xlfont:getHeight()*2+ViewMargin - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     else
-        love.graphics.draw(BackIcon, 64, 64, 0, 64/BackIcon:getWidth()*Settings["Video"]["UI Scale"], 64/BackIcon:getHeight()*Settings["Video"]["UI Scale"])
+        love.graphics.draw(BackIcon, 64, 64, 0, 64/BackIcon:getWidth()*Settings["video"]["ui_scale"], 64/BackIcon:getHeight()*Settings["video"]["ui_scale"])
     end
 
     local pos = 0
@@ -34,12 +34,12 @@ function scene.draw()
         if Credits[i]["type"] == "name" then
             love.graphics.setFont(lrfont)
         end
-        love.graphics.printf(Localize(Credits[i]["label"]), 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight()*3 + pos - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize(Credits[i]["label"]), 0, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"] + xlfont:getHeight()*3 + pos - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
         pos = pos + love.graphics.getFont():getHeight()
         lastType = Credits[i]["type"]
     end
 
-    love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos+ViewMargin, 0, Settings["Video"]["UI Scale"], Settings["Video"]["UI Scale"], Logo:getWidth()/2, 0)
+    love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos+ViewMargin, 0, Settings["video"]["ui_scale"], Settings["video"]["ui_scale"], Logo:getWidth()/2, 0)
 end
 
 function scene.wheelmoved(x, y)
@@ -84,7 +84,7 @@ end
 
 function scene.mousepressed(x,y)
     scrollVelocity = 0
-    if x >= 64 and x < 64+64*Settings["Video"]["UI Scale"] and y >= 64 and y < 64+64*Settings["Video"]["UI Scale"] then
+    if x >= 64 and x < 64+64*Settings["video"]["ui_scale"] and y >= 64 and y < 64+64*Settings["video"]["ui_scale"] then
         SceneManager.LoadScene("scenes/menu")
     end
 end

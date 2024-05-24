@@ -40,9 +40,9 @@ function scene.draw()
     else
         love.graphics.draw(MenuBGMobile, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
     end
-    love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos, 0, Settings["Video"]["UI Scale"], Settings["Video"]["UI Scale"], Logo:getWidth()/2, 0)
+    love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos, 0, Settings["video"]["ui_scale"], Settings["video"]["ui_scale"], Logo:getWidth()/2, 0)
     love.graphics.setFont(xlfont)
-    love.graphics.printf("Multiplayer", 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"], love.graphics.getWidth(), "center")
+    love.graphics.printf("Multiplayer", 0, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"], love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)
     
     local mx,my = love.mouse.getPosition()
@@ -77,7 +77,7 @@ function scene.draw()
     end
     if MPMenuState == states.findgames then
         for i,room in ipairs(Net.RoomList or {}) do
-            local y = LogoPos+Logo:getHeight()*Settings["Video"]["UI Scale"]+xlfont:getHeight()+32 + (64*(i-1))
+            local y = LogoPos+Logo:getHeight()*Settings["video"]["ui_scale"]+xlfont:getHeight()+32 + (64*(i-1))
             love.graphics.setColor(1,1,1)
             love.graphics.rectangle("fill", (love.graphics.getWidth()-256)/2, y, 256, 48)
             love.graphics.setColor(0,0,0)
@@ -157,7 +157,7 @@ function scene.mousepressed(x, y)
     end
     if MPMenuState == states.findgames then
         for i,room in ipairs(Net.RoomList or {}) do
-            local by = LogoPos+Logo:getHeight()*Settings["Video"]["UI Scale"]+xlfont:getHeight()+32 + (64*(i-1))
+            local by = LogoPos+Logo:getHeight()*Settings["video"]["ui_scale"]+xlfont:getHeight()+32 + (64*(i-1))
             if x >= (love.graphics.getWidth()-256)/2 and x < (love.graphics.getWidth()+256)/2 and y >= by and y < by+48 then
                 Net.Send({type = "join", id = room.id})
                 MPMenuMessage = "Joining game"

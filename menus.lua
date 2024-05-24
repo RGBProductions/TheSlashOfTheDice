@@ -13,7 +13,7 @@ end
 function Menu:draw()
     love.graphics.push()
     local logo = Logo or {getHeight = function() return 0 end}
-    local pos = (LogoPos or 16) + logo:getHeight()*Settings["Video"]["UI Scale"]
+    local pos = (LogoPos or 16) + logo:getHeight()*Settings["video"]["ui_scale"]
     if self.label then
         love.graphics.setFont(xlfont)
         love.graphics.printf(Localize(self.label), 0, pos, love.graphics.getWidth(), "center")
@@ -627,13 +627,13 @@ end
 SingleplayerMenu = Menu:new("title.menu.singleplayer",{
     ScrollablePanel:new(0,function()
         local logo = Logo or {getHeight = function() return 0 end}
-        local pos = (LogoPos or 16) + logo:getHeight()*Settings["Video"]["UI Scale"]
+        local pos = (LogoPos or 16) + logo:getHeight()*Settings["video"]["ui_scale"]
         local top_pos = pos+xlfont:getHeight()
         local bottom_pos = love.graphics.getHeight()/2+256-32
         return (top_pos+bottom_pos)/2-(love.graphics.getHeight()/2)
     end,function() return love.graphics.getWidth()-512 end, function()
         local logo = Logo or {getHeight = function() return 0 end}
-        local pos = (LogoPos or 16) + logo:getHeight()*Settings["Video"]["UI Scale"]
+        local pos = (LogoPos or 16) + logo:getHeight()*Settings["video"]["ui_scale"]
         local top_pos = pos+xlfont:getHeight()
         local bottom_pos = love.graphics.getHeight()/2+256-32
         local height = bottom_pos-top_pos

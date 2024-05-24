@@ -10,11 +10,11 @@ for _,lang in ipairs(love.filesystem.getDirectoryItems("assets/lang")) do
 end
 
 function Localize(text)
-    local lang = Settings["Language"] or "en_US"
+    local lang = Settings["language"] or "en_US"
     return ((Languages[lang] or {}).text or {})[text] or text
 end
 
 function GetTextDelay()
-    local lang = Settings["Language"] or "en_US"
+    local lang = Settings["language"] or "en_US"
     return (Languages[lang] or {}).textDelay or (1/40)
 end

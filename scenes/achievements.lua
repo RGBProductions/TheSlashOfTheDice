@@ -30,7 +30,7 @@ function scene.draw()
         if (Achievements.Achievements[id].hidden and Achievements.Achievements[id].progress >= Achievements.Achievements[id].maxProgress) or not Achievements.Achievements[id].hidden then
             hidden = (wasHidden and hidden - 1) or hidden
             local icon = Achievements.Achievements[id].icon
-            local y = LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight()*2+lgfont:getHeight() + pos*(iconScale+16)*ViewScale - AchievementScroll
+            local y = LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"] + xlfont:getHeight()*2+lgfont:getHeight() + pos*(iconScale+16)*ViewScale - AchievementScroll
             love.graphics.setColor(1,1,1)
             unlocked = unlocked + 1
             if Achievements.Achievements[id].progress < Achievements.Achievements[id].maxProgress then
@@ -51,16 +51,16 @@ function scene.draw()
         end
     end
 
-    love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos+ViewMargin, 0, Settings["Video"]["UI Scale"], Settings["Video"]["UI Scale"], Logo:getWidth()/2, 0)
+    love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos+ViewMargin, 0, Settings["video"]["ui_scale"], Settings["video"]["ui_scale"], Logo:getWidth()/2, 0)
     love.graphics.setFont(xlfont)
-    love.graphics.printf(Localize("title.achievements"), 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight()+ViewMargin, love.graphics.getWidth(), "center")
+    love.graphics.printf(Localize("title.achievements"), 0, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"] + xlfont:getHeight()+ViewMargin, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)
     if not IsMobile then
-        love.graphics.printf(Localize("key.goback"), 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight()*2+ViewMargin, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("key.goback"), 0, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"] + xlfont:getHeight()*2+ViewMargin, love.graphics.getWidth(), "center")
     else
-        love.graphics.draw(BackIcon, 64, 64, 0, 64/BackIcon:getWidth()*Settings["Video"]["UI Scale"], 64/BackIcon:getHeight()*Settings["Video"]["UI Scale"])
+        love.graphics.draw(BackIcon, 64, 64, 0, 64/BackIcon:getWidth()*Settings["video"]["ui_scale"], 64/BackIcon:getHeight()*Settings["video"]["ui_scale"])
     end
-    love.graphics.printf(unlocked .. " / " .. total .. " (" .. hidden .. " hidden)", 0, LogoPos + Logo:getHeight()*Settings["Video"]["UI Scale"] + xlfont:getHeight()*2+lgfont:getHeight()+ViewMargin, love.graphics.getWidth(), "center")
+    love.graphics.printf(unlocked .. " / " .. total .. " (" .. hidden .. " hidden)", 0, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"] + xlfont:getHeight()*2+lgfont:getHeight()+ViewMargin, love.graphics.getWidth(), "center")
 end
 
 function scene.wheelmoved(x, y)
@@ -99,7 +99,7 @@ end
 
 function scene.mousepressed(x,y)
     scrollVelocity = 0
-    if x >= 64 and x < 64+64*Settings["Video"]["UI Scale"] and y >= 64 and y < 64+64*Settings["Video"]["UI Scale"] then
+    if x >= 64 and x < 64+64*Settings["video"]["ui_scale"] and y >= 64 and y < 64+64*Settings["video"]["ui_scale"] then
         SceneManager.LoadScene("scenes/menu")
     end
 end

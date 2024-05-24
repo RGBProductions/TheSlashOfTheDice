@@ -39,8 +39,8 @@ EntityTypes = {
             end
     
             if not usedWASD then
-                local x = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"])*speed
-                local y = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings["Video"]["UI Scale"])*speed
+                local x = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])*speed
+                local y = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])*speed
                 if joystick then
                     x = joystick:getGamepadAxis("leftx")
                     y = joystick:getGamepadAxis("lefty")
@@ -123,13 +123,13 @@ EntityTypes = {
                         if math.floor(self:get("critFactor")*math.max(0,9-self:get("stats")["Luck"]/10)) == 0 then
                             dmg = dmg * 2
                             crit = true
-                            beep("crit", 1567.981743926997, 0, 8, 0.25*Settings["Audio"]["Sound Volume"]/100)
+                            beep("crit", 1567.981743926997, 0, 8, 0.25*Settings["audio"]["sound_volume"]/100)
                         end
                         dmg = math.round(dmg)
                         ent.hp = ent.hp - dmg
                         ent.invincibility = 0.5
                         ent.data.lastAttacker = self.uid
-                        boom("hit", 2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
+                        boom("hit", 2, 0.005, 16, 0.5*Settings["audio"]["sound_volume"]/100)
                         AddDamageIndicator(ent.x, ent.y, dmg, (crit and {1,1,0}) or {1,1,1})
                         if IsHosting() then
                             self:set("damageFactor", love.math.random(5, 10))
@@ -159,9 +159,9 @@ EntityTypes = {
                         ax = ax / m
                         ay = ay / m
                     end
-                    if Settings["Gameplay"]["Auto Aim"] then
+                    if Settings["gameplay"]["auto_aim_on"] then
                         local consider = {}
-                        local t = math.cos(math.rad(Settings["Gameplay"]["Auto Aim Limit"]))
+                        local t = math.cos(math.rad(Settings["gameplay"]["auto_aim_limit"]))
                         for _,entity in ipairs(GetEntitiesWithID("enemy")) do
                             local evec = math.norm({entity.x-self.x, entity.y-self.y})
                             local svec = {ax,ay}
@@ -188,7 +188,7 @@ EntityTypes = {
                     self.vx = self.vx + ax*64
                     self.vy = self.vy + ay*64
                     self:set("slashTime", 0.25)
-                    sweep("slash", 1, 0, 32, 0.25*Settings["Audio"]["Sound Volume"]/100)
+                    sweep("slash", 1, 0, 32, 0.25*Settings["audio"]["sound_volume"]/100)
                     TutorialValues["Slashes"] = TutorialValues["Slashes"] + 1
     
                     if IsMultiplayer then
@@ -274,7 +274,7 @@ EntityTypes = {
                         ent.hp = ent.hp - dmg
                         ent.invincibility = 0.5
                         ent.data.lastAttacker = self.uid
-                        boom("hit", 2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
+                        boom("hit", 2, 0.005, 16, 0.5*Settings["audio"]["sound_volume"]/100)
                         AddDamageIndicator(ent.x, ent.y, dmg, {1,0,0})
                         if IsHosting() then
                             self:set("damageFactor", love.math.random(5, 10))
@@ -327,7 +327,7 @@ EntityTypes = {
                         dmg = math.round(dmg)
                         ent.hp = ent.hp - dmg
                         ent.invincibility = 0.5
-                        boom("hit", 2, 0.005, 16, 0.5*Settings["Audio"]["Sound Volume"]/100)
+                        boom("hit", 2, 0.005, 16, 0.5*Settings["audio"]["sound_volume"]/100)
                         AddDamageIndicator(ent.x, ent.y, dmg, {1,0,0})
                     end
                 end
@@ -419,7 +419,7 @@ EntityTypes = {
                 for _=1,32 do
                     table.insert(Particles, Game.Particle:new(self.x,self.y,1,(love.math.random()*2-1)*32,(love.math.random()*2-1)*32,16))
                 end
-                boom("explosion", 128, 0.000, 1, 0.5*Settings["Audio"]["Sound Volume"]/100)
+                boom("explosion", 128, 0.000, 1, 0.5*Settings["audio"]["sound_volume"]/100)
                 self:destroy()
             end
         end
