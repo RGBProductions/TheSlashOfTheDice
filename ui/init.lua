@@ -86,7 +86,7 @@ function UI.Element:click(mx,my,b)
     end
     
     if mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2 then
-        if self.clickInstance then self:clickInstance(mx-x,my-y,b) end
+        if (not self.disabled) and type(self.clickInstance) == "function" then self:clickInstance(mx-x,my-y,b) end
         return true, self
     end
     return false, self
@@ -110,7 +110,7 @@ function UI.Element:release(mx,my,b)
         end
     end
     
-    self:releaseInstance(mx,my,b)
+    if (not self.disabled) and type(self.releaseInstance) == "function" then self:releaseInstance(mx,my,b) end
     return true,self
     -- return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
 end
@@ -133,6 +133,7 @@ function UI.Element:scroll(mx,my,sx,sy)
         end
     end
     
+    if (not self.disabled) and type(self.scrollInstance) == "function" then self:scrollInstance(mx,my,sx,sy) end
     return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
 end
 
@@ -154,11 +155,27 @@ function UI.Element:mousemove(mx,my,dx,dy)
         end
     end
     
-    self:mousemoveInstance(mx-x,my-y,dx,dy)
+    if (not self.disabled) and type(self.mousemoveInstance) == "function" then self:mousemoveInstance(mx,my,dx,dy) end
     return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
 end
 
 function UI.Element:mousemoveInstance(mx,my,dx,dy) end
+
+function UI.Element:getChildById(id,dontRecurse)
+    for _,child in ipairs(self.children or {}) do
+        if type(child) == "table" then
+            if child.id == id then
+                return child
+            elseif (not dontRecurse) then
+                local found = child:getChildById(id)
+                if found then
+                    return found
+                end
+            end
+        end
+    end
+    return nil
+end
 
 --#endregion
 

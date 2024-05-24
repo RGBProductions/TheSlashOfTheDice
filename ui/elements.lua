@@ -12,6 +12,10 @@ function UI.Button:drawInstance()
     local border = self.border or {color = {1,1,1}, width = 0}
     local rounding = self.rounding or 0
 
+    if type(background) == "function" then background = background(self) end
+    if type(border) == "function" then border = border(self) end
+    if type(rounding) == "function" then rounding = rounding(self) end
+
     local r,g,b,a = love.graphics.getColor()
     local lw = love.graphics.getLineWidth()
 
@@ -39,6 +43,10 @@ function UI.Button:drawInstance()
     love.graphics.setLineWidth(lw)
 end
 
+function UI.Button:clickInstance(mx,my,b)
+    if type(self.onclick) == "function" then self:onclick(mx,my,b) end
+end
+
 --#endregion
 
 --#region Text
@@ -51,13 +59,18 @@ function UI.Text:drawInstance()
     
     local color = self.color or {1,1,1}
     local font = self.font or lgfont
+    local text = self.text or ""
+
+    if type(color) == "function" then color = color(self) end
+    if type(font) == "function" then font = font(self) end
+    if type(text) == "function" then text = text(self) end
 
     local r,g,b,a = love.graphics.getColor()
     local oldFont = love.graphics.getFont()
 
     love.graphics.setColor(color)
     love.graphics.setFont(font)
-    local maxWidth,lines = font:getWrap(self.text, w)
+    local maxWidth,lines = font:getWrap(text, w)
     local y = 0
     if self.alignVert == "center" then
         y = (h-(#lines*font:getHeight()))/2
@@ -65,7 +78,7 @@ function UI.Text:drawInstance()
     if self.alignVert == "bottom" then
         y = h-(#lines*font:getHeight())
     end
-    love.graphics.printf(self.text, -w/2, -h/2+y, w, self.alignHoriz)
+    love.graphics.printf(text, -w/2, -h/2+y, w, self.alignHoriz)
 
     if ShowDebugInfo then
         local lw = love.graphics.getLineWidth()
@@ -107,6 +120,51 @@ end
 
 --#endregion
 
+--#region Panel
+
+UI.Panel = UI.Element:new({})
+
+function UI.Panel:drawInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    local background = self.background or {1,1,1}
+    local border = self.border or {color = {1,1,1}, width = 0}
+    local rounding = self.rounding or 0
+
+    if type(background) == "function" then background = background(self) end
+    if type(border) == "function" then border = border(self) end
+    if type(rounding) == "function" then rounding = rounding(self) end
+
+    local r,g,b,a = love.graphics.getColor()
+    local lw = love.graphics.getLineWidth()
+
+    if type(background) == "table" then
+        love.graphics.setColor(background)
+        love.graphics.rectangle("fill", -w/2, -h/2, w, h)
+    elseif type(background.getWidth) == "function" then
+        love.graphics.setColor(1,1,1)
+        love.graphics.draw(background, -w/2, -h/2, 0, w/background:getWidth(), h/background:getHeight())
+    end
+
+    if border and (border.width or 0) > 0 then
+        love.graphics.setColor(border.color or {1,1,1})
+        love.graphics.setLineWidth(border.width or 0)
+        love.graphics.rectangle("line", -w/2, -h/2, w, h, rounding)
+    end
+
+    if ShowDebugInfo then
+        love.graphics.setLineWidth(2)
+        love.graphics.setColor(1,1,1)
+        love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    end
+
+    love.graphics.setColor(r,g,b,a)
+    love.graphics.setLineWidth(lw)
+end
+
+--#endregion
+
 --#region Slider
 
 UI.Slider = UI.Element:new({})
@@ -124,6 +182,16 @@ function UI.Slider:drawInstance()
     local thumbFill = self.thumbFill or {1,1,1}
     local thumbBorder = self.thumbBorder or {color = {0.5,0.5,0.5}, width = 2}
     local thumbSize = self.thumbSize or 1
+    
+    if type(barEmpty) == "function" then barEmpty = barEmpty(self) end
+    if type(barFill) == "function" then barFill = barFill(self) end
+    if type(barFillBorder) == "function" then barFillBorder = barFillBorder(self) end
+    if type(barEmptyBorder) == "function" then barEmptyBorder = barEmptyBorder(self) end
+    if type(barWidth) == "function" then barWidth = barWidth(self) end
+    if type(barRoundness) == "function" then barRoundness = barRoundness(self) end
+    if type(thumbFill) == "function" then thumbFill = thumbFill(self) end
+    if type(thumbBorder) == "function" then thumbBorder = thumbBorder(self) end
+    if type(thumbSize) == "function" then thumbSize = thumbSize(self) end
 
     local r,g,b,a = love.graphics.getColor()
     local lw = love.graphics.getLineWidth()
