@@ -101,7 +101,7 @@ function scene.draw()
     else
         love.graphics.draw(MenuBGMobile, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
     end
-    love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos, 0, Settings["video"]["ui_scale"], Settings["video"]["ui_scale"], Logo:getWidth()/2, 0)
+    love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos, 0, Settings.video.ui_scale, Settings.video.ui_scale, Logo:getWidth()/2, 0)
     love.graphics.setFont(xlfont)
     love.graphics.setFont(lrfont)
     local c = "arrow"
@@ -174,12 +174,12 @@ function scene.keypressed(k)
             SusCombo = 0
             SusMode = not SusMode
             if SusMode then
-                EnterTheSus:setVolume(Settings["audio"]["sound_volume"]/100)
+                EnterTheSus:setVolume(Settings.audio.sound_volume/100)
                 EnterTheSus:stop()
                 EnterTheSus:play()
                 Achievements.Advance("sus")
             else
-                ExitTheSus:setVolume(Settings["audio"]["sound_volume"]/100)
+                ExitTheSus:setVolume(Settings.audio.sound_volume/100)
                 ExitTheSus:stop()
                 ExitTheSus:play()
             end
