@@ -63,7 +63,7 @@ function scene.load()
     }
 
     -- TODO: evict this from the code
-    Menus = {
+    OldMenus = {
         MainMenu = {
             buttons = {
                 {
@@ -575,7 +575,7 @@ function scene.load()
     }
 
     for _,mode in ipairs(PlayModes) do
-        table.insert(Menus.Singleplayer.buttons, #Menus.Singleplayer.buttons-1, {
+        table.insert(OldMenus.Singleplayer.buttons, #OldMenus.Singleplayer.buttons-1, {
             label = mode[1],
             callbacks = {
                 ["return"] = function()
@@ -621,16 +621,16 @@ function scene.draw()
     end
     love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos, 0, Settings["video"]["ui_scale"], Settings["video"]["ui_scale"], Logo:getWidth()/2, 0)
     love.graphics.setFont(xlfont)
-    if Menus[CurrentMenu].label then
-        love.graphics.printf(Menus[CurrentMenu].label, 0, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"], love.graphics.getWidth(), "center")
-        if Menus[CurrentMenu].icon then
-            love.graphics.draw(Menus[CurrentMenu].icon, (love.graphics.getWidth()-xlfont:getWidth(Menus[CurrentMenu].label))/2-xlfont:getHeight()*1.5, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"], 0, xlfont:getHeight()/Menus[CurrentMenu].icon:getWidth(), xlfont:getHeight()/Menus[CurrentMenu].icon:getHeight())
+    if OldMenus[CurrentMenu].label then
+        love.graphics.printf(OldMenus[CurrentMenu].label, 0, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"], love.graphics.getWidth(), "center")
+        if OldMenus[CurrentMenu].icon then
+            love.graphics.draw(OldMenus[CurrentMenu].icon, (love.graphics.getWidth()-xlfont:getWidth(OldMenus[CurrentMenu].label))/2-xlfont:getHeight()*1.5, LogoPos + Logo:getHeight()*Settings["video"]["ui_scale"], 0, xlfont:getHeight()/OldMenus[CurrentMenu].icon:getWidth(), xlfont:getHeight()/OldMenus[CurrentMenu].icon:getHeight())
         end
     end
     love.graphics.setFont(lrfont)
     local iconSize = lrfont:getHeight()
     local c = "arrow"
-    for i,v in ipairs(Menus[CurrentMenu].buttons) do
+    for i,v in ipairs(OldMenus[CurrentMenu].buttons) do
         local label,col = ParseLabel(v.label)
         love.graphics.setColor(col or {1,1,1})
         local r,g,b,a = love.graphics.getColor()
@@ -641,7 +641,7 @@ function scene.draw()
         if i == MenuSelection and v.canClick ~= false and (#label > 0) then
             c = "hand"
         end
-        local y = LogoPos + (love.graphics.getHeight()-lrfont:getHeight()*(#Menus[CurrentMenu].buttons-4))/2 + lrfont:getHeight()*(i-1)
+        local y = LogoPos + (love.graphics.getHeight()-lrfont:getHeight()*(#OldMenus[CurrentMenu].buttons-4))/2 + lrfont:getHeight()*(i-1)
         love.graphics.printf(label, 0, y, love.graphics.getWidth(), "center")
         if v.icon then
             love.graphics.draw(v.icon, (love.graphics.getWidth()-lrfont:getWidth(label))/2-iconSize, y, 0, iconSize/v.icon:getWidth(), iconSize/v.icon:getHeight())
@@ -740,23 +740,23 @@ function scene.keypressed(k)
     end
     MenuSelection = MenuSelection - 1
     if k == "down" then
-        MenuSelection = (MenuSelection+1)%(#Menus[CurrentMenu].buttons)
-        if not Menus[CurrentMenu].buttons[MenuSelection+1].callbacks then
-            MenuSelection = (MenuSelection+1)%(#Menus[CurrentMenu].buttons)
+        MenuSelection = (MenuSelection+1)%(#OldMenus[CurrentMenu].buttons)
+        if not OldMenus[CurrentMenu].buttons[MenuSelection+1].callbacks then
+            MenuSelection = (MenuSelection+1)%(#OldMenus[CurrentMenu].buttons)
         end
     end
     if k == "up" then
-        MenuSelection = (MenuSelection-1)%(#Menus[CurrentMenu].buttons)
-        if not Menus[CurrentMenu].buttons[MenuSelection+1].callbacks then
-            MenuSelection = (MenuSelection-1)%(#Menus[CurrentMenu].buttons)
+        MenuSelection = (MenuSelection-1)%(#OldMenus[CurrentMenu].buttons)
+        if not OldMenus[CurrentMenu].buttons[MenuSelection+1].callbacks then
+            MenuSelection = (MenuSelection-1)%(#OldMenus[CurrentMenu].buttons)
         end
     end
     MenuSelection = MenuSelection + 1
 
-    if MenuSelection > 0 and MenuSelection <= #Menus[CurrentMenu].buttons then
-        if Menus[CurrentMenu].buttons[MenuSelection].callbacks then
+    if MenuSelection > 0 and MenuSelection <= #OldMenus[CurrentMenu].buttons then
+        if OldMenus[CurrentMenu].buttons[MenuSelection].callbacks then
             if k ~= "down" and k ~= "up" then
-                local callback = Menus[CurrentMenu].buttons[MenuSelection].callbacks[k]
+                local callback = OldMenus[CurrentMenu].buttons[MenuSelection].callbacks[k]
                 if callback then
                     callback()
                 end
@@ -766,15 +766,15 @@ function scene.keypressed(k)
 end
 
 function scene.mousemoved(x, y, dx, dy)
-    local itmY = LogoPos+(love.graphics.getHeight()-lrfont:getHeight()*(#Menus[CurrentMenu].buttons-4))/2
+    local itmY = LogoPos+(love.graphics.getHeight()-lrfont:getHeight()*(#OldMenus[CurrentMenu].buttons-4))/2
     MenuSelection = math.floor((y-itmY)/lrfont:getHeight())+1
 end
 
 function scene.mousepressed(x, y)
-    if MenuSelection > 0 and MenuSelection <= #Menus[CurrentMenu].buttons then
-        if Menus[CurrentMenu].buttons[MenuSelection].callbacks then
-            local calls = Menus[CurrentMenu].buttons[MenuSelection].callbacks
-            local label = ParseLabel(Menus[CurrentMenu].buttons[MenuSelection].label or "")
+    if MenuSelection > 0 and MenuSelection <= #OldMenus[CurrentMenu].buttons then
+        if OldMenus[CurrentMenu].buttons[MenuSelection].callbacks then
+            local calls = OldMenus[CurrentMenu].buttons[MenuSelection].callbacks
+            local label = ParseLabel(OldMenus[CurrentMenu].buttons[MenuSelection].label or "")
             if IsMobile then
                 local iconSize = lrfont:getHeight()
                 local fwdX = (love.graphics.getWidth()+lrfont:getWidth(label))/2+iconSize
@@ -798,17 +798,17 @@ function scene.mousepressed(x, y)
             if callback then
                 callback()
             end
-            local itmY = LogoPos+(love.graphics.getHeight()-lrfont:getHeight()*(#Menus[CurrentMenu].buttons-4))/2
+            local itmY = LogoPos+(love.graphics.getHeight()-lrfont:getHeight()*(#OldMenus[CurrentMenu].buttons-4))/2
             MenuSelection = math.floor((y-itmY)/lrfont:getHeight())+1
         end
     end
 end
 
 function scene.wheelmoved(x, y)
-    if MenuSelection > 0 and MenuSelection <= #Menus[CurrentMenu].buttons then
-        if Menus[CurrentMenu].buttons[MenuSelection].callbacks then
+    if MenuSelection > 0 and MenuSelection <= #OldMenus[CurrentMenu].buttons then
+        if OldMenus[CurrentMenu].buttons[MenuSelection].callbacks then
             local k = (math.sign(y) == -1 and "left") or "right"
-            local callback = Menus[CurrentMenu].buttons[MenuSelection].callbacks[k]
+            local callback = OldMenus[CurrentMenu].buttons[MenuSelection].callbacks[k]
             if callback then
                 callback()
             end

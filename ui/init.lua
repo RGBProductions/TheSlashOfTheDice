@@ -42,13 +42,15 @@ function UI.Element:draw()
     love.graphics.push()
     love.graphics.translate(x, y)
 
-    if type(self.drawInstance) == "function" then
-        self:drawInstance()
-    end
+    if not self.hidden then
+        if type(self.drawInstance) == "function" then
+            self:drawInstance()
+        end
 
-    for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
-        if type(child) == "table" and type(child.draw) == "function" then
-            child:draw()
+        for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+            if type(child) == "table" and type(child.draw) == "function" then
+                child:draw()
+            end
         end
     end
 
@@ -75,6 +77,10 @@ function UI.Element:click(mx,my,b)
     
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
     local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    if self.clickThrough or self.hidden then
+        return false, self
+    end
 
     for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
         if type(child) == "table" and type(child.click) == "function" then
@@ -110,7 +116,7 @@ function UI.Element:release(mx,my,b)
         end
     end
     
-    if (not self.disabled) and type(self.releaseInstance) == "function" then self:releaseInstance(mx,my,b) end
+    if (not self.disabled) and type(self.releaseInstance) == "function" then self:releaseInstance(mx-x,my-y,b) end
     return true,self
     -- return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
 end
@@ -124,6 +130,10 @@ function UI.Element:scroll(mx,my,sx,sy)
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
     local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
 
+    if self.hidden then
+        return false, self
+    end
+
     for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
         if type(child) == "table" and type(child.scroll) == "function" then
             local scrolled = child:scroll(mx-x,my-y,sx,sy)
@@ -133,7 +143,7 @@ function UI.Element:scroll(mx,my,sx,sy)
         end
     end
     
-    if (not self.disabled) and type(self.scrollInstance) == "function" then self:scrollInstance(mx,my,sx,sy) end
+    if (not self.disabled) and type(self.scrollInstance) == "function" then self:scrollInstance(mx-x,my-y,sx,sy) end
     return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
 end
 
@@ -146,6 +156,10 @@ function UI.Element:mousemove(mx,my,dx,dy)
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
     local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
 
+    if self.hidden then
+        return false, self
+    end
+
     for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
         if type(child) == "table" and type(child.mousemove) == "function" then
             local moved = child:mousemove(mx-x,my-y,dx,dy)
@@ -155,11 +169,37 @@ function UI.Element:mousemove(mx,my,dx,dy)
         end
     end
     
-    if (not self.disabled) and type(self.mousemoveInstance) == "function" then self:mousemoveInstance(mx,my,dx,dy) end
+    if (not self.disabled) and type(self.mousemoveInstance) == "function" then self:mousemoveInstance(mx-x,my-y,dx,dy) end
     return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
 end
 
 function UI.Element:mousemoveInstance(mx,my,dx,dy) end
+
+function UI.Element:getCursor(mx,my)
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    if self.hidden or self.clickThrough then
+        return nil
+    end
+
+    for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+        if type(child) == "table" and type(child.getCursor) == "function" then
+            local cursor = child:getCursor(mx-x,my-y)
+            if cursor then
+                return cursor
+            end
+        end
+    end
+    
+    if mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2 then
+        return self.cursor
+    end
+    return nil
+end
 
 function UI.Element:getChildById(id,dontRecurse)
     for _,child in ipairs(self.children or {}) do

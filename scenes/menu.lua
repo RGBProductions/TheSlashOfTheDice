@@ -28,7 +28,7 @@ function scene.load()
     Logo = love.graphics.newImage("assets/images/ui/logo-updated.png")
     LogoPos = love.graphics.getHeight()
 
-    CurrentMenu = "Main"
+    CurrentMenu = "main"
     MenuSelection = 1
 
     WeighingModes = {
@@ -53,8 +53,6 @@ function scene.load()
         table.insert(PlayModes, {"[DBG] MP - TDM", "tdm"})
     end
     Events.fire("gamemodeInit")
-
-    Menus = require "menus"
 
     -- for _,mode in ipairs(PlayModes) do
     --     table.insert(Menus.Singleplayer.buttons, #Menus.Singleplayer.buttons-1, {
@@ -91,6 +89,39 @@ function scene.update(dt)
     -- LogoPos = LogoPos - ((LogoPos-16)/8)
 end
 
+TestMenu = UI.Element:new({
+    children = {
+        UI.Panel:new({
+            x = 0,
+            y = 0,
+            width = 640,
+            height = 320,
+            background = {0,0,0,0.5},
+            border = {color = {1,1,1}, width = 4},
+            rounding = 4,
+            children = {
+                UI.Text:new({text = "Audio Settings", x = 0, y = -136+16, width = 640, height = xlfont:getHeight(), font = xlfont, alignHoriz = "center"}),
+                UI.Slider:new({id = "music_volume", x = 0, y = -136+16+xlfont:getHeight()/2+12+8, width = 256, height = 24, fill = Settings.audio.music_volume, max = 100, onvaluechanged = function (self, value)
+                    Settings.audio.music_volume = value
+                end, children = {
+                    UI.Text:new({id = "music_volume_label", x = -(128+64+16), y = 0, width = 128, height = 24, font = mdfont, alignHoriz = "right", text = "Music Volume"}),
+                    UI.Text:new({id = "music_volume_value", x = 128+64+16, y = 0, width = 128, height = 24, font = mdfont, text = function (self)
+                        return math.floor((self.parent.fill or 0)).."%"
+                    end})
+                }}),
+                UI.Slider:new({id = "sound_volume", x = 0, y = -136+16+xlfont:getHeight()/2+12+8 + 32, width = 256, height = 24, fill = Settings.audio.sound_volume, max = 100, onvaluechanged = function (self, value)
+                    Settings.audio.sound_volume = value
+                end, children = {
+                    UI.Text:new({id = "sound_volume_label", x = -(128+64+16), y = 0, width = 128, height = 24, font = mdfont, alignHoriz = "right", text = "Sound Volume"}),
+                    UI.Text:new({id = "sound_volume_value", x = 128+64+16, y = 0, width = 128, height = 24, font = mdfont, text = function (self)
+                        return math.floor((self.parent.fill or 0)).."%"
+                    end})
+                }})
+            }
+        })
+    }
+})
+
 function scene.draw()
     love.graphics.setColor(1,1,1)
     if not IsMobile then
@@ -105,10 +136,31 @@ function scene.draw()
     love.graphics.setFont(xlfont)
     love.graphics.setFont(lrfont)
     local c = "arrow"
-    if Menus[CurrentMenu].draw then
+    local screenWidth = 1280
+    local screenHeight = 720
+    local leftMargin = 160
+    local rightMargin = 160
+    local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local bottomMargin = 64-(LogoPos-16)
+    local centerpoint = {
+        (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
+        (topMargin+(love.graphics.getHeight()-bottomMargin))/2
+    }
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local w,h = screenWidth-leftMargin-rightMargin, screenHeight-topMargin-bottomMargin
+    love.graphics.push()
+    love.graphics.translate(centerpoint[1], centerpoint[2])
+    love.graphics.scale(scale,scale)
+    -- love.graphics.circle("fill", 0, 0, 4)
+    -- love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    if (Menus[CurrentMenu] or {}).draw then
         Menus[CurrentMenu]:draw()
     end
-    c = Menus[CurrentMenu]:getCursor(love.mouse.getPosition()) or c
+    love.graphics.pop()
+    if (Menus[CurrentMenu] or {}).getCursor then
+        c = Menus[CurrentMenu]:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or c
+    end
+    -- c = Menus[CurrentMenu]:getCursor(love.mouse.getPosition()) or c
     love.mouse.setCursor(love.mouse.getSystemCursor(c))
 
     love.graphics.setColor(1,1,1)
@@ -168,6 +220,9 @@ function ParseLabel(v)
 end
 
 function scene.keypressed(k)
+    if k == "f8" then
+        SceneManager.LoadScene("scenes/oldmenu")
+    end
     if k == Sus:sub(SusCombo+1,SusCombo+1) then
         SusCombo = SusCombo + 1
         if SusCombo == #Sus then
@@ -192,21 +247,79 @@ function scene.keypressed(k)
 end
 
 function scene.mousemoved(x, y, dx, dy)
-
+    local screenWidth = 1280
+    local screenHeight = 720
+    local leftMargin = 160
+    local rightMargin = 160
+    local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local bottomMargin = 64-(LogoPos-16)
+    local centerpoint = {
+        (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
+        (topMargin+(love.graphics.getHeight()-bottomMargin))/2
+    }
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    x = (x-centerpoint[1])/scale
+    y = (y-centerpoint[2])/scale
+    if (Menus[CurrentMenu] or {}).mousemove then
+        (Menus[CurrentMenu] or {}):mousemove(x, y, dx, dy)
+    end
 end
 
-function scene.mousepressed(x, y)
-    local hit,element,cx,cy = Menus[CurrentMenu]:click(x,y)
-    if hit then
-        if (element or {}).onclick then
-            element:onclick(cx,cy)
-        end
+function scene.mousepressed(x, y, b)
+    local screenWidth = 1280
+    local screenHeight = 720
+    local leftMargin = 160
+    local rightMargin = 160
+    local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local bottomMargin = 64-(LogoPos-16)
+    local centerpoint = {
+        (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
+        (topMargin+(love.graphics.getHeight()-bottomMargin))/2
+    }
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    x = (x-centerpoint[1])/scale
+    y = (y-centerpoint[2])/scale
+    if (Menus[CurrentMenu] or {}).click then
+        (Menus[CurrentMenu] or {}):click(x, y, b)
+    end
+end
+
+function scene.mousereleased(x, y, b)
+    local screenWidth = 1280
+    local screenHeight = 720
+    local leftMargin = 160
+    local rightMargin = 160
+    local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local bottomMargin = 64-(LogoPos-16)
+    local centerpoint = {
+        (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
+        (topMargin+(love.graphics.getHeight()-bottomMargin))/2
+    }
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    x = (x-centerpoint[1])/scale
+    y = (y-centerpoint[2])/scale
+    if (Menus[CurrentMenu] or {}).release then
+        (Menus[CurrentMenu] or {}):release(x, y, b)
     end
 end
 
 function scene.wheelmoved(x, y)
-    if Menus[CurrentMenu] then
-        Menus[CurrentMenu]:scroll(love.mouse.getX(), love.mouse.getY(), x, y)
+    local screenWidth = 1280
+    local screenHeight = 720
+    local leftMargin = 160
+    local rightMargin = 160
+    local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local bottomMargin = 64-(LogoPos-16)
+    local centerpoint = {
+        (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
+        (topMargin+(love.graphics.getHeight()-bottomMargin))/2
+    }
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local mx,my = love.mouse.getPosition()
+    mx = (mx-centerpoint[1])/scale
+    my = (my-centerpoint[2])/scale
+    if (Menus[CurrentMenu] or {}).scroll then
+        (Menus[CurrentMenu] or {}):scroll(mx, my, x, y)
     end
 end
 

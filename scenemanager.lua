@@ -39,6 +39,12 @@ function SceneManager.MousePressed(x, y, b)
     end
 end
 
+function SceneManager.MouseReleased(x, y, b)
+    if SceneManager.ActiveScene.mousereleased ~= nil then
+        SceneManager.ActiveScene.mousereleased(x, y, b)
+    end
+end
+
 function SceneManager.MouseMoved(x, y, dx, dy)
     if SceneManager.ActiveScene.mousemoved ~= nil then
         SceneManager.ActiveScene.mousemoved(x, y, dx, dy)

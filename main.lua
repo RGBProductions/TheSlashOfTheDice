@@ -186,6 +186,9 @@ require "scenemanager"
 require "network"
 require "achievements"
 require "ui"
+require "menus"
+
+require "default.menus"
 
 if not love.filesystem.getInfo("achievements.txt") then
     Achievements.Save("achievements.txt")
@@ -338,8 +341,20 @@ Settings = {
         background_brightness = 1,
         menu_theme = {
             button_primary = {
-                background = "#403C1B",
-                border = {color = "#FFFFFF", width = 0}
+                background = Color("#403C1B"),
+                border = {color = Color("#FFFFFF"), width = 0}
+            },
+            button_secondary = {
+                background = Color("#281E61"),
+                border = {color = Color("#FFFFFF"), width = 0}
+            },
+            button_back = {
+                background = Color("#3C1B1B"),
+                border = {color = Color("#FFFFFF"), width = 0}
+            },
+            button_other = {
+                background = Color("#3E2F19"),
+                border = {color = Color("#FFFFFF"), width = 0}
             }
         }
     },
@@ -479,7 +494,9 @@ function love.mousepressed(x,y,b)
 end
 
 function love.mousereleased(x,y,b)
-    -- for ui release events later
+    if frame > 3 then
+        SceneManager.MouseReleased(x,y,b)
+    end
 end
 
 function love.gamepadpressed(stick,b)
