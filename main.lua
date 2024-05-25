@@ -1,4 +1,5 @@
 utf8 = require "utf8"
+hsx = require "lib.hsx"
 
 function utf8.sub(txt, i, j)
     local o1 = (utf8.offset(txt,i) or (#txt))-1

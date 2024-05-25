@@ -269,3 +269,139 @@ end
 
 --#endregion
 
+--#region ColorPicker
+
+UI.ColorPicker = UI.Element:new({})
+
+local colorPick = love.graphics.newShader("assets/shaders/color.glsl")
+local blank = love.graphics.newImage("assets/images/ui/blank.png")
+
+function UI.ColorPicker:drawInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    local barWidth = self.barWidth or 32
+    if type(barWidth) == "function" then barWidth = barWidth(self) end
+        
+    local previewHeight = self.previewHeight or 32
+    if type(previewHeight) == "function" then previewHeight = previewHeight(self) end
+
+    local mainWidth = w-barWidth-8
+    local mainHeight = h-previewHeight-8
+
+    local r,g,b,a = love.graphics.getColor()
+    local lw = love.graphics.getLineWidth()
+    local shader = love.graphics.getShader()
+
+    love.graphics.setColor(1,1,1)
+    love.graphics.setShader(colorPick)
+    colorPick:send("hue", self.hue or 0)
+    colorPick:send("justColor", false)
+    colorPick:send("justHue", false)
+    love.graphics.draw(blank, -w/2, -h/2, 0, mainWidth, mainHeight)
+    colorPick:send("justHue", true)
+    love.graphics.draw(blank, -w/2+mainWidth+8, -h/2, 0, barWidth, mainHeight)
+    colorPick:send("hsv", {self.hue or 0, self.saturation or 0, self.value or 0})
+    colorPick:send("justColor", true)
+    love.graphics.draw(blank, -w/2, -h/2+mainHeight+8, 0, w, previewHeight)
+    love.graphics.setShader(shader)
+    love.graphics.setColor(1,1,1)
+    love.graphics.circle("line", -w/2+(self.saturation or 0)*mainWidth, -h/2+(1-(self.value or 0))*mainHeight, 4)
+    love.graphics.setLineWidth(2)
+    love.graphics.rectangle("line", -w/2+mainWidth+8, -h/2+(1-(self.hue or 0))*mainHeight-2, barWidth, 4)
+    love.graphics.rectangle("line", -w/2+1, -h/2+mainHeight+8+1, w-2, previewHeight-2)
+
+    if ShowDebugInfo then
+        love.graphics.setLineWidth(2)
+        love.graphics.setColor(1,1,1)
+        love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    end
+
+    love.graphics.setColor(r,g,b,a)
+    love.graphics.setLineWidth(lw)
+end
+
+function UI.ColorPicker:clickInstance(mx,my,b)
+    if b == 1 then
+        local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+        local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+        
+        local barWidth = self.barWidth or 32
+        if type(barWidth) == "function" then barWidth = barWidth(self) end
+        
+        local previewHeight = self.previewHeight or 32
+        if type(previewHeight) == "function" then previewHeight = previewHeight(self) end
+
+        local mainWidth = w-barWidth-8
+        local mainHeight = h-previewHeight-8
+        
+        local colorChanged = false
+
+        if mx >= -w/2 and mx < -w/2+mainWidth and my >= -h/2 and my < -h/2+mainHeight then
+            local saturation = (mx+w/2)/mainWidth
+            local value = (my+h/2)/mainHeight
+            
+            self.saturation = math.max(0, math.min(1, saturation))
+            self.value = 1-math.max(0, math.min(1, value))
+
+            colorChanged = true
+
+            self.grabMain = true
+        end
+        
+        if mx >= -w/2+mainWidth+8 and mx < w/2 and my >= -h/2 and my < -h/2+mainHeight then
+            local hue = math.max(0,math.min(1,(my+h/2)/mainHeight))
+            self.hue = 1-hue
+
+            colorChanged = true
+
+            self.grabBar = true
+        end
+
+        if colorChanged and type(self.oncolorchanged) == "function" then self:oncolorchanged({self.hue or 0, self.saturation or 0, self.value or 0}, {hsx.hsv2rgb(self.hue or 0, self.saturation or 0, self.value or 0)}) end
+    end
+end
+
+function UI.ColorPicker:mousemoveInstance(mx,my,dx,dy)
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    local barWidth = self.barWidth or 32
+    if type(barWidth) == "function" then barWidth = barWidth(self) end
+        
+    local previewHeight = self.previewHeight or 32
+    if type(previewHeight) == "function" then previewHeight = previewHeight(self) end
+
+    local mainWidth = w-barWidth-8
+    local mainHeight = h-previewHeight-8
+    
+    local colorChanged = false
+
+    if self.grabMain then
+        local saturation = (mx+w/2)/mainWidth
+        local value = (my+h/2)/mainHeight
+        
+        self.saturation = math.max(0, math.min(1, saturation))
+        self.value = 1-math.max(0, math.min(1, value))
+
+        colorChanged = true
+    end
+
+    if self.grabBar then
+        local hue = math.max(0,math.min(1,(my+h/2)/mainHeight))
+        
+        self.hue = 1-hue
+
+        colorChanged = true
+    end
+
+    if colorChanged and type(self.oncolorchanged) == "function" then self:oncolorchanged({self.hue or 0, self.saturation or 0, self.value or 0}, {hsx.hsv2rgb(self.hue or 0, self.saturation or 0, self.value or 0)}) end
+end
+
+function UI.ColorPicker:release(mx,my,b)
+    self.grabMain = false
+    self.grabBar = false
+end
+
+--#endregion
+

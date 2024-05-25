@@ -188,7 +188,7 @@ local playMenu = UI.Element:new({
         UI.Button:new({
             id = "back",
             x = 0,
-            y = 136,
+            y = 136+64,
             width = 256,
             height = 64,
             background = function() return Settings.video.menu_theme.button_back.background end,
@@ -208,6 +208,12 @@ local playMenu = UI.Element:new({
                 })
             },
             onclick = function() SetMenu("main") end
+        }),
+        UI.ColorPicker:new({
+            width = 256,
+            height = 256,
+            x = 0,
+            y = 0
         })
     }
 })
