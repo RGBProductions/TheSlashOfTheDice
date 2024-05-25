@@ -395,12 +395,28 @@ function UI.ColorPicker:mousemoveInstance(mx,my,dx,dy)
         colorChanged = true
     end
 
-    if colorChanged and type(self.oncolorchanged) == "function" then self:oncolorchanged({self.hue or 0, self.saturation or 0, self.value or 0}, {hsx.hsv2rgb(self.hue or 0, self.saturation or 0, self.value or 0)}) end
+    if colorChanged and type(self.oncolorchanged) == "function" then self:oncolorchanged({self.hue or 0, self.saturation or 0, self.value or 0}, self:getRGB()) end
 end
 
 function UI.ColorPicker:release(mx,my,b)
     self.grabMain = false
     self.grabBar = false
+end
+
+function UI.ColorPicker:getRGB()
+    return {hsx.hsv2rgb(self.hue or 0, self.saturation or 0, self.value or 0)}
+end
+
+function UI.ColorPicker:getHSV()
+    return {self.hue or 0, self.saturation or 0, self.value or 0}
+end
+
+function UI.ColorPicker:setRGB(r,g,b)
+    self.hue, self.saturation, self.value = hsx.rgb2hsv(r,g,b)
+end
+
+function UI.ColorPicker:setHSV(h,s,v)
+    self.hue, self.saturation, self.value = h, s, v
 end
 
 --#endregion
