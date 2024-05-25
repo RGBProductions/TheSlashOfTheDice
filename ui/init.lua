@@ -2,10 +2,12 @@ UI = {}
 
 function Color(code)
     local t = type(code)
-    if t == "table" then return code end
     if t == "nil" then return {0,0,0} end
+    if t == "number" then return {code,code,code} end
+    if t == "table" then return code end
     if t == "function" then return code() end
     if code:sub(1,1) == "#" then code = code:sub(2,-1) end
+    if #code == 3 then code = code:sub(1,1):rep(2) .. code:sub(2,2):rep(2) .. code:sub(3,3):rep(2) end
     local r = tonumber(code:sub(1,2), 16)
     local g = tonumber(code:sub(3,4), 16)
     local b = tonumber(code:sub(5,6), 16)
