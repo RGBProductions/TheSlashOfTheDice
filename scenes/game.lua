@@ -623,7 +623,9 @@ function scene.update(dt)
                 end
                 i = i + 1
             end
-            DiceDisplayPosition = DiceDisplayPosition + (#Dice-DiceDisplayPosition)/8
+            local blend = math.pow( (1/((8/7)^60)), dt)
+            local b,a = #Dice,DiceDisplayPosition
+            DiceDisplayPosition = blend*(a-b)+b
             if Stats["Attack"] < 1 then
                 Stats["Attack"] = 1
             end
