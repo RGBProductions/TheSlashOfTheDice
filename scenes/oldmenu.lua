@@ -207,7 +207,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Dice Weighing Mode: "},
                         {type = "fromcode", value = function()
-                            return WeighingModes[Settings["Gameplay"]["Dice Weighing Mode"]+1]
+                            return WeighingModes[Settings["gameplay"]["dice_mode"]+1]
                         end}
                     },
                     callbacks = {
@@ -217,7 +217,7 @@ function scene.load()
                                 shift = 10
                             end
                             local unlockBlessed = Achievements.IsUnlocked("extreme_luck")
-                            Settings["Gameplay"]["Dice Weighing Mode"] = math.max(0, math.min(#WeighingModes-1-(unlockBlessed and 0 or 1), Settings["Gameplay"]["Dice Weighing Mode"] - shift))
+                            Settings["gameplay"]["dice_mode"] = math.max(0, math.min(#WeighingModes-1-(unlockBlessed and 0 or 1), Settings["gameplay"]["dice_mode"] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -226,7 +226,7 @@ function scene.load()
                                 shift = 10
                             end
                             local unlockBlessed = Achievements.IsUnlocked("extreme_luck")
-                            Settings["Gameplay"]["Dice Weighing Mode"] = math.max(0, math.min(#WeighingModes-1-(unlockBlessed and 0 or 1), Settings["Gameplay"]["Dice Weighing Mode"] + shift))
+                            Settings["gameplay"]["dice_mode"] = math.max(0, math.min(#WeighingModes-1-(unlockBlessed and 0 or 1), Settings["gameplay"]["dice_mode"] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -236,24 +236,24 @@ function scene.load()
                     label = {
                         {type = "text", value = "Auto Aim: "},
                         {type = "fromcode", value = function()
-                            return Settings["Gameplay"]["Auto Aim"] and "On" or "Off"
+                            return Settings["gameplay"]["auto_aim_on"] and "On" or "Off"
                         end}
                     },
                     callbacks = {
                         ["left"] = function(fast)
-                            if Settings["Gameplay"]["Auto Aim"] then
-                                Settings["Gameplay"]["Auto Aim"] = false
+                            if Settings["gameplay"]["auto_aim_on"] then
+                                Settings["gameplay"]["auto_aim_on"] = false
                                 love.filesystem.write("settings.json", json.encode(Settings))
                             end
                         end,
                         ["right"] = function(fast)
-                            if not Settings["Gameplay"]["Auto Aim"] then
-                                Settings["Gameplay"]["Auto Aim"] = true
+                            if not Settings["gameplay"]["auto_aim_on"] then
+                                Settings["gameplay"]["auto_aim_on"] = true
                                 love.filesystem.write("settings.json", json.encode(Settings))
                             end
                         end,
                         ["return"] = function()
-                            Settings["Gameplay"]["Auto Aim"] = not Settings["Gameplay"]["Auto Aim"]
+                            Settings["gameplay"]["auto_aim_on"] = not Settings["gameplay"]["auto_aim_on"]
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -262,7 +262,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Auto Aim Limit: "},
                         {type = "fromcode", value = function()
-                            return Settings["Gameplay"]["Auto Aim Limit"]
+                            return Settings["gameplay"]["auto_aim_limit"]
                         end}
                     },
                     callbacks = {
@@ -271,7 +271,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 15
                             end
-                            Settings["Gameplay"]["Auto Aim Limit"] = math.max(0, math.min(180, Settings["Gameplay"]["Auto Aim Limit"] - shift))
+                            Settings["gameplay"]["auto_aim_limit"] = math.max(0, math.min(180, Settings["gameplay"]["auto_aim_limit"] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -279,7 +279,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 15
                             end
-                            Settings["Gameplay"]["Auto Aim Limit"] = math.max(0, math.min(180, Settings["Gameplay"]["Auto Aim Limit"] + shift))
+                            Settings["gameplay"]["auto_aim_limit"] = math.max(0, math.min(180, Settings["gameplay"]["auto_aim_limit"] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }

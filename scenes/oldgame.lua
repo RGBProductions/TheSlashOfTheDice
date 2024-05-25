@@ -162,9 +162,9 @@ function AddNewPlayer(forceColor,keepStats,netid)
                     ax = ax / m
                     ay = ay / m
                 end
-                if Settings["Gameplay"]["Auto Aim"] then
+                if Settings["gameplay"]["auto_aim_on"] then
                     local consider = {}
-                    local t = math.cos(math.rad(Settings["Gameplay"]["Auto Aim Limit"]))
+                    local t = math.cos(math.rad(Settings["gameplay"]["auto_aim_limit"]))
                     for _,entity in ipairs(GetEntitiesWithID("enemy")) do
                         local evec = math.norm({entity.x-self.x, entity.y-self.y})
                         local svec = {ax,ay}
@@ -840,10 +840,10 @@ function scene.update(dt)
             for t,v in pairs(Stats) do
                 table.insert(stats, t)
             end
-            local pool = GetPoolByID(Settings["Gameplay"]["Dice Weighing Mode"])
+            local pool = GetPoolByID(Settings["gameplay"]["dice_mode"])
             local ops = pool.Operators
             -- Situatonal
-            if Settings["Gameplay"]["Dice Weighing Mode"] == 2 then
+            if Settings["gameplay"]["dice_mode"] == 2 then
                 ops = {"add","mul","sub","div"}
                 -- Calculate Total Statistic Score
                 local statscore = (Stats["Attack"]/150)*0.4 + (Stats["Defense"]/150)*0.4 + (Stats["Luck"]/90)*0.2
