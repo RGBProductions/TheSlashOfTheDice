@@ -33,6 +33,7 @@
         "tutorial.advance.mobile": "Tap anywhere to continue.",
 
         "title.menu.play": "Play Game",
+        "title.menu.settings": "Settings",
         "title.menu.singleplayer": "Play Game",
         "title.menu.multiplayer": "Multiplayer",
 
@@ -55,6 +56,10 @@
         "button.quit": "Quit",
         "button.singleplayer": "Singleplayer",
         "button.multiplayer": "Multiplayer",
+
+        "button.settings.video": "Video",
+        "button.settings.audio": "Audio",
+        "button.settings.gameplay": "Gameplay",
 
         "stat.attack": "Attack",
         "stat.defense": "Defense",

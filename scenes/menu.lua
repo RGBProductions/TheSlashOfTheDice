@@ -89,39 +89,6 @@ function scene.update(dt)
     -- LogoPos = LogoPos - ((LogoPos-16)/8)
 end
 
-TestMenu = UI.Element:new({
-    children = {
-        UI.Panel:new({
-            x = 0,
-            y = 0,
-            width = 640,
-            height = 320,
-            background = {0,0,0,0.5},
-            border = {color = {1,1,1}, width = 4},
-            rounding = 4,
-            children = {
-                UI.Text:new({text = "Audio Settings", x = 0, y = -136+16, width = 640, height = xlfont:getHeight(), font = xlfont, alignHoriz = "center"}),
-                UI.Slider:new({id = "music_volume", x = 0, y = -136+16+xlfont:getHeight()/2+12+8, width = 256, height = 24, fill = Settings.audio.music_volume, max = 100, onvaluechanged = function (self, value)
-                    Settings.audio.music_volume = value
-                end, children = {
-                    UI.Text:new({id = "music_volume_label", x = -(128+64+16), y = 0, width = 128, height = 24, font = mdfont, alignHoriz = "right", text = "Music Volume"}),
-                    UI.Text:new({id = "music_volume_value", x = 128+64+16, y = 0, width = 128, height = 24, font = mdfont, text = function (self)
-                        return math.floor((self.parent.fill or 0)).."%"
-                    end})
-                }}),
-                UI.Slider:new({id = "sound_volume", x = 0, y = -136+16+xlfont:getHeight()/2+12+8 + 32, width = 256, height = 24, fill = Settings.audio.sound_volume, max = 100, onvaluechanged = function (self, value)
-                    Settings.audio.sound_volume = value
-                end, children = {
-                    UI.Text:new({id = "sound_volume_label", x = -(128+64+16), y = 0, width = 128, height = 24, font = mdfont, alignHoriz = "right", text = "Sound Volume"}),
-                    UI.Text:new({id = "sound_volume_value", x = 128+64+16, y = 0, width = 128, height = 24, font = mdfont, text = function (self)
-                        return math.floor((self.parent.fill or 0)).."%"
-                    end})
-                }})
-            }
-        })
-    }
-})
-
 function scene.draw()
     love.graphics.setColor(1,1,1)
     if not IsMobile then
