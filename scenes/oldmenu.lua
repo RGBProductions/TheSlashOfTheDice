@@ -674,16 +674,6 @@ function scene.draw()
     -- local major,minor,rev,name = love.getVersion()
     -- love.graphics.print("LÖVE v" .. major .. "." .. minor .. " (" .. name .. ")", 0, love.graphics.getHeight() - smfont:getHeight())
 
-    if UpdateCheckFailed ~= 0 then
-        love.graphics.setColor(1,0,0)
-        love.graphics.print("UPDATE CHECKING FAILED WITH CODE " .. UpdateCheckFailed[1], 0, 0)
-        local pos = 1
-        for k,v in pairs(UpdateCheckFailed[2]) do
-            love.graphics.print(tostring(k) .. ":" .. tostring(v), 0, pos*smfont:getHeight())
-            pos = pos + 1
-        end
-    end
-
     if beta then
         love.graphics.setFont(lgfont)
         love.graphics.setColor(0,1,0)

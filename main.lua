@@ -214,49 +214,10 @@ version = curver[1]
 version_number = curver[2]
 update = {false, version}
 beta = false
+checkingUpdate = true
 
-function CompareVersions(a,b)
-    local t1 = string.split_plain(a, ".")
-    local t2 = string.split_plain(b, ".")
-    for i,v in ipairs(t1) do
-        t1[i] = string.split_plain(v, "-")[1]
-    end
-    for i,v in ipairs(t2) do
-        t2[i] = string.split_plain(v, "-")[1]
-    end
-
-    for i = 1, math.max(#t1,#t2) do
-        if tonumber(t1[i] or 0) > tonumber(t2[i] or 0) then
-            return 1
-        end
-        if tonumber(t1[i] or 0) < tonumber(t2[i] or 0) then
-            return -1
-        end
-    end
-    return 0
-end
-
-UpdateCheckFailed = 0
-
--- File method
-function CheckForUpdates()
-    local versionUrl = "https://raw.githubusercontent.com/RGBProductions/TheSlashOfTheDice/main/version.txt"
-    local code,data,headers = https.request(versionUrl, {method = "get"})
-    if code ~= 200 then return end
-    local lines = data:split("\n")
-    local cmp = 0
-    if #lines > 1 then
-        cmp = (tonumber(lines[2]) > tonumber(version_number) and 1) or (tonumber(lines[2]) < tonumber(version_number) and -1) or 0
-    else
-        print("No version code exists. Comparing via name instead")
-        cmp = CompareVersions(version, lines[1])
-    end
-    if cmp == 1 then
-        beta = true
-    elseif cmp == -1 then
-        update = {true, lines[1]}
-    end
-end
+local updateThread = love.thread.newThread("checkupdate.lua")
+local updateChannel = love.thread.getChannel("update")
 
 function table.index(t,v)
     for n,i in pairs(t) do
@@ -393,9 +354,15 @@ function love.load()
     BGShader:send("time", (GlobalTime-600)*48)
     MenuBGMobile = love.graphics.newImage("assets/images/ui/background-mobile.png")
     MenuBGMobile:setWrap("repeat", "repeat", "repeat")
+    
+    updateThread:start()
+
+    Events.fire("modPreInit")
+    Events.fire("modPostInit")
+    
+    SceneManager.LoadScene("scenes/menu", {})
 end
 
-local frame = 0
 local saveTime = 0
 
 GlobalTime = 0
@@ -403,6 +370,15 @@ local presenceTimer = 0
 
 function love.update(dt)
     local t = love.timer.getTime()
+
+    if updateChannel:getCount() > 0 then
+        checkingUpdate = false
+        local updateMessage = updateChannel:pop()
+        if updateMessage[1] then -- Update checking passed
+            beta = updateMessage[2]
+            update = updateMessage[3]
+        end
+    end
 
     if DiscordRPC then
         DiscordRPC.runCallbacks()
@@ -426,18 +402,7 @@ function love.update(dt)
             Music:setVolume(Settings.audio.music_volume/100)
         end
     end
-    frame = frame + 1
-    if frame == 2 then
-        if enableHttps then pcall(CheckForUpdates) end
-    
-        Events.fire("modPreInit")
-        Events.fire("modPostInit")
-        
-        SceneManager.LoadScene("scenes/menu", {})
-    end
-    if frame > 3 then
-        SceneManager.Update(dt)
-    end
+    SceneManager.Update(dt)
     GlobalTime = GlobalTime + dt
     if #AchievementUnlocks >= 1 then
         AchievementUnlocks[1].time = AchievementUnlocks[1].time + dt
@@ -450,21 +415,15 @@ function love.update(dt)
 end
 
 function love.mousemoved(x, y, dx, dy)
-    if frame > 3 then
-        SceneManager.MouseMoved(x, y, dx, dy)
-    end
+    SceneManager.MouseMoved(x, y, dx, dy)
 end
 
 function love.wheelmoved(x, y)
-    if frame > 3 then
-        SceneManager.WheelMoved(x, y)
-    end
+    SceneManager.WheelMoved(x, y)
 end
 
 function love.focus(f)
-    if frame > 3 then
-        SceneManager.Focus(f)
-    end
+    SceneManager.Focus(f)
     if not f then
         Achievements.Save("achievements.txt")
     end
@@ -477,27 +436,19 @@ function love.keypressed(k)
     if k == "f3" then
         ShowDebugInfo = not ShowDebugInfo
     end
-    if frame > 3 then
-        SceneManager.KeyPressed(k)
-    end
+    SceneManager.KeyPressed(k)
 end
 
 function love.textinput(t)
-    if frame > 3 then
-        SceneManager.TextInput(t)
-    end
+    SceneManager.TextInput(t)
 end
 
 function love.mousepressed(x,y,b)
-    if frame > 3 then
-        SceneManager.MousePressed(x,y,b)
-    end
+    SceneManager.MousePressed(x,y,b)
 end
 
 function love.mousereleased(x,y,b)
-    if frame > 3 then
-        SceneManager.MouseReleased(x,y,b)
-    end
+    SceneManager.MouseReleased(x,y,b)
 end
 
 function love.gamepadpressed(stick,b)
@@ -505,32 +456,21 @@ function love.gamepadpressed(stick,b)
 end
 
 function love.touchpressed(...)
-    if frame > 3 then
-        SceneManager.TouchPressed(...)
-    end
+    SceneManager.TouchPressed(...)
 end
 
 function love.touchmoved(...)
-    if frame > 3 then
-        SceneManager.TouchMoved(...)
-    end
+    SceneManager.TouchMoved(...)
 end
 
 function love.touchreleased(...)
-    if frame > 3 then
-        SceneManager.TouchReleased(...)
-    end
+    SceneManager.TouchReleased(...)
 end
 
 function love.draw()
     local t = love.timer.getTime()
 
-    if frame > 3 then
-        SceneManager.Draw()
-    else
-        love.graphics.setFont(xlfont)
-        love.graphics.printf(Localize("update.retrieving"), 0, (love.graphics.getHeight()-xlfont:getHeight())/2, love.graphics.getWidth(), "center")
-    end
+    SceneManager.Draw()
     if #AchievementUnlocks >= 1 then
         local txt = Localize("achievements."..AchievementUnlocks[1].achievement..".name")
         local w = math.max(lrfont:getWidth(Localize(AchievementUnlocks[1].titleText or "achievement_unlocked")), lgfont:getWidth(txt))

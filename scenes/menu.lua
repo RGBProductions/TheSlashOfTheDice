@@ -143,22 +143,16 @@ function scene.draw()
     -- local major,minor,rev,name = love.getVersion()
     -- love.graphics.print("LÖVE v" .. major .. "." .. minor .. " (" .. name .. ")", 0, love.graphics.getHeight() - smfont:getHeight())
 
-    if UpdateCheckFailed ~= 0 then
-        love.graphics.setColor(1,0,0)
-        love.graphics.print("UPDATE CHECKING FAILED WITH CODE " .. UpdateCheckFailed[1], 0, 0)
-        local pos = 1
-        for k,v in pairs(UpdateCheckFailed[2]) do
-            love.graphics.print(tostring(k) .. ":" .. tostring(v), 0, pos*smfont:getHeight())
-            pos = pos + 1
-        end
-    end
-
     love.graphics.setFont(lgfont)
 
     local f8 = "This menu is incomplete\nPress F8 to use the old menu"
     local height = lgfont:getHeight()*(#(({lgfont:getWrap(f8,lgfont:getWidth(f8))})[2]))
     love.graphics.printf(f8, love.graphics.getWidth()-lgfont:getWidth(f8), love.graphics.getHeight() - height, lgfont:getWidth(f8), "right")
 
+    if checkingUpdate then
+        love.graphics.setColor(1,1,1,0.75)
+        love.graphics.printf("Checking for updates", 0, love.graphics.getHeight() - lgfont:getHeight(), love.graphics.getWidth(), "center")
+    end
     if beta then
         love.graphics.setFont(lgfont)
         love.graphics.setColor(0,1,0)
