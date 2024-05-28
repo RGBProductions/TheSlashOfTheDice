@@ -194,6 +194,7 @@ function scene.load(args)
 
     Dice = {}
     DiceDisplayPosition = 0
+    DiceDisplaySize = 0
     
     Particles = {}
 
@@ -624,8 +625,14 @@ function scene.update(dt)
                 i = i + 1
             end
             local blend = math.pow( (1/((8/7)^60)), dt)
-            local b,a = #Dice,DiceDisplayPosition
-            DiceDisplayPosition = blend*(a-b)+b
+            do
+                local b,a = #Dice,DiceDisplayPosition
+                DiceDisplayPosition = blend*(a-b)+b
+            end
+            do
+                local b,a = math.max(1, (#Dice)*64*Settings.video.ui_scale/love.graphics.getWidth()), DiceDisplaySize
+                DiceDisplaySize = blend*(a-b)+b
+            end
             if Stats["Attack"] < 1 then
                 Stats["Attack"] = 1
             end
@@ -929,7 +936,7 @@ function scene.draw()
     love.graphics.pop()
 
     for i,die in ipairs(Dice) do
-        local s = math.max(1, DiceDisplayPosition*64*Settings.video.ui_scale/love.graphics.getWidth())
+        local s = DiceDisplaySize
         local ds = (1-math.max(0, math.min(1, 2*(die.die.timeSinceCompletion-1))))^5
         local ny = 1-(1-math.max(0, math.min(1, 2*(die.die.timeSinceCompletion))))^5
         local x = love.graphics.getWidth()-((DiceDisplayPosition-(i)+1)*64*Settings.video.ui_scale/s) + 32*Settings.video.ui_scale/s
