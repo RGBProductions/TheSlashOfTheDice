@@ -147,6 +147,9 @@
         "credits.you_header": "And thank YOU",
         "credits.you_text": "for playing this game!",
 
-        "update.retrieving": "Loading..."
+        "update.checking": "Checking for updates",
+        "update.new": "Beta Version",
+        "update.old": "You are on an outdated version",
+        "update.new_version": "Latest Version: %s"
     }
 }

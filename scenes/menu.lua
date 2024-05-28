@@ -151,17 +151,17 @@ function scene.draw()
 
     if checkingUpdate then
         love.graphics.setColor(1,1,1,0.75)
-        love.graphics.printf("Checking for updates", 0, love.graphics.getHeight() - lgfont:getHeight(), love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("update.checking"), 0, love.graphics.getHeight() - lgfont:getHeight(), love.graphics.getWidth(), "center")
     end
     if beta then
         love.graphics.setFont(lgfont)
         love.graphics.setColor(0,1,0)
-        love.graphics.printf("BETA VERSION", 0, love.graphics.getHeight() - lgfont:getHeight(), love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("update.new"), 0, love.graphics.getHeight() - lgfont:getHeight(), love.graphics.getWidth(), "center")
     end
     if update[1] then
         love.graphics.setFont(lgfont)
-        love.graphics.printf("An update is available!", 0, love.graphics.getHeight()-lgfont:getHeight()*2, love.graphics.getWidth(), "center")
-        love.graphics.printf("New version: " .. update[2], 0, love.graphics.getHeight()-lgfont:getHeight(), love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("update.old"), 0, love.graphics.getHeight()-lgfont:getHeight()*2, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize("update.new_version"):format(update[2]), 0, love.graphics.getHeight()-lgfont:getHeight(), love.graphics.getWidth(), "center")
     end
 end
 
