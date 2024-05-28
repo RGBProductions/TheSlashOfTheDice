@@ -544,7 +544,7 @@ function scene.update(dt)
                     SpawnDelay = math.max((Gamemode == "enemy_rush" and 2) or (Gamemode == "calm" and 5) or 1,SpawnDelay - (Gamemode ~= "tutorial" and 0.5 or 0))
                     local x = love.math.random(-512, 512) + player.x
                     local y = love.math.random(-512, 512) + player.y
-                    local event = {type = AprilFoolsMode and "rocket_enemy" or "enemy", stats = {
+                    local event = {type = "enemy", stats = {
                         ["Defense"] = (Gamemode ~= "tutorial" and 1+(Difficulty-1)/5*rand(0.96875,1.5) or 1),
                         ["Attack"] = (Gamemode ~= "tutorial" and 1+(Difficulty-1)/5*rand(0.96875,1.5) or 1)
                     }, cancelled = false}

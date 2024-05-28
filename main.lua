@@ -17,15 +17,6 @@ json = require "json"
 
 love.filesystem.getInfo = love.filesystem.getInfo or function() return nil end
 
--- hehe
-AprilFoolsMode = false
-do
-    local date = os.date("*t")
-    if date.month == 4 and date.day <= 3 then
-        AprilFoolsMode = true
-    end
-end
-
 ShowMobileUI = IsMobile
 
 ShowDebugInfo = false

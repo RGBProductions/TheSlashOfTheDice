@@ -15,7 +15,7 @@ local tutorialBounds = 1024
 function AddNewPlayer(forceColor,keepStats,netid)
     player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["update"] = function(self, dt)
         self:set("slashTime", self:get("slashTime")-dt)
-        local speed = love.keyboard.isDown("lshift") and (AprilFoolsMode and 3 or 2) or 2
+        local speed = 2
         local usedWASD = false
         if love.keyboard.isDown("a") then
             self.vx = self.vx - speed * dt * 60
@@ -164,7 +164,7 @@ function AddNewPlayer(forceColor,keepStats,netid)
                 end
                 if Settings["gameplay"]["auto_aim_on"] then
                     local consider = {}
-                    local t = math.cos(math.rad(Settings["gameplay"]["auto_aim_limit"]))
+                    local t = math.cos(math.rad(Settings["gameplay"]["Auto Aim Limit"]))
                     for _,entity in ipairs(GetEntitiesWithID("enemy")) do
                         local evec = math.norm({entity.x-self.x, entity.y-self.y})
                         local svec = {ax,ay}
@@ -729,7 +729,7 @@ function scene.update(dt)
                     SpawnDelay = math.max((Gamemode == "enemy_rush" and 2) or (Gamemode == "calm" and 5) or 1,SpawnDelay - (Gamemode ~= "tutorial" and 0.5 or 0))
                     local x = love.math.random(-512, 512) + player.x
                     local y = love.math.random(-512, 512) + player.y
-                    local event = {type = AprilFoolsMode and "rocket_enemy" or "enemy", stats = {
+                    local event = {type = "enemy", stats = {
                         ["Defense"] = (Gamemode ~= "tutorial" and 1+(Difficulty-1)/5*rand(0.96875,1.5) or 1),
                         ["Attack"] = (Gamemode ~= "tutorial" and 1+(Difficulty-1)/5*rand(0.96875,1.5) or 1)
                     }, cancelled = false}

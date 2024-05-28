@@ -7,7 +7,7 @@ EntityTypes = {
     player = {
         update = function(self, dt)
             self:set("slashTime", self:get("slashTime")-dt)
-            local speed = love.keyboard.isDown("lshift") and (AprilFoolsMode and 3 or 2) or 2
+            local speed = 2
             local usedWASD = false
             if love.keyboard.isDown("a") then
                 self.vx = self.vx - speed * dt * 60
