@@ -24,7 +24,8 @@ local mainMenu = UI.Element:new({
                     width = 256,
                     height = 96,
                     text = function() return Localize("button.play") end,
-                    font = xlfont,
+                    font = xlfont_2x,
+                    fontScale = 0.5,
                     alignHoriz = "center",
                     alignVert = "center"
                 })
@@ -56,7 +57,8 @@ local mainMenu = UI.Element:new({
                     width = 256,
                     height = 48,
                     text = function() return Localize("button.achievements") end,
-                    font = mdfont,
+                    font = mdfont_2x,
+                    fontScale = 0.5,
                     alignHoriz = "center",
                     alignVert = "center"
                 })
@@ -87,7 +89,8 @@ local mainMenu = UI.Element:new({
                     width = 256,
                     height = 48,
                     text = function() return Localize("button.credits") end,
-                    font = mdfont,
+                    font = mdfont_2x,
+                    fontScale = 0.5,
                     alignHoriz = "center",
                     alignVert = "center"
                 })
@@ -118,7 +121,8 @@ local mainMenu = UI.Element:new({
                     width = 256,
                     height = 48,
                     text = function() return Localize("button.settings") end,
-                    font = mdfont,
+                    font = mdfont_2x,
+                    fontScale = 0.5,
                     alignHoriz = "center",
                     alignVert = "center"
                 })
@@ -150,7 +154,8 @@ local mainMenu = UI.Element:new({
                     width = 256,
                     height = 48,
                     text = function() return Localize("button.customization") end,
-                    font = mdfont,
+                    font = mdfont_2x,
+                    fontScale = 0.5,
                     alignHoriz = "center",
                     alignVert = "center"
                 })
@@ -171,10 +176,11 @@ local mainMenu = UI.Element:new({
                     clickThrough = true,
                     x = 0,
                     y = 0,
-                    width = 120,
+                    width = 256,
                     height = 64,
                     text = function() return Localize("button.quit") end,
-                    font = lgfont,
+                    font = lgfont_2x,
+                    fontScale = 0.5,
                     alignHoriz = "center",
                     alignVert = "center"
                 })
@@ -191,7 +197,8 @@ local playMenu = UI.Element:new({
             y = -180,
             width = 512,
             height = xlfont:getHeight(),
-            font = xlfont,
+            font = xlfont_2x,
+            fontScale = 0.5,
             alignHoriz = "center",
             text = function() return Localize("title.menu.play") end
         }),
@@ -217,7 +224,8 @@ local playMenu = UI.Element:new({
                             width = 256,
                             height = 64,
                             text = function(self) return Localize("gamemode."..self.parent.id) end,
-                            font = lgfont,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
                             alignHoriz = "center",
                             alignVert = "center"
                         })
@@ -241,7 +249,8 @@ local playMenu = UI.Element:new({
                             width = 256,
                             height = 64,
                             text = function(self) return Localize("gamemode."..self.parent.id) end,
-                            font = lgfont,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
                             alignHoriz = "center",
                             alignVert = "center"
                         })
@@ -265,7 +274,8 @@ local playMenu = UI.Element:new({
                             width = 256,
                             height = 64,
                             text = function(self) return Localize("gamemode."..self.parent.id) end,
-                            font = lgfont,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
                             alignHoriz = "center",
                             alignVert = "center"
                         })
@@ -288,10 +298,11 @@ local playMenu = UI.Element:new({
                     clickThrough = true,
                     x = 0,
                     y = 0,
-                    width = 120,
+                    width = 256,
                     height = 64,
                     text = function() return Localize("button.back") end,
-                    font = lgfont,
+                    font = lgfont_2x,
+                    fontScale = 0.5,
                     alignHoriz = "center",
                     alignVert = "center"
                 })
@@ -308,7 +319,8 @@ local settingsMenu = UI.Element:new({
             y = -180,
             width = 512,
             height = xlfont:getHeight(),
-            font = xlfont,
+            font = xlfont_2x,
+            fontScale = 0.5,
             alignHoriz = "center",
             text = function() return Localize("title.menu.settings") end
         }),
@@ -334,7 +346,8 @@ local settingsMenu = UI.Element:new({
                             width = 256,
                             height = 64,
                             text = function(self) return Localize("button.settings.video") end,
-                            font = lgfont,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
                             alignHoriz = "center",
                             alignVert = "center"
                         })
@@ -358,7 +371,8 @@ local settingsMenu = UI.Element:new({
                             width = 256,
                             height = 64,
                             text = function(self) return Localize("button.settings.audio") end,
-                            font = lgfont,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
                             alignHoriz = "center",
                             alignVert = "center"
                         })
@@ -382,7 +396,8 @@ local settingsMenu = UI.Element:new({
                             width = 256,
                             height = 64,
                             text = function(self) return Localize("button.settings.gameplay") end,
-                            font = lgfont,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
                             alignHoriz = "center",
                             alignVert = "center"
                         })
@@ -408,7 +423,8 @@ local settingsMenu = UI.Element:new({
                     width = 120,
                     height = 64,
                     text = function() return Localize("button.back") end,
-                    font = lgfont,
+                    font = lgfont_2x,
+                    fontScale = 0.5,
                     alignHoriz = "center",
                     alignVert = "center"
                 })

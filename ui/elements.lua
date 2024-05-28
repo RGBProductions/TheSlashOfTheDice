@@ -59,26 +59,28 @@ function UI.Text:drawInstance()
     
     local color = self.color or {1,1,1}
     local font = self.font or lgfont
+    local fontScale = self.fontScale or 1
     local text = self.text or ""
 
     if type(color) == "function" then color = color(self) end
     if type(font) == "function" then font = font(self) end
     if type(text) == "function" then text = text(self) end
+    if type(fontScale) == "function" then fontScale = fontScale(self) end
 
     local r,g,b,a = love.graphics.getColor()
     local oldFont = love.graphics.getFont()
 
     love.graphics.setColor(color)
     love.graphics.setFont(font)
-    local maxWidth,lines = font:getWrap(text, w)
+    local maxWidth,lines = font:getWrap(text, w/fontScale)
     local y = 0
     if self.alignVert == "center" then
-        y = (h-(#lines*font:getHeight()))/2
+        y = (h-(#lines*font:getHeight()*fontScale))/2
     end
     if self.alignVert == "bottom" then
-        y = h-(#lines*font:getHeight())
+        y = h-(#lines*font:getHeight()*fontScale)
     end
-    love.graphics.printf(text, -w/2, -h/2+y, w, self.alignHoriz)
+    love.graphics.printf(text, -w/2, -h/2+y, w/fontScale, self.alignHoriz, 0, fontScale)
 
     if ShowDebugInfo then
         local lw = love.graphics.getLineWidth()

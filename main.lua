@@ -122,6 +122,13 @@ mdfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*FontSca
 lgfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*FontScale)
 lrfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32*FontScale)
 xlfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48*FontScale)
+
+smfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12*2)
+mdfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*2)
+lgfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*2)
+lrfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32*2)
+xlfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48*2)
+
 SusMode = false
 
 function timerString(time)
