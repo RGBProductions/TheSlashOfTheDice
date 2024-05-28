@@ -695,7 +695,7 @@ function scene.update(dt)
         if Spectating then
             local mx = (love.keyboard.isDown("d") and 1 or 0) - (love.keyboard.isDown("a") and 1 or 0)
             local my = (love.keyboard.isDown("s") and 1 or 0) - (love.keyboard.isDown("w") and 1 or 0)
-            if IsMobile then
+            if ShowMobileUI then
                 mx = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
                 my = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
             end
@@ -767,7 +767,7 @@ function scene.keypressed(k)
     -- end
 end
 
-function scene.mousepressed(x, y, b)
+function scene.mousepressed(x, y, b, t, p)
     if not Paused then
         if IsDead and not Spectating then
             local my = (love.graphics.getHeight()-lgfont:getHeight())/2+lgfont:getHeight()*2
@@ -790,7 +790,7 @@ function scene.mousepressed(x, y, b)
             if b == 2 and (runTimer and Spawned < 5) then
                 SpawnTimer = SpawnDelay
             end
-            if not IsMobile then
+            if not t then
                 for _,ent in pairs(Entities) do
                     ent:mousepressed(x,y,b)
                 end
@@ -987,7 +987,7 @@ function scene.draw()
         love.graphics.rectangle("fill", (love.graphics.getWidth()-barWidth)/2, lgfont:getHeight(), barWidth, barHeight*ViewScale)
         love.graphics.setColor(1,1,1)
         love.graphics.rectangle("fill", (love.graphics.getWidth()-barWidth)/2, lgfont:getHeight(), barWidth*fill, barHeight*ViewScale)
-        if IsMobile then
+        if ShowMobileUI then
             love.graphics.draw(FastForwardIcon, (love.graphics.getWidth()+barWidth)/2 + barHeight, lgfont:getHeight()-barHeight/2, 0, barHeight*2/FastForwardIcon:getWidth(), barHeight*2/FastForwardIcon:getHeight())
         end
         pos = pos + lgfont:getHeight()+16
@@ -1023,7 +1023,7 @@ function scene.draw()
         end
     end
 
-    if IsMobile then
+    if ShowMobileUI then
         love.graphics.setLineWidth(2)
         love.graphics.circle("line", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+64, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-64, Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
         love.graphics.circle("fill", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+64+Thumbstick.x, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-64+Thumbstick.y, Thumbstick.innerRad*ViewScale*Settings.video.ui_scale)
@@ -1114,7 +1114,7 @@ function scene.touchpressed(id,x,y)
         return
     end
     if not (IsDead and not Spectating) then
-        if IsMobile then
+        if ShowMobileUI then
             local barWidth = 1024
             local barHeight = 32
             local skipX, skipY = (love.graphics.getWidth()+barWidth)/2 + barHeight, lgfont:getHeight()-barHeight/2

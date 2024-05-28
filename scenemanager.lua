@@ -33,9 +33,9 @@ function SceneManager.Draw()
     end
 end
 
-function SceneManager.MousePressed(x, y, b)
+function SceneManager.MousePressed(x, y, b, t, p)
     if SceneManager.ActiveScene.mousepressed ~= nil then
-        SceneManager.ActiveScene.mousepressed(x, y, b)
+        SceneManager.ActiveScene.mousepressed(x, y, b, t, p)
     end
 end
 

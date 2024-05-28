@@ -26,6 +26,8 @@ do
     end
 end
 
+ShowMobileUI = IsMobile
+
 ShowDebugInfo = false
 DrawTime = 0
 UpdateTime = 0
@@ -436,6 +438,7 @@ function love.keypressed(k)
     if k == "f3" then
         ShowDebugInfo = not ShowDebugInfo
     end
+    ShowMobileUI = false
     SceneManager.KeyPressed(k)
 end
 
@@ -443,8 +446,9 @@ function love.textinput(t)
     SceneManager.TextInput(t)
 end
 
-function love.mousepressed(x,y,b)
-    SceneManager.MousePressed(x,y,b)
+function love.mousepressed(x,y,b,t,p)
+    ShowMobileUI = t
+    SceneManager.MousePressed(x,y,b,t,p)
 end
 
 function love.mousereleased(x,y,b)
