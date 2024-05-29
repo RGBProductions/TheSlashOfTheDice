@@ -927,11 +927,12 @@ function scene.draw()
     for _,indicator in pairs(DamageIndicators) do
         love.graphics.setColor(indicator.color)
         local x = indicator.x - Camera.x + love.graphics.getWidth()/2
+        local w = lgfont:getWidth(tostring(indicator.amt))
         local y = indicator.y - Camera.y + love.graphics.getHeight()/2
         
         local ny = 1-(1-math.max(0, math.min(1, 2*(love.timer.getTime() - indicator.time))))^5
         local ds = (1-math.max(0, math.min(1, 2*((love.timer.getTime() - indicator.time)-1))))^5
-        love.graphics.printf(indicator.amt, x, y-ny*48, 64, "center", 0, ds, ds, 32, 32)
+        love.graphics.printf(indicator.amt, x, y-ny*48, w, "center", 0, ds, ds, w/2, 32)
     end
     love.graphics.pop()
 
