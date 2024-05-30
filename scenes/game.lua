@@ -876,8 +876,14 @@ function scene.draw()
     love.graphics.setLineWidth(4)
     love.graphics.setColor(1,1,1)
     for _,orb in pairs(Particles) do
-        love.graphics.setColor(1,1,1)
-        love.graphics.circle("fill", orb.x-Camera.x+love.graphics.getWidth()/2, orb.y-Camera.y+love.graphics.getHeight()/2, (orb.lifespan-(love.timer.getTime()-orb.time))*16/(orb.lifespan/0.5))
+        local x,y = orb.x-Camera.x+love.graphics.getWidth()/2, orb.y-Camera.y+love.graphics.getHeight()/2
+        local scale = (orb.lifespan-(love.timer.getTime()-orb.time))*16/(orb.lifespan/0.5)
+        if orb.image then
+            love.graphics.draw(orb.image, x, y, 0, scale, scale, orb.image:getWidth()/2, orb.image:getHeight()/2)
+        else
+            love.graphics.setColor(1,1,1)
+            love.graphics.circle("fill", x, y, scale)
+        end
     end
     for _,entity in pairs(Entities) do
         if entity.callbacks.draw then
