@@ -18,11 +18,11 @@ function Cosmetics.Search(dir)
         local p = dir.."/"..itm
         if love.filesystem.getInfo(p).type == "directory" then
             if love.filesystem.getInfo(p.."/hat.json") then
-                Cosmetics.ReadHat(dir)
+                Cosmetics.ReadHat(p)
             elseif love.filesystem.getInfo(p.."/trail.json") then
-                Cosmetics.ReadTrail(dir)
+                Cosmetics.ReadTrail(p)
             elseif love.filesystem.getInfo(p.."/effect.json") then
-                Cosmetics.ReadEffect(dir)
+                Cosmetics.ReadEffect(p)
             else
                 Cosmetics.Search(p)
             end
