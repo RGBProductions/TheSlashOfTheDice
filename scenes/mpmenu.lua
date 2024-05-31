@@ -14,7 +14,7 @@ function scene.load(args)
     MPMenuMessage = nil
     LogoPos = 16
     if not Net.Connected then
-        Net.Connect("192.168.1.28", 3000)
+        Net.Connect("localhost", 3000)
     end
     DiscordPresence.partyId = nil
     DiscordPresence.partySize = nil
