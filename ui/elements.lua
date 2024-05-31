@@ -246,6 +246,9 @@ function UI.Slider:clickInstance(mx,my,b)
         else
             local pos = mx-(-w/2)
             self.fill = math.max((self.min or 0),math.min((self.max or 1), ((self.max or 1)-(self.min or 0))*pos/w+(self.min or 0)))
+            if self.step then
+                self.fill = math.floor(self.fill*self.step)/self.step
+            end
             if type(self.onvaluechanged) == "function" then
                 self:onvaluechanged(self.fill)
             end
@@ -259,6 +262,9 @@ function UI.Slider:mousemoveInstance(mx,my,dx,dy)
         local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
         local pos = mx-(-w/2)
         self.fill = math.max((self.min or 0),math.min((self.max or 1), ((self.max or 1)-(self.min or 0))*pos/w+(self.min or 0)))
+        if self.step then
+            self.fill = math.floor(self.fill*self.step)/self.step
+        end
         if type(self.onvaluechanged) == "function" then
             self:onvaluechanged(self.fill)
         end
