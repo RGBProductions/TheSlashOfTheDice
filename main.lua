@@ -474,7 +474,7 @@ function love.draw()
 
     SceneManager.Draw()
     if #AchievementUnlocks >= 1 then
-        local txt = Localize("achievements."..AchievementUnlocks[1].achievement..".name")
+        local txt = Localize("achievement."..AchievementUnlocks[1].achievement..".name")
         local w = math.max(lrfont:getWidth(Localize(AchievementUnlocks[1].titleText or "achievement_unlocked")), lgfont:getWidth(txt))
         local h = lrfont:getHeight()+lgfont:getHeight()
         local icon = Achievements.Achievements[AchievementUnlocks[1].achievement].icon
