@@ -163,12 +163,12 @@ function scene.load(args)
     Thumbstick = {
         x = 0,
         y = 0,
-        outerRad = 80,
+        outerRad = 96,
         innerRad = 32,
         pressed = nil
     }
     Slashstick = {
-        radius = 80
+        radius = 96
     }
     Pausebutton = {
         size = 64
