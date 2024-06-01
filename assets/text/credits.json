@@ -11,6 +11,10 @@
 
     {"type": "header", "label": "credits.ui"},
     {"type": "name", "label": "TotallyNotFrisk"},
+
+    {"type": "header", "label": "credits.testing"},
+    {"type": "name", "label": "EastCoastBraiden"},
+    {"type": "name", "label": "nicholas"},
     
     {"type": "header", "label": "credits.you_header"},
     {"type": "name", "label": "credits.you_text"}
