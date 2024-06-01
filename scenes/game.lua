@@ -679,6 +679,9 @@ function scene.update(dt)
                                 if not Moved then
                                     Achievements.Advance("no_movement")
                                 end
+                                if #GetEntitiesWithID("enemy")-1 <= 0 then
+                                    SpawnTimer = math.max(SpawnTimer, SpawnDelay-5)
+                                end
                             end
                             Score = Score + 1
                             DiscordPresence.state = "Score: " .. Score
