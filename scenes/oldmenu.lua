@@ -659,7 +659,10 @@ function scene.draw()
             end
         end
     end
-    love.mouse.setCursor(love.mouse.getSystemCursor(c))
+    local s,r = pcall(love.mouse.getSystemCursor,c)
+    if s then
+        love.mouse.setCursor(r)
+    end
 
     love.graphics.setColor(1,1,1)
     if Achievements.IsUnlocked("default_50_waves") then

@@ -128,7 +128,10 @@ function scene.draw()
         c = Menus[CurrentMenu]:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or c
     end
     -- c = Menus[CurrentMenu]:getCursor(love.mouse.getPosition()) or c
-    love.mouse.setCursor(love.mouse.getSystemCursor(c))
+    local s,r = pcall(love.mouse.getSystemCursor, c)
+    if s then
+        love.mouse.setCursor(r)
+    end
 
     love.graphics.setColor(1,1,1)
     if Achievements.IsUnlocked("default_50_waves") then

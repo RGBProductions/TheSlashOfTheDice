@@ -120,7 +120,10 @@ function scene.draw()
         love.graphics.printf(MPMenuMessage, 0, (love.graphics.getHeight()-xlfont:getHeight())/2, love.graphics.getWidth(), "center")
     end
 
-    love.mouse.setCursor(love.mouse.getSystemCursor(cursor))
+    local s,r = pcall(love.mouse.getSystemCursor,cursor)
+    if s then
+        love.mouse.setCursor(r)
+    end
 end
 
 function scene.keypressed(k)

@@ -18,7 +18,10 @@ function SceneManager.LoadScene(fn, args)
             end
         end
     end
-    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
+    local s,r = pcall(love.mouse.getSystemCursor,"arrow")
+    if s then
+        love.mouse.setCursor(r)
+    end
 end
 
 function SceneManager.Update(dt)
