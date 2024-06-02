@@ -1,6 +1,7 @@
 {
     "name": "日本語 (日本)",
     "textDelay": 0.05,
+    "logo": "jp2",
     "text": {
         "tutorial.intro1": "こんにちは! The Slash of the Dice へようこそ!",
         "tutorial.intro2": "このゲームでは、運の試練に耐えながら、無限に押し寄せる敵を倒さなければなりません!",

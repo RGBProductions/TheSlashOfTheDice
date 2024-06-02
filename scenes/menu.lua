@@ -25,7 +25,13 @@ function scene.load()
         ["space"] = "return"
     }
     
-    Logo = love.graphics.newImage("assets/images/ui/logo-updated.png")
+    local logoName = (Languages[Settings.language] or {}).logo
+    if logoName then
+        logoName = "logo-" .. logoName
+    else
+        logoName = "logo"
+    end
+    Logo = love.graphics.newImage("assets/images/ui/" .. logoName .. ".png")
     LogoPos = love.graphics.getHeight()
 
     CurrentMenu = "main"
