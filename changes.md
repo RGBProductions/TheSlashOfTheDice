@@ -4,7 +4,7 @@ Added Discord Rich Presence
 Added localization
 Added achievements
 Added player customization
-Added Android support
+Android and iOS support
 Overhauled menu
 Updated dice sprites
 A few secrets have been added

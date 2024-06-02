@@ -1,7 +1,7 @@
 {
     "name": "日本語 (日本)",
     "textDelay": 0.05,
-    "logo": "jp2",
+    "logo": "jp",
     "text": {
         "tutorial.intro1": "こんにちは! The Slash of the Dice へようこそ!",
         "tutorial.intro2": "このゲームでは、運の試練に耐えながら、無限に押し寄せる敵を倒さなければなりません!",
@@ -62,6 +62,11 @@
         "dice.div": "%s ÷%s",
 
         "score": "スコア：%s",
-        "timer.enemy": "次の敵：%s"
+        "timer.enemy": "次の敵：%s",
+        
+        "update.checking": "アップデートの確認",
+        "update.new": "ベータ版",
+        "update.old": "古いバージョンを使用しています",
+        "update.new_version": "最新バージョン：%s"
     }
 }

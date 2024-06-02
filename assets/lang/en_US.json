@@ -1,6 +1,6 @@
 {
     "name": "English (United States)",
-    "logo": "updated",
+    "logo": "en",
     "text": {
         "tutorial.intro1": "Hello! Welcome to The Slash of the Dice!",
         "tutorial.intro2": "In this game, you must defeat endless waves of enemies while also enduring the test of luck!",
@@ -146,7 +146,8 @@
         "credits.music": "Music",
         "credits.ui": "UI Design",
         "credits.testing": "Beta Testing",
-        "credits.you_header": "And thank YOU",
+        "credits.ios_macos": "MacOS and iOS Builds",
+        "credits.you_header": "And thank you",
         "credits.you_text": "for playing this game!",
 
         "update.checking": "Checking for updates",

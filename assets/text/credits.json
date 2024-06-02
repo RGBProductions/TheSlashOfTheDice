@@ -15,6 +15,9 @@
     {"type": "header", "label": "credits.testing"},
     {"type": "name", "label": "EastCoastBraiden"},
     {"type": "name", "label": "nicholas"},
+
+    {"type": "header", "label": "credits.ios_macos"},
+    {"type": "name", "label": "TotallyNotFrisk"},
     
     {"type": "header", "label": "credits.you_header"},
     {"type": "name", "label": "credits.you_text"}
