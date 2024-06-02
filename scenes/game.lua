@@ -274,7 +274,7 @@ function scene.load(args)
                 {text = "tutorial.intro1", pause = true},
                 {text = "tutorial.intro2", pause = true},
                 {text = "tutorial.intro3", pause = true},
-                {text = (IsMobile and "tutorial.intro4.mobile" or "tutorial.intro4.desktop"), pause = true},
+                {text = (IsMobile and "tutorial.intro4.mobile" or "tutorial.intro4.desktop"), format = {"Escape"}, pause = true},
                 {text = "tutorial.intro5", pause = true}
             }
         }, {
@@ -285,7 +285,7 @@ function scene.load(args)
                 }
             },
             messages = {
-                {text = (IsMobile and "tutorial.movement.mobile" or "tutorial.movement.desktop")}
+                {text = (IsMobile and "tutorial.movement.mobile" or "tutorial.movement.desktop"), format = {"W","A","S","D"}}
             }
         }, {
             criteria = {
@@ -469,7 +469,11 @@ function CheckStageCriteria()
 end
 
 function AttemptTutorialAdvance(fromKey)
-    local txt = Localize(TutorialStages[Stage].messages[Message].text)
+    local format = TutorialStages[Stage].messages[Message].format or {}
+    for i,v in ipairs(format) do
+        if type(v) == "function" then format[i] = v() end
+    end
+    local txt = Localize(TutorialStages[Stage].messages[Message].text):format(unpack(format))
     if MessageProgress < utf8.len(txt) and fromKey then
         MessageProgress = utf8.len(txt)
         return
@@ -494,7 +498,11 @@ function scene.update(dt)
     if not (Paused and not IsMultiplayer) then
         if Gamemode == "tutorial" then
             CharTime = CharTime + dt
-            local txt = Localize(TutorialStages[Stage].messages[Message].text)
+            local format = TutorialStages[Stage].messages[Message].format or {}
+            for i,v in ipairs(format) do
+                if type(v) == "function" then format[i] = v() end
+            end
+            local txt = Localize(TutorialStages[Stage].messages[Message].text):format(unpack(format))
             local beeped = false
             while CharTime >= GetTextDelay() do
                 if MessageProgress < utf8.len(txt) then
@@ -1020,7 +1028,11 @@ function scene.draw()
         love.graphics.setColor(1,1,1)
         pcall(love.graphics.printf, TutorialText, 150, pos, love.graphics.getWidth()-300, "center")
 
-        local txt = Localize(TutorialStages[Stage].messages[Message].text)
+        local format = TutorialStages[Stage].messages[Message].format or {}
+        for i,v in ipairs(format) do
+            if type(v) == "function" then format[i] = v() end
+        end
+        local txt = Localize(TutorialStages[Stage].messages[Message].text):format(unpack(format))
         if MessageProgress >= utf8.len(txt) and TutorialStages[Stage].messages[Message].pause then
             local w,l = lgfont:getWrap(txt, love.graphics.getWidth()-300)
             local h = #l*lgfont:getHeight()
@@ -1041,7 +1053,7 @@ function scene.draw()
     end
 
     if ShowMobileUI then
-        love.graphics.setLineWidth(2)
+        love.graphics.setLineWidth(8)
         love.graphics.circle("line", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+64, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-64, Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
         love.graphics.circle("fill", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+64+Thumbstick.x, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-64+Thumbstick.y, Thumbstick.innerRad*ViewScale*Settings.video.ui_scale)
         love.graphics.setLineWidth(8)
