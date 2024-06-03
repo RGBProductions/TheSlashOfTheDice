@@ -25,7 +25,7 @@ function scene.load()
         ["space"] = "return"
     }
     
-    Logo = love.graphics.newImage("assets/images/ui/logo.png")
+    Logo = love.graphics.newImage("assets/images/ui/logo-en.png")
     LogoPos = love.graphics.getHeight()
 
     CurrentMenu = "MainMenu"
