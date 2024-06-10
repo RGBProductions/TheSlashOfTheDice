@@ -521,3 +521,8 @@ function love.quit()
     Achievements.Save("achievements.txt")
     if DiscordRPC then DiscordRPC.shutdown() end
 end
+
+function love.lowmemory()
+    print("LOW MEMORY, ATTEMPTING TO CLEAR")
+    collectgarbage()
+end
