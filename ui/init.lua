@@ -34,6 +34,29 @@ function UI.Element:new(data)
     return element
 end
 
+function UI.Element:setParent(parent, i)
+    if self.parent then
+        local j = table.index(self.parent.children, self)
+        if j then
+            table.remove(self.parent.children, j)
+        end
+    end
+    self.parent = parent
+    if parent then
+        table.insert(parent.children, i or #parent.children+1, self)
+    end
+end
+
+function UI.Element:addChild(child, i)
+    child:setParent(self, i)
+end
+
+function UI.Element:removeChild(child)
+    if child.parent == self then
+        child:setParent(nil)
+    end
+end
+
 function UI.Element:draw()
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
     local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
@@ -84,7 +107,9 @@ function UI.Element:click(mx,my,b)
         return false, self
     end
 
-    for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
         if type(child) == "table" and type(child.click) == "function" then
             local clicked = child:click(mx-x,my-y,b)
             if clicked then
@@ -109,7 +134,9 @@ function UI.Element:release(mx,my,b)
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
     local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
 
-    for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
         if type(child) == "table" and type(child.release) == "function" then
             local released = child:release(mx-x,my-y,b)
             -- if released then
@@ -136,7 +163,9 @@ function UI.Element:scroll(mx,my,sx,sy)
         return false, self
     end
 
-    for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
         if type(child) == "table" and type(child.scroll) == "function" then
             local scrolled = child:scroll(mx-x,my-y,sx,sy)
             if scrolled then
@@ -162,7 +191,9 @@ function UI.Element:mousemove(mx,my,dx,dy)
         return false, self
     end
 
-    for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
         if type(child) == "table" and type(child.mousemove) == "function" then
             local moved = child:mousemove(mx-x,my-y,dx,dy)
             if moved then
@@ -188,7 +219,9 @@ function UI.Element:getCursor(mx,my)
         return nil
     end
 
-    for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
         if type(child) == "table" and type(child.getCursor) == "function" then
             local cursor = child:getCursor(mx-x,my-y)
             if cursor then

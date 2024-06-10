@@ -37,6 +37,8 @@ function scene.load()
     CurrentMenu = "main"
     MenuSelection = 1
 
+    Dialogs = {}
+
     WeighingModes = {
         "Legacy",
         "Even",
@@ -130,8 +132,24 @@ function scene.draw()
         Menus[CurrentMenu]:draw()
     end
     love.graphics.pop()
-    if (Menus[CurrentMenu] or {}).getCursor then
+    love.graphics.push()
+    love.graphics.translate(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
+    love.graphics.scale(scale,scale)
+    for _,dialog in ipairs(Dialogs) do
+        love.graphics.setColor(0,0,0,0.5)
+        love.graphics.rectangle("fill", -love.graphics.getWidth()/2/scale, -love.graphics.getHeight()/2/scale, love.graphics.getWidth()/scale, love.graphics.getHeight()/scale)
+        if dialog.draw then
+            dialog:draw()
+        end
+    end
+    love.graphics.pop()
+    if (Menus[CurrentMenu] or {}).getCursor and not Dialogs[1] then
         c = Menus[CurrentMenu]:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or c
+    end
+    for _,dialog in ipairs(Dialogs) do
+        if dialog.getCursor then
+            c = dialog:getCursor((love.mouse.getX()-love.graphics.getWidth()/2)/scale, (love.mouse.getY()-love.graphics.getHeight()/2)/scale) or c
+        end
     end
     -- c = Menus[CurrentMenu]:getCursor(love.mouse.getPosition()) or c
     local s,r = pcall(love.mouse.getSystemCursor, c)
@@ -234,10 +252,20 @@ function scene.mousemoved(x, y, dx, dy)
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
     local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
-    x = (x-centerpoint[1])/scale
-    y = (y-centerpoint[2])/scale
-    if (Menus[CurrentMenu] or {}).mousemove then
-        (Menus[CurrentMenu] or {}):mousemove(x, y, dx, dy)
+    local m_x = (x-centerpoint[1])/scale
+    local m_y = (y-centerpoint[2])/scale
+    local hasDialog = #Dialogs > 0
+    for d = #Dialogs, 1, -1 do
+        local dialog = Dialogs[d]
+        if dialog.mousemove then
+            local hit,elem = dialog:mousemove((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale,dx,dy)
+            if hit then
+                break
+            end
+        end
+    end
+    if (Menus[CurrentMenu] or {}).mousemove and not hasDialog then
+        (Menus[CurrentMenu] or {}):mousemove(m_x, m_y, dx, dy)
     end
 end
 
@@ -253,10 +281,20 @@ function scene.mousepressed(x, y, b)
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
     local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
-    x = (x-centerpoint[1])/scale
-    y = (y-centerpoint[2])/scale
-    if (Menus[CurrentMenu] or {}).click then
-        (Menus[CurrentMenu] or {}):click(x, y, b)
+    local m_x = (x-centerpoint[1])/scale
+    local m_y = (y-centerpoint[2])/scale
+    local hasDialog = #Dialogs > 0
+    for d = #Dialogs, 1, -1 do
+        local dialog = Dialogs[d]
+        if dialog.click then
+            local hit,elem = dialog:click((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale,b)
+            if hit then
+                break
+            end
+        end
+    end
+    if (Menus[CurrentMenu] or {}).click and not hasDialog then
+        (Menus[CurrentMenu] or {}):click(m_x, m_y, b)
     end
 end
 
@@ -272,10 +310,20 @@ function scene.mousereleased(x, y, b)
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
     local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
-    x = (x-centerpoint[1])/scale
-    y = (y-centerpoint[2])/scale
-    if (Menus[CurrentMenu] or {}).release then
-        (Menus[CurrentMenu] or {}):release(x, y, b)
+    local m_x = (x-centerpoint[1])/scale
+    local m_y = (y-centerpoint[2])/scale
+    local hasDialog = #Dialogs > 0
+    for d = #Dialogs, 1, -1 do
+        local dialog = Dialogs[d]
+        if dialog.release then
+            local hit,elem = dialog:release((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale,b)
+            if hit then
+                break
+            end
+        end
+    end
+    if (Menus[CurrentMenu] or {}).release and not hasDialog then
+        (Menus[CurrentMenu] or {}):release(m_x, m_y, b)
     end
 end
 
@@ -292,10 +340,20 @@ function scene.wheelmoved(x, y)
     }
     local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
     local mx,my = love.mouse.getPosition()
-    mx = (mx-centerpoint[1])/scale
-    my = (my-centerpoint[2])/scale
-    if (Menus[CurrentMenu] or {}).scroll then
-        (Menus[CurrentMenu] or {}):scroll(mx, my, x, y)
+    local m_x = (mx-centerpoint[1])/scale
+    local m_y = (my-centerpoint[2])/scale
+    local hasDialog = #Dialogs > 0
+    for d = #Dialogs, 1, -1 do
+        local dialog = Dialogs[d]
+        if dialog.scroll then
+            local hit,elem = dialog:scroll((mx-love.graphics.getWidth()/2)/scale,(my-love.graphics.getHeight()/2)/scale, x, y)
+            if hit then
+                break
+            end
+        end
+    end
+    if (Menus[CurrentMenu] or {}).scroll and not hasDialog then
+        (Menus[CurrentMenu] or {}):scroll(m_x, m_y, x, y)
     end
 end
 

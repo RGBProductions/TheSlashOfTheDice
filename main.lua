@@ -317,6 +317,14 @@ Settings = {
             button_other = {
                 background = Color("#3E2F19"),
                 border = {color = Color("#FFFFFF"), width = 0}
+            },
+            popup_error = {
+                background = Color("#3C1B1B"),
+                border = {color = Color("#FFFFFF"), width = 0}
+            },
+            popup_info = {
+                background = Color("#281E61"),
+                border = {color = Color("#FFFFFF"), width = 0}
             }
         }
     },

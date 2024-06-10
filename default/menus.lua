@@ -436,6 +436,7 @@ local settingsMenu = UI.Element:new({
 })
 
 local customizeMenu = UI.Element:new({
+    id = "customizeMenu",
     children = {
         UI.Text:new({
             x = 0,
@@ -453,7 +454,7 @@ local customizeMenu = UI.Element:new({
             y = -80,
             children = {
                 UI.Button:new({
-                    id = "gameplay",
+                    id = "color",
                     x = 0,
                     y = 160,
                     width = 256,
@@ -475,7 +476,51 @@ local customizeMenu = UI.Element:new({
                             alignVert = "center"
                         })
                     },
-                    onclick = function(self)  end
+                    onclick = function(self)
+                        local popup = UI.Panel:new({
+                            width = 480,
+                            height = 320,
+                            background = function() return Settings.video.menu_theme.popup_error.background end,
+                            border = function() return Settings.video.menu_theme.popup_error.border end,
+                            children = {
+                                UI.Text:new({
+                                    width = 448,
+                                    height = 208,
+                                    y = -40,
+                                    alignHoriz = "center",
+                                    alignVert = "center",
+                                    text = function() return Localize("error.unimplemented") end
+                                }),
+                                UI.Button:new({
+                                    id = "assist",
+                                    width = 256,
+                                    height = 64,
+                                    y = 112,
+                                    background = function() return Settings.video.menu_theme.button_secondary.background end,
+                                    border = function() return Settings.video.menu_theme.button_secondary.border end,
+                                    onclick = function(me)
+                                        table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                    end,
+                                    cursor = "hand",
+                                    children = {
+                                        UI.Text:new({
+                                            clickThrough = true,
+                                            x = 0,
+                                            y = 0,
+                                            width = 256,
+                                            height = 64,
+                                            text = function() return Localize("button.ok") end,
+                                            font = lgfont_2x,
+                                            fontScale = 0.5,
+                                            alignHoriz = "center",
+                                            alignVert = "center"
+                                        })
+                                    },
+                                })
+                            }
+                        })
+                        table.insert(Dialogs, popup)
+                    end
                 })
             }
         }),
@@ -483,23 +528,19 @@ local customizeMenu = UI.Element:new({
             id = "back",
             x = 0,
             y = 160,
-            width = 256,
+            width = 64,
             height = 64,
             background = function() return Settings.video.menu_theme.button_back.background end,
             border = function() return Settings.video.menu_theme.button_back.border end,
             cursor = "hand",
             children = {
-                UI.Text:new({
+                UI.Image:new({
                     clickThrough = true,
+                    image = love.graphics.newImage("assets/images/ui/button_icons/materialsymbols_exit_to_app.png"),
                     x = 0,
                     y = 0,
-                    width = 120,
-                    height = 64,
-                    text = function() return Localize("button.back") end,
-                    font = lgfont_2x,
-                    fontScale = 0.5,
-                    alignHoriz = "center",
-                    alignVert = "center"
+                    width = 48,
+                    height = 48
                 })
             },
             onclick = function() SetMenu("main") end

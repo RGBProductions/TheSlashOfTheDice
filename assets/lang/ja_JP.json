@@ -67,6 +67,13 @@
         "update.checking": "アップデートの確認",
         "update.new": "ベータ版",
         "update.old": "古いバージョンを使用しています",
-        "update.new_version": "最新バージョン：%s"
+        "update.new_version": "最新バージョン：%s",
+        
+        "error.unknown": "不明なエラーが発生しました。",
+        "error.unimplemented": "これは現在実装されていません。最新バージョンでない場合は、ゲームを更新してください。",
+        "error.kicked": "ルームホストによってキックされました。数分後に再度参加してみてください。",
+        "error.banned": "ルームホストによって禁止されました。再度参加することはできません。",
+        "error.disconnected": "サーバーから切断されました。インターネット接続を確認して、もう一度お試しください。",
+        "error.formatted": "エラーが発生しました：%s"
     }
 }

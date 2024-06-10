@@ -37,6 +37,7 @@
         "title.menu.settings": "Settings",
         "title.menu.singleplayer": "Play Game",
         "title.menu.multiplayer": "Multiplayer",
+        "title.menu.customization": "Player Customization",
 
         "title.credits": "Credits",
         "title.achievements": "Achievements",
@@ -61,6 +62,11 @@
         "button.settings.video": "Video",
         "button.settings.audio": "Audio",
         "button.settings.gameplay": "Gameplay",
+
+        "button.customize.color": "Color",
+        "button.customize.trail": "Trail",
+        "button.customize.death_effect": "Death Effect",
+        "button.customize.hat": "Hat",
 
         "stat.attack": "Attack",
         "stat.defense": "Defense",
@@ -153,6 +159,13 @@
         "update.checking": "Checking for updates",
         "update.new": "Beta Version",
         "update.old": "You are on an outdated version",
-        "update.new_version": "Latest Version: %s"
+        "update.new_version": "Latest Version: %s",
+        
+        "error.unknown": "There was an unknown error.",
+        "error.unimplemented": "This is not currently implemented. Please update your game if you are not on the latest version.",
+        "error.kicked": "You were kicked by the room host. You may try to rejoin in a few minutes.",
+        "error.banned": "You were banned by the room host. You will not be able to rejoin.",
+        "error.disconnected": "You were disconnected from the server. Check your internet connection and try again.",
+        "error.formatted": "There was an error: %s"
     }
 }
