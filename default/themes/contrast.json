@@ -1,0 +1,39 @@
+{
+    "name": "Contrast",
+    "theme": {
+        "button_back": {
+            "background": [0,0,0,0.75],
+            "border": {"color": [1,0.5,0.5], "width": 4},
+            "text": [1,1,1],
+            "icon_color": [1,1,1]
+        },
+        "button_other": {
+            "background": [0,0,0,0.75],
+            "border": {"color": [1,0.8,0.5], "width": 4},
+            "text": [1,1,1],
+            "icon_color": [1,1,1]
+        },
+        "button_secondary": {
+            "background": [0,0,0,0.75],
+            "border": {"color": [0.5,0.7,1], "width": 4},
+            "text": [1,1,1],
+            "icon_color": [1,1,1]
+        },
+        "button_primary": {
+            "background": [0,0,0,0.75],
+            "border": {"color": [0.5,1,0.5], "width": 4},
+            "text": [1,1,1],
+            "icon_color": [1,1,1]
+        },
+        "popup_error": {
+            "background": [0,0,0,0.75],
+            "border": {"color": [1,0,0], "width": 4},
+            "text": [1,1,1]
+        },
+        "popup_info": {
+            "background": [0,0,0,0.75],
+            "border": {"color": [0,0.5,1], "width": 4},
+            "text": [1,1,1]
+        }
+    }
+}

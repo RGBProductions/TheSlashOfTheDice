@@ -106,8 +106,14 @@ function UI.Image:drawInstance()
 
     local r,g,b,a = love.graphics.getColor()
 
-    love.graphics.setColor(self.tint or {1,1,1})
-    love.graphics.draw(self.image, -w/2, -h/2, 0, w/self.image:getWidth(), h/self.image:getHeight())
+    local tint = self.tint or {1,1,1}
+    local image = self.image or Logo
+
+    if type(tint) == "function" then tint = tint(self) end
+    if type(image) == "function" then image = image(self) end
+
+    love.graphics.setColor(tint or {1,1,1})
+    love.graphics.draw(image, -w/2, -h/2, 0, w/self.image:getWidth(), h/self.image:getHeight())
 
     if ShowDebugInfo then
         local lw = love.graphics.getLineWidth()

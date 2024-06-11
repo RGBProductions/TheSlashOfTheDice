@@ -301,32 +301,7 @@ Settings = {
         ui_scale = 1.5,
         color_by_operator = true,
         background_brightness = 1,
-        menu_theme = {
-            button_primary = {
-                background = Color("#403C1B"),
-                border = {color = Color("#FFFFFF"), width = 0}
-            },
-            button_secondary = {
-                background = Color("#281E61"),
-                border = {color = Color("#FFFFFF"), width = 0}
-            },
-            button_back = {
-                background = Color("#3C1B1B"),
-                border = {color = Color("#FFFFFF"), width = 0}
-            },
-            button_other = {
-                background = Color("#3E2F19"),
-                border = {color = Color("#FFFFFF"), width = 0}
-            },
-            popup_error = {
-                background = Color("#3C1B1B"),
-                border = {color = Color("#FFFFFF"), width = 0}
-            },
-            popup_info = {
-                background = Color("#281E61"),
-                border = {color = Color("#FFFFFF"), width = 0}
-            }
-        }
+        menu_theme = "contrast"
     },
 
     audio = {
@@ -349,6 +324,25 @@ Settings = {
 if love.filesystem.getInfo("settings.json") then
     local itms = json.decode(love.filesystem.read("settings.json"))
     Settings = table.merge(Settings, itms)
+end
+
+ThemePresets = {}
+for _,itm in ipairs(love.filesystem.getDirectoryItems("default/themes")) do
+    local name = itm:sub(1,-6)
+    local ext = itm:sub(-5,-1)
+    if ext == ".json" then
+        local s,r = pcall(json.decode, love.filesystem.read("default/themes/" .. itm))
+        if s then
+            ThemePresets[name] = r
+        end
+    end
+end
+
+function GetTheme()
+    if type(Settings.video.menu_theme) == "string" then
+        return (ThemePresets[Settings.video.menu_theme] or {}).theme or {}
+    end
+    return (Settings.video.menu_theme or {})
 end
 
 function love.load()
