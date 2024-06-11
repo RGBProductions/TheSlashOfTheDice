@@ -3,10 +3,60 @@ RocketSprite = love.graphics.newImage("assets/images/entities/rocket.png")
 local blendAmt = 1/((5/4)^60)
 local tutorialBounds = 1024
 
+local function slash(self,x,y)
+    local ax = x-love.graphics.getWidth()/2
+    local ay = y-love.graphics.getHeight()/2
+    local px = player.x - Camera.x
+    local py = player.y - Camera.y
+    ax = ax - px
+    ay = ay - py
+    local m = math.sqrt(ax^2+ay^2)
+    if m > 0 then
+        ax = ax / m
+        ay = ay / m
+    end
+    if Settings["gameplay"]["auto_aim_on"] then
+        local consider = {}
+        local t = math.cos(math.rad(Settings["gameplay"]["auto_aim_limit"]))
+        for _,entity in ipairs(GetEntitiesWithID("enemy")) do
+            local evec = math.norm({entity.x-self.x, entity.y-self.y})
+            local svec = {ax,ay}
+            if math.dot(evec,svec) >= t then
+                table.insert(consider, entity)
+            end
+        end
+        local dist = math.huge
+        local ent = 0
+        local spos = {x+Camera.x-love.graphics.getWidth()/2,y+Camera.y-love.graphics.getHeight()/2}
+        for i,entity in ipairs(consider) do
+            local d = math.sqrt((entity.x-spos[1])^2+(entity.y-spos[2])^2)
+            if d <= dist then
+                dist = d
+                ent = i
+            end
+        end
+        if ent ~= 0 then
+            local evec = math.norm({consider[ent].x-self.x, consider[ent].y-self.y})
+            ax = evec[1]
+            ay = evec[2]
+        end
+    end
+    self.vx = self.vx + ax*64
+    self.vy = self.vy + ay*64
+    self:set("slashTime", 0.25)
+    sweep("slash", 1, 0, 32, 0.25*Settings["audio"]["sound_volume"]/100)
+    TutorialValues["Slashes"] = TutorialValues["Slashes"] + 1
+
+    if IsMultiplayer then
+        Net.Send({type = "slash", vx = self.vx, vy = self.vy})
+    end
+end
+
 EntityTypes = {
     player = {
         update = function(self, dt)
             self:set("slashTime", self:get("slashTime")-dt)
+            self:set("bufferTime", (self:get("bufferTime") or 0)-dt)
             local speed = 2
             local usedWASD = false
             if love.keyboard.isDown("a") then
@@ -137,6 +187,11 @@ EntityTypes = {
                         end
                     end
                 end
+            else
+                if (self:get("bufferTime") or 0) > 0 then
+                    slash(self, love.mouse.getX(), love.mouse.getY())
+                    self:set("bufferTime", 0)
+                end
             end
     
             self:set("lastPos", {self.x, self.y})
@@ -148,52 +203,9 @@ EntityTypes = {
         mousepressed = function(self, x, y, b)
             if b == 1 then
                 if self:get("slashTime") <= 0 then
-                    local ax = x-love.graphics.getWidth()/2
-                    local ay = y-love.graphics.getHeight()/2
-                    local px = player.x - Camera.x
-                    local py = player.y - Camera.y
-                    ax = ax - px
-                    ay = ay - py
-                    local m = math.sqrt(ax^2+ay^2)
-                    if m > 0 then
-                        ax = ax / m
-                        ay = ay / m
-                    end
-                    if Settings["gameplay"]["auto_aim_on"] then
-                        local consider = {}
-                        local t = math.cos(math.rad(Settings["gameplay"]["auto_aim_limit"]))
-                        for _,entity in ipairs(GetEntitiesWithID("enemy")) do
-                            local evec = math.norm({entity.x-self.x, entity.y-self.y})
-                            local svec = {ax,ay}
-                            if math.dot(evec,svec) >= t then
-                                table.insert(consider, entity)
-                            end
-                        end
-                        local dist = math.huge
-                        local ent = 0
-                        local spos = {x+Camera.x-love.graphics.getWidth()/2,y+Camera.y-love.graphics.getHeight()/2}
-                        for i,entity in ipairs(consider) do
-                            local d = math.sqrt((entity.x-spos[1])^2+(entity.y-spos[2])^2)
-                            if d <= dist then
-                                dist = d
-                                ent = i
-                            end
-                        end
-                        if ent ~= 0 then
-                            local evec = math.norm({consider[ent].x-self.x, consider[ent].y-self.y})
-                            ax = evec[1]
-                            ay = evec[2]
-                        end
-                    end
-                    self.vx = self.vx + ax*64
-                    self.vy = self.vy + ay*64
-                    self:set("slashTime", 0.25)
-                    sweep("slash", 1, 0, 32, 0.25*Settings["audio"]["sound_volume"]/100)
-                    TutorialValues["Slashes"] = TutorialValues["Slashes"] + 1
-    
-                    if IsMultiplayer then
-                        Net.Send({type = "slash", vx = self.vx, vy = self.vy})
-                    end
+                    slash(self, x, y)
+                else
+                    self:set("bufferTime", 0.05)
                 end
             end
         end,
