@@ -301,7 +301,7 @@ Settings = {
         ui_scale = 1.5,
         color_by_operator = true,
         background_brightness = 1,
-        menu_theme = "colored"
+        menu_theme = "aura"
     },
 
     audio = {
@@ -316,7 +316,10 @@ Settings = {
     },
 
     customization = {
-        color = {0,1,1}
+        color = {0,1,1},
+        hat = nil,
+        trail = nil,
+        death_effect = nil
     }
 }
 if love.filesystem.getInfo("settings.json") then
@@ -338,7 +341,7 @@ end
 
 function GetTheme()
     if type(Settings.video.menu_theme) == "string" then
-        return (ThemePresets[Settings.video.menu_theme] or {}).theme or {}
+        return (ThemePresets[Settings.video.menu_theme] or {}).theme or ((ThemePresets.aura or {}).theme or {})
     end
     return (Settings.video.menu_theme or {})
 end

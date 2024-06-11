@@ -451,9 +451,11 @@ function UI.PlayerDisplay:drawInstance()
     if type(data) == "function" then data = data(self) end
     
     love.graphics.push()
-    if not Camera then Camera = {x = 0, y = 0, tx = 0, ty = 0} end
+    local c = Camera
+    Camera = {x = 0, y = 0, tx = 0, ty = 0}
     love.graphics.translate(Camera.x-love.graphics.getWidth()/2,Camera.y-love.graphics.getHeight()/2)
     EntityTypes.player.draw({x = 0, y = 0, hp = 100, maxhp = 100, get = Game.Entity.get, set = Game.Entity.set, data = data, hidehp = true})
+    Camera = c
     love.graphics.pop()
 
     if ShowDebugInfo then

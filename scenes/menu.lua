@@ -7,7 +7,7 @@ function SetMenu(m)
     MenuSelection = 1
 end
 
-function scene.load()
+function scene.load(args)
     StopMusic()
     InGame = false
     SusCombo = 0
@@ -34,7 +34,7 @@ function scene.load()
     Logo = love.graphics.newImage("assets/images/ui/" .. logoName .. ".png")
     LogoPos = love.graphics.getHeight()
 
-    CurrentMenu = "main"
+    CurrentMenu = args.menu or "main"
     MenuSelection = 1
 
     Dialogs = {}

@@ -210,6 +210,8 @@ function scene.load(args)
         calm = {multiplayer = false, name = "Calm", hasTimer = true, timerType = "enemy", timer = 15, spawnImmediate = true, canRespawn = false},
         enemy_rush = {multiplayer = false, name = "Enemy Rush", hasTimer = true, timerType = "enemy", timer = 5, spawnImmediate = true, canRespawn = false},
         
+        playtest = {multiplayer = false, name = "Playtest", hasTimer = true, timerType = "enemy", timer = 10, spawnImmediate = true, canRespawn = false},
+        
         coop = {multiplayer = true, name = "Co-op", hasTimer = true, timerType = "enemy", timer = 15, spawnImmediate = true, canRespawn = false},
         ffa = {multiplayer = true, name = "FFA", hasTimer = true, timerType = "match", timer = MultiplayerSetup.Timer or (3*60), spawnImmediate = false, canRespawn = true},
         tdm = {multiplayer = true, name = "TDM", hasTimer = true, timerType = "match", timer = MultiplayerSetup.Timer or (3*60), spawnImmediate = false, canRespawn = true}
@@ -550,7 +552,7 @@ function scene.update(dt)
                 SpawnTimer = 0
                 if timerType == "enemy" and ((IsMultiplayer and Net.Hosting) or (not IsMultiplayer)) then
                     if Gamemode == "tutorial" then Spawned = Spawned + 1 end
-                    SpawnDelay = math.max((Gamemode == "enemy_rush" and 2) or (Gamemode == "calm" and 5) or 1,SpawnDelay - (Gamemode ~= "tutorial" and 0.5 or 0))
+                    SpawnDelay = math.max((Gamemode == "enemy_rush" and 2) or (Gamemode == "calm" and 5) or (Gamemode == "playtest" and 10) or 1,SpawnDelay - ((Gamemode ~= "tutorial" and Gamemode ~= "playtest") and 0.5 or 0))
                     local x = love.math.random(-512, 512) + player.x
                     local y = love.math.random(-512, 512) + player.y
                     local event = {type = "enemy", stats = {
@@ -575,7 +577,7 @@ function scene.update(dt)
                         end
                     end
                     Achievements.SetMax("singularity", #GetEntitiesWithID("enemy"))
-                    Difficulty = Difficulty * ((Gamemode == "default" and 1.15) or (Gamemode == "tutorial" and 1) or 1.075)
+                    Difficulty = Difficulty * ((Gamemode == "default" and 1.15) or ((Gamemode == "tutorial" or Gamemode == "playtest") and 1) or 1.075)
                     if Gamemode == "calm" then
                         Difficulty = math.min(40,Difficulty)
                     end
@@ -755,6 +757,9 @@ function scene.keypressed(k)
         end
     end
     if k == "escape" then
+        if Gamemode == "playtest" then
+            SceneManager.LoadScene("scenes/menu", {menu = "customize"})
+        end
         if #GetEntitiesWithID("player") > 0 or Spectating then
             Paused = not Paused
             ShowGameMenu = not ShowGameMenu
@@ -1015,7 +1020,20 @@ function scene.draw()
         if ShowMobileUI then
             love.graphics.draw(FastForwardIcon, (love.graphics.getWidth()+barWidth)/2 + barHeight, lgfont:getHeight()-barHeight/2, 0, barHeight*2/FastForwardIcon:getWidth(), barHeight*2/FastForwardIcon:getHeight())
         end
-        pos = pos + lgfont:getHeight()+16
+        pos = pos + lgfont:getHeight()+barHeight
+    end
+
+    if Gamemode == "playtest" then
+        love.graphics.setColor(0,0,0)
+        local txt = Localize("playtesting")
+        pcall(love.graphics.printf, txt, 0, pos-2, love.graphics.getWidth(), "center")
+        pcall(love.graphics.printf, txt, 0, pos-2, love.graphics.getWidth(), "center")
+        pcall(love.graphics.printf, txt, 0, pos+2, love.graphics.getWidth(), "center")
+        pcall(love.graphics.printf, txt, 0, pos+2, love.graphics.getWidth(), "center")
+        local t = ((math.sin(love.timer.getTime()*math.pi)+1)/2)*0.5+0.5
+        love.graphics.setColor(t,t,t)
+        love.graphics.printf(txt, 0, pos, love.graphics.getWidth(), "center")
+        love.graphics.setColor(1,1,1)
     end
 
     love.graphics.setFont(lgfont)
@@ -1095,6 +1113,9 @@ function scene.gamepadpressed(stick,b)
         player:mousepressed(stick:getGamepadAxis("leftx")*96+love.graphics.getWidth()/2,stick:getGamepadAxis("lefty")*96+love.graphics.getHeight()/2,1)
     end
     if b == "start" then
+        if Gamemode == "playtest" then
+            SceneManager.LoadScene("scenes/menu", {menu = "customize"})
+        end
         if #GetEntitiesWithID("player") > 0 or Spectating then
             Paused = not Paused
             ShowGameMenu = not ShowGameMenu
@@ -1138,6 +1159,10 @@ function scene.touchpressed(id,x,y)
         return
     end
     if x >= love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64 and x < love.graphics.getWidth()-64 and y >= 64 and y < Pausebutton.size*ViewScale*Settings.video.ui_scale+64 then
+        if Gamemode == "playtest" then
+            SceneManager.LoadScene("scenes/menu", {menu = "customize"})
+            return
+        end
         Paused = not Paused
         ShowGameMenu = not ShowGameMenu
         return
