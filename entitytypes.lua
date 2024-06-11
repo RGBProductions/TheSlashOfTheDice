@@ -214,18 +214,20 @@ EntityTypes = {
             local x = self.x-Camera.x+(love.graphics.getWidth()-scale)/2
             local y = self.y-Camera.y+(love.graphics.getHeight()-scale)/2+ViewMargin
             if x >= -scale and x < love.graphics.getWidth() and y >= -scale and y < love.graphics.getHeight() then
-                local c = self:get("color") or {0,1,1}
-                love.graphics.setColor(c)
+                local customization = self:get("customization") or {color = self:get("color") or {0,1,1}}
+                love.graphics.setColor(customization.color or {0,1,1})
                 if self:get("slashTime") and self:get("slashTime") >= 0 then
                     love.graphics.setColor(1,0,0)
                 end
                 love.graphics.rectangle("fill", x, y, scale, scale)
 
-                love.graphics.setColor(1,0,0)
-                love.graphics.rectangle("fill", x-(96-scale)/2, y-scale/2-16, 96, 12)
-                love.graphics.setColor(0,1,0)
-                local fill = self.hp / self.maxhp
-                love.graphics.rectangle("fill", x-(96-scale)/2, y-scale/2-16, 96*fill, 12)
+                if not self.hidehp then
+                    love.graphics.setColor(1,0,0)
+                    love.graphics.rectangle("fill", x-(96-scale)/2, y-scale/2-16, 96, 12)
+                    love.graphics.setColor(0,1,0)
+                    local fill = self.hp / self.maxhp
+                    love.graphics.rectangle("fill", x-(96-scale)/2, y-scale/2-16, 96*fill, 12)
+                end
             end
         end,
     },

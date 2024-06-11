@@ -463,6 +463,13 @@ local customizeMenu = UI.Element:new({
             alignHoriz = "center",
             text = function() return Localize("title.menu.customization") end
         }),
+        UI.PlayerDisplay:new({
+            x = -240,
+            y = 0,
+            width = 64,
+            height = 64,
+            data = function() return {customization = Settings.customization} end
+        }),
         UI.Element:new({
             id = "options",
             x = 0,

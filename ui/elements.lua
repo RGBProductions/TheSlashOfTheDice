@@ -435,3 +435,36 @@ end
 
 --#endregion
 
+
+--#region Player Display
+
+UI.PlayerDisplay = UI.Element:new({})
+
+function UI.PlayerDisplay:drawInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    local r,g,b,a = love.graphics.getColor()
+
+    local data = self.data or {}
+
+    if type(data) == "function" then data = data(self) end
+    
+    love.graphics.push()
+    if not Camera then Camera = {x = 0, y = 0, tx = 0, ty = 0} end
+    love.graphics.translate(Camera.x-love.graphics.getWidth()/2,Camera.y-love.graphics.getHeight()/2)
+    EntityTypes.player.draw({x = 0, y = 0, hp = 100, maxhp = 100, get = Game.Entity.get, set = Game.Entity.set, data = data, hidehp = true})
+    love.graphics.pop()
+
+    if ShowDebugInfo then
+        local lw = love.graphics.getLineWidth()
+        love.graphics.setLineWidth(2)
+        love.graphics.setColor(1,1,1)
+        love.graphics.rectangle("line", -w/2, -h/2, w, h)
+        love.graphics.setLineWidth(lw)
+    end
+
+    love.graphics.setColor(r,g,b,a)
+end
+
+--#endregion

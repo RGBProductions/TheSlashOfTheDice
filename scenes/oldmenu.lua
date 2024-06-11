@@ -463,11 +463,7 @@ function scene.load()
                 {
                     label = {
                         {type = "color", color = function()
-                            return {
-                                Settings["customization"]["color_r"],
-                                Settings["customization"]["color_g"],
-                                Settings["customization"]["color_b"]
-                            }
+                            return Settings.customization.color
                         end},
                         {type = "text", value = "Player Color Preview"}
                     },
@@ -477,7 +473,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Player Color (Red): "},
                         {type = "fromcode", value = function()
-                            return Settings["customization"]["color_r"]
+                            return Settings.customization.color[1]
                         end}
                     },
                     callbacks = {
@@ -486,7 +482,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["customization"]["color_r"] = math.max(0, math.min(1, Settings["customization"]["color_r"] - shift))
+                            Settings.customization.color[1] = math.max(0, math.min(1, Settings.customization.color[1] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -494,7 +490,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["customization"]["color_r"] = math.max(0, math.min(1, Settings["customization"]["color_r"] + shift))
+                            Settings.customization.color[1] = math.max(0, math.min(1, Settings.customization.color[1] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -503,7 +499,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Player Color (Green): "},
                         {type = "fromcode", value = function()
-                            return Settings["customization"]["color_g"]
+                            return Settings.customization.color[2]
                         end}
                     },
                     callbacks = {
@@ -512,7 +508,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["customization"]["color_g"] = math.max(0, math.min(1, Settings["customization"]["color_g"] - shift))
+                            Settings.customization.color[2] = math.max(0, math.min(1, Settings.customization.color[2] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -520,7 +516,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["customization"]["color_g"] = math.max(0, math.min(1, Settings["customization"]["color_g"] + shift))
+                            Settings.customization.color[2] = math.max(0, math.min(1, Settings.customization.color[2] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }
@@ -529,7 +525,7 @@ function scene.load()
                     label = {
                         {type = "text", value = "Player Color (Blue): "},
                         {type = "fromcode", value = function()
-                            return Settings["customization"]["color_b"]
+                            return Settings.customization.color[3]
                         end}
                     },
                     callbacks = {
@@ -538,7 +534,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["customization"]["color_b"] = math.max(0, math.min(1, Settings["customization"]["color_b"] - shift))
+                            Settings.customization.color[3] = math.max(0, math.min(1, Settings.customization.color[3] - shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end,
                         ["right"] = function(fast)
@@ -546,7 +542,7 @@ function scene.load()
                             if love.keyboard.isDown("lshift") or fast then
                                 shift = 0.125
                             end
-                            Settings["customization"]["color_b"] = math.max(0, math.min(1, Settings["customization"]["color_b"] + shift))
+                            Settings.customization.color[3] = math.max(0, math.min(1, Settings.customization.color[3] + shift))
                             love.filesystem.write("settings.json", json.encode(Settings))
                         end
                     }

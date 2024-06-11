@@ -227,7 +227,7 @@ function scene.load(args)
     SixStreak = 0
 
     Entities = {}
-    player = AddNewPlayer({Settings.customization.color_r or 0,Settings.customization.color_g or 1,Settings.customization.color_b or 1}, nil, IsMultiplayer and Net.ClientID)
+    player = AddNewPlayer(Settings.customization.color or {0,1,1}, nil, IsMultiplayer and Net.ClientID)
     if IsMultiplayer and Net.Hosting then
         for _,p in ipairs(Net.Room.players) do
             local stats = {Defense = 1, Attack = 1, Luck = 0}
@@ -768,7 +768,7 @@ function scene.keypressed(k)
     end
     if k == "space" and #GetEntitiesWithID("player") == 0 and not Spectating then
         if GameSetups[Gamemode].canRespawn then
-            AddNewPlayer({Settings.customization.color_r or 0,Settings.customization.color_g or 1,Settings.customization.color_b or 1}, Gamemode == "calm")
+            AddNewPlayer(Settings.customization.color or {0,1,1}, Gamemode == "calm")
             IsDead = false
         elseif IsMultiplayer then
             Spectating = true
@@ -792,7 +792,7 @@ function scene.mousepressed(x, y, b, t, p)
             local itm = math.floor((y-my)/lrfont:getHeight())
             if itm == 0 then
                 if GameSetups[Gamemode].canRespawn then
-                    AddNewPlayer({Settings.customization.color_r or 0,Settings.customization.color_g or 1,Settings.customization.color_b or 1}, Gamemode == "calm")
+                    AddNewPlayer(Settings.customization.color or {0,1,1}, Gamemode == "calm")
                     IsDead = false
                 elseif IsMultiplayer then
                     Spectating = true
@@ -1100,7 +1100,7 @@ function scene.gamepadpressed(stick,b)
             ShowGameMenu = not ShowGameMenu
         else
             if GameSetups[Gamemode].canRespawn then
-                AddNewPlayer({Settings.customization.color_r or 0,Settings.customization.color_g or 1,Settings.customization.color_b or 1}, Gamemode == "calm")
+                AddNewPlayer(Settings.customization.color or {0,1,1}, Gamemode == "calm")
                 IsDead = false
             elseif IsMultiplayer then
                 Spectating = true

@@ -316,9 +316,7 @@ Settings = {
     },
 
     customization = {
-        color_r = 0,
-        color_g = 1,
-        color_b = 1
+        color = {0,1,1}
     }
 }
 if love.filesystem.getInfo("settings.json") then
