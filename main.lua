@@ -258,7 +258,11 @@ function table.merge(t, m)
     t = t or {}
     for k,v in pairs(m) do
         if type(v) == "table" then
-            t[k] = table.merge(t[k],v)
+            if type(t[k]) == "table" then
+                t[k] = table.merge(t[k],v)
+            else
+                t[k] = table.merge({},v)
+            end
         else
             t[k] = v
         end

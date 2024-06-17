@@ -14,7 +14,7 @@ function SceneManager.LoadScene(fn, args)
         if love.filesystem.getInfo(fn .. ".lua") ~= nil then
             SceneManager.ActiveScene = require(fn)
             if SceneManager.ActiveScene.load ~= nil then
-                SceneManager.ActiveScene.load(args)
+                SceneManager.ActiveScene.load(args or {})
             end
         end
     end
