@@ -17,11 +17,52 @@ function Cosmetics.ReadHat(dir)
 end
 
 function Cosmetics.ReadTrail(dir)
-   --todo: idk
+    local trailsettings = json.decode(love.filesystem.read(dir.."/trail.json"))
+    local id = dir:split("/")[4]
+    local events = {}
+    for _,v in ipairs(trailsettings.events) do
+        local actions = {}
+        for _,v2 in ipairs(v.actions) do
+            local action = {
+                type = v2.type,
+                spawnRadius = v2.spawnRadius,
+                size = v2.size,
+                life = v2.life,
+                image = love.graphics.newImage(dir.."/"..v2.image)
+            }
+            table.insert(actions,action)
+        end
+        local event = {name=v.name, actions=actions}
+        events[v.name] = event
+    end
+    local trail = {events=events}
+    Cosmetics.Trails[id] = trail
 end
 
 function Cosmetics.ReadEffect(dir)
     --todo: yep
+    local effectSettings = json.decode(love.filesystem.read(dir.."/effect.json"))
+    local id = dir:split("/")[4]
+    local events = {}
+    for _,v in ipairs(effectSettings.events) do
+        local actions = {}
+        for _,v2 in ipairs(v.actions) do
+            local action = {
+                type = v2.type,
+                spawnRadius = v2.spawnRadius,
+                velocity = v2.velocity,
+                size = v2.size,
+                amount = v2.amount,
+                life = v2.life,
+                image = love.graphics.newImage(dir..v2.image)
+            }
+            table.insert(actions,action)
+        end
+        local event = {name=v.name, actions=actions}
+        events[v.name] = event
+    end
+    local trail = {events=events}
+    Cosmetics.Effects[id] = trail
 end
 
 function Cosmetics.Search(dir)

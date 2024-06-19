@@ -303,11 +303,27 @@ Settings = {
 }
 
 Cosmetics.Search("default/cosmetics")
+
 if love.filesystem.getInfo("settings.json") then
     local itms = json.decode(love.filesystem.read("settings.json"))
     Settings = table.merge(Settings, itms)
 end
-
+function DeathHandler() 
+print("died")
+end
+function StepHandler(event) 
+    if Settings.customization.trail then
+        local trail = Cosmetics.Trails[Settings.customization.trail]
+        local actions = trail.events["step"].actions
+        for _,v in ipairs(actions) do
+            if v.type == "particle" then
+                table.insert(Particles, Game.Particle:new(event.x, event.y, v.life, 0, 0, 0, v.size))
+            end
+        end
+    end
+end
+Events.on("step",StepHandler)
+Events.on("player_death", DeathHandler)
 function WriteSettings()
     local s,r = pcall(json.encode,Settings)
     if not s then

@@ -228,6 +228,7 @@ EntityTypes = {
                         love.graphics.setColor(customization.color or {0,1,1})
                     end
                     else
+                        --TODO: actually add an error
                         print("no hat?" .. customization.hat)
                     end
                 if not self.hidehp then
