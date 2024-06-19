@@ -1,3 +1,11 @@
+local icons = {}
+for _,itm in ipairs(love.filesystem.getDirectoryItems("assets/images/ui/button_icons")) do
+    local name,ext = unpack(itm:split_plain("."))
+    if ext == "png" then
+        icons[name] = love.graphics.newImage("assets/images/ui/button_icons/"..itm)
+    end
+end
+
 local mainMenu = UI.Element:new({
     children = {
         UI.Button:new({
@@ -16,7 +24,7 @@ local mainMenu = UI.Element:new({
                     width = 128,
                     height = 128,
                     tint = function() return GetTheme().button_primary.icon_color end,
-                    image = love.graphics.newImage("assets/images/ui/button_icons/materialsymbols_play_arrow.png")
+                    image = icons.materialsymbols_play_arrow
                 }),
                 UI.Text:new({
                     clickThrough = true,
@@ -51,7 +59,7 @@ local mainMenu = UI.Element:new({
                     width = 64,
                     height = 64,
                     tint = function() return GetTheme().button_secondary.icon_color end,
-                    image = love.graphics.newImage("assets/images/ui/button_icons/materialsymbols_trophy_sharp.png")
+                    image = icons.materialsymbols_trophy_sharp
                 }),
                 UI.Text:new({
                     clickThrough = true,
@@ -85,7 +93,7 @@ local mainMenu = UI.Element:new({
                     width = 64,
                     height = 64,
                     tint = function() return GetTheme().button_secondary.icon_color end,
-                    image = love.graphics.newImage("assets/images/ui/button_icons/materialsymbols_text_ad_outline.png")
+                    image = icons.materialsymbols_text_ad_outline
                 }),
                 UI.Text:new({
                     clickThrough = true,
@@ -119,7 +127,7 @@ local mainMenu = UI.Element:new({
                     width = 64,
                     height = 64,
                     tint = function() return GetTheme().button_secondary.icon_color end,
-                    image = love.graphics.newImage("assets/images/ui/button_icons/materialsymbols_settings.png")
+                    image = icons.materialsymbols_settings
                 }),
                 UI.Text:new({
                     clickThrough = true,
@@ -154,7 +162,7 @@ local mainMenu = UI.Element:new({
                     width = 64,
                     height = 64,
                     tint = function() return GetTheme().button_secondary.icon_color end,
-                    image = love.graphics.newImage("assets/images/ui/button_icons/materialsymbols_dresser_outline.png")
+                    image = icons.materialsymbols_dresser_outline
                 }),
                 UI.Text:new({
                     clickThrough = true,
@@ -484,7 +492,7 @@ local customizeMenu = UI.Element:new({
                     y = 0,
                     width = 48,
                     height = 48,
-                    image = love.graphics.newImage("assets/images/ui/button_icons/materialsymbols_play_arrow.png"),
+                    image = icons.materialsymbols_play_arrow,
                     tint = function() return GetTheme().button_primary.icon_color end,
                     clickThrough = true
                 })
@@ -505,13 +513,30 @@ local customizeMenu = UI.Element:new({
                     border = function() return GetTheme().button_secondary.border end,
                     cursor = "hand",
                     children = {
+                        UI.Image:new({
+                            clickThrough = true,
+                            x = -96,
+                            y = 0,
+                            width = 48,
+                            height = 48,
+                            image = icons.materialsymbols_colors,
+                            tint = function() return GetTheme().button_primary.icon_color end,
+                        }),
+                        UI.Panel:new({
+                            clickThrough = true,
+                            x = -64,
+                            y = 0,
+                            width = 2,
+                            height = 64,
+                            tint = function() return GetTheme().button_primary.icon_color end,
+                        }),
                         UI.Text:new({
                             clickThrough = true,
-                            x = 0,
+                            x = 32,
                             y = 0,
-                            width = 256,
+                            width = 192,
                             height = 64,
-                            text = function(self) return Localize("button.customize.color") end,
+                            text = function(self) return HexCodeOf(unpack(Settings.customization.color)) end,
                             color = function() return GetTheme().button_secondary.text end,
                             font = lgfont_2x,
                             fontScale = 0.5,
@@ -798,7 +823,7 @@ local customizeMenu = UI.Element:new({
                 UI.Image:new({
                     clickThrough = true,
                     tint = function() return GetTheme().button_back.icon_color end,
-                    image = love.graphics.newImage("assets/images/ui/button_icons/materialsymbols_exit_to_app.png"),
+                    image = icons.materialsymbols_exit_to_app,
                     x = 0,
                     y = 0,
                     width = 48,
