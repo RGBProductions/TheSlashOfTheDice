@@ -300,7 +300,7 @@ function UI.Element:getLowestChild(dontRecurse)
     return lowest,pos
 end
 
-function UI.Element:getLeftestChild(dontRecurse)
+function UI.Element:getLeftmostChild(dontRecurse)
     local leftest,pos = nil,math.huge
     for _,child in ipairs(self.children or {}) do
         if type(child) == "table" then
@@ -319,7 +319,7 @@ function UI.Element:getLeftestChild(dontRecurse)
     return leftest,pos
 end
 
-function UI.Element:getRightestChild(dontRecurse)
+function UI.Element:getRightmostChild(dontRecurse)
     local rightest,pos = nil,-math.huge
     for _,child in ipairs(self.children or {}) do
         if type(child) == "table" then
