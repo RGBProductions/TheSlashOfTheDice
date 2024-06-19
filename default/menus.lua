@@ -605,13 +605,30 @@ local customizeMenu = UI.Element:new({
                     border = function() return GetTheme().button_secondary.border end,
                     cursor = "hand",
                     children = {
+                        UI.Image:new({
+                            clickThrough = true,
+                            x = -96,
+                            y = 0,
+                            width = 48,
+                            height = 48,
+                            image = icons.materialsymbols_footprint,
+                            tint = function() return GetTheme().button_primary.icon_color end,
+                        }),
+                        UI.Panel:new({
+                            clickThrough = true,
+                            x = -64,
+                            y = 0,
+                            width = 2,
+                            height = 64,
+                            tint = function() return GetTheme().button_primary.icon_color end,
+                        }),
                         UI.Text:new({
                             clickThrough = true,
-                            x = 0,
+                            x = 32,
                             y = 0,
-                            width = 256,
+                            width = 192,
                             height = 64,
-                            text = function(self) return Localize("button.customize.trail") end,
+                            text = function(self) return Localize(Settings.customization.trail == nil and "customization.none" or ("customization.trails."..Settings.customization.trail..".name")) end,
                             color = function() return GetTheme().button_secondary.text end,
                             font = lgfont_2x,
                             fontScale = 0.5,
@@ -632,6 +649,8 @@ local customizeMenu = UI.Element:new({
                                     y = -40,
                                     alignHoriz = "center",
                                     alignVert = "center",
+                                    font = lgfont_2x,
+                                    fontScale = 0.5,
                                     text = function() return Localize("error.unimplemented") end
                                 }),
                                 UI.Button:new({
@@ -676,13 +695,30 @@ local customizeMenu = UI.Element:new({
                     border = function() return GetTheme().button_secondary.border end,
                     cursor = "hand",
                     children = {
+                        UI.Image:new({
+                            clickThrough = true,
+                            x = -96,
+                            y = 0,
+                            width = 48,
+                            height = 48,
+                            image = icons.materialsymbols_skull_outline,
+                            tint = function() return GetTheme().button_primary.icon_color end,
+                        }),
+                        UI.Panel:new({
+                            clickThrough = true,
+                            x = -64,
+                            y = 0,
+                            width = 2,
+                            height = 64,
+                            tint = function() return GetTheme().button_primary.icon_color end,
+                        }),
                         UI.Text:new({
                             clickThrough = true,
-                            x = 0,
+                            x = 32,
                             y = 0,
-                            width = 256,
+                            width = 192,
                             height = 64,
-                            text = function(self) return Localize("button.customize.death_effect") end,
+                            text = function(self) return Localize(Settings.customization.death_effect == nil and "customization.none" or ("customization.effects."..Settings.customization.death_effect..".name")) end,
                             color = function() return GetTheme().button_secondary.text end,
                             font = lgfont_2x,
                             fontScale = 0.5,
@@ -703,6 +739,8 @@ local customizeMenu = UI.Element:new({
                                     y = -40,
                                     alignHoriz = "center",
                                     alignVert = "center",
+                                    font = lgfont_2x,
+                                    fontScale = 0.5,
                                     text = function() return Localize("error.unimplemented") end
                                 }),
                                 UI.Button:new({
@@ -747,13 +785,30 @@ local customizeMenu = UI.Element:new({
                     border = function() return GetTheme().button_secondary.border end,
                     cursor = "hand",
                     children = {
+                        UI.Image:new({
+                            clickThrough = true,
+                            x = -96,
+                            y = 0,
+                            width = 48,
+                            height = 48,
+                            image = icons.mingcute_hat_fill,
+                            tint = function() return GetTheme().button_primary.icon_color end,
+                        }),
+                        UI.Panel:new({
+                            clickThrough = true,
+                            x = -64,
+                            y = 0,
+                            width = 2,
+                            height = 64,
+                            tint = function() return GetTheme().button_primary.icon_color end,
+                        }),
                         UI.Text:new({
                             clickThrough = true,
-                            x = 0,
+                            x = 32,
                             y = 0,
-                            width = 256,
+                            width = 192,
                             height = 64,
-                            text = function(self) return Localize("button.customize.hat") end,
+                            text = function(self) return Localize(Settings.customization.hat == nil and "customization.none" or ("customization.hats."..Settings.customization.hat..".name")) end,
                             color = function() return GetTheme().button_secondary.text end,
                             font = lgfont_2x,
                             fontScale = 0.5,
@@ -774,6 +829,8 @@ local customizeMenu = UI.Element:new({
                                     y = -40,
                                     alignHoriz = "center",
                                     alignVert = "center",
+                                    font = lgfont_2x,
+                                    fontScale = 0.5,
                                     text = function() return Localize("error.unimplemented") end
                                 }),
                                 UI.Button:new({
@@ -812,7 +869,7 @@ local customizeMenu = UI.Element:new({
         }),
         UI.Button:new({
             id = "back",
-            x = 0,
+            x = -40,
             y = 160,
             width = 64,
             height = 64,
@@ -833,6 +890,75 @@ local customizeMenu = UI.Element:new({
             onclick = function()
                 WriteSettings()
                 SetMenu("main")
+            end
+        }),
+        UI.Button:new({
+            id = "help",
+            x = 40,
+            y = 160,
+            width = 64,
+            height = 64,
+            background = function() return GetTheme().button_other.background end,
+            border = function() return GetTheme().button_other.border end,
+            cursor = "hand",
+            children = {
+                UI.Image:new({
+                    clickThrough = true,
+                    tint = function() return GetTheme().button_other.icon_color end,
+                    image = icons.materialsymbols_help,
+                    x = 0,
+                    y = 0,
+                    width = 48,
+                    height = 48
+                })
+            },
+            onclick = function()
+                local popup = UI.Panel:new({
+                    width = 480,
+                    height = 320,
+                    background = function() return GetTheme().popup_error.background end,
+                    border = function() return GetTheme().popup_error.border end,
+                    children = {
+                        UI.Text:new({
+                            width = 448,
+                            height = 208,
+                            y = -40,
+                            alignHoriz = "center",
+                            alignVert = "center",
+                            font = lgfont_2x,
+                            fontScale = 0.5,
+                            text = function() return Localize("error.unimplemented") end
+                        }),
+                        UI.Button:new({
+                            id = "close",
+                            width = 256,
+                            height = 64,
+                            y = 112,
+                            background = function() return GetTheme().button_secondary.background end,
+                            border = function() return GetTheme().button_secondary.border end,
+                            onclick = function(me)
+                                table.remove(Dialogs, table.index(Dialogs, me.parent))
+                            end,
+                            cursor = "hand",
+                            children = {
+                                UI.Text:new({
+                                    clickThrough = true,
+                                    x = 0,
+                                    y = 0,
+                                    width = 256,
+                                    height = 64,
+                                    text = function() return Localize("button.ok") end,
+                                    color = function() return GetTheme().button_secondary.text end,
+                                    font = lgfont_2x,
+                                    fontScale = 0.5,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                })
+                            },
+                        })
+                    }
+                })
+                table.insert(Dialogs, popup)
             end
         })
     }

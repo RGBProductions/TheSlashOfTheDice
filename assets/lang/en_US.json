@@ -170,11 +170,13 @@
 
         "playtesting": "Playtest mode - Press Escape to return to customization",
 
-        "cosmetics.hats.top_hat.name": "Top Hat",
-        "cosmetics.hats.top_hat.description": "A fancy hat for distinguished individuals.\n\nOr just because you like top hats.",
-        "cosmetics.hats.double_top_hat.name": "Double Top Hat",
-        "cosmetics.hats.double_top_hat.description": "Double the top hats, double the fashion... I think.",
-        "cosmetics.hats.red_dude.name": "Red Dude",
-        "cosmetics.hats.red_dude.description": "YOU CANT JUST THROW TRASH AT THE ENEMIES WTF"
+        "customization.none": "None",
+        
+        "customization.hats.top_hat.name": "Top Hat",
+        "customization.hats.top_hat.description": "A fancy hat for distinguished individuals.\n\nOr just because you like top hats.",
+        "customization.hats.double_top_hat.name": "Double Top Hat",
+        "customization.hats.double_top_hat.description": "Double the top hats, double the fashion... I think.",
+        "customization.hats.red_dude.name": "Red Dude",
+        "customization.hats.red_dude.description": "YOU CANT JUST THROW TRASH AT THE ENEMIES WTF"
     }
 }
