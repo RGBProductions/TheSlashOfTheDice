@@ -262,6 +262,82 @@ function UI.Element:getChildById(id,dontRecurse)
     return nil
 end
 
+function UI.Element:getHighestChild(dontRecurse)
+    local highest,pos = nil,math.huge
+    for _,child in ipairs(self.children or {}) do
+        if type(child) == "table" then
+            local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+            if y < pos then
+                highest = child
+            end
+            if (not dontRecurse) then
+                local r_highest, r_pos = child:getHighestChild()
+                if r_pos < pos then
+                    highest = r_highest
+                end
+            end
+        end
+    end
+    return highest,pos
+end
+
+function UI.Element:getLowestChild(dontRecurse)
+    local lowest,pos = nil,-math.huge
+    for _,child in ipairs(self.children or {}) do
+        if type(child) == "table" then
+            local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+            if y > pos then
+                lowest = child
+            end
+            if (not dontRecurse) then
+                local r_lowest, r_pos = child:getLowestChild()
+                if r_pos > pos then
+                    lowest = r_lowest
+                end
+            end
+        end
+    end
+    return lowest,pos
+end
+
+function UI.Element:getLeftestChild(dontRecurse)
+    local leftest,pos = nil,math.huge
+    for _,child in ipairs(self.children or {}) do
+        if type(child) == "table" then
+            local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+            if x < pos then
+                leftest = child
+            end
+            if (not dontRecurse) then
+                local r_leftest, r_pos = child:getLeftestChild()
+                if r_pos < pos then
+                    leftest = r_leftest
+                end
+            end
+        end
+    end
+    return leftest,pos
+end
+
+function UI.Element:getRightestChild(dontRecurse)
+    local rightest,pos = nil,-math.huge
+    for _,child in ipairs(self.children or {}) do
+        if type(child) == "table" then
+            local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+            if x > pos then
+                rightest = child
+            end
+            if (not dontRecurse) then
+                local r_rightest, r_pos = child:getRightestChild()
+                if r_pos > pos then
+                    rightest = r_rightest
+                end
+            end
+        end
+    end
+    return rightest,pos
+end
+
 --#endregion
 
 require "ui.elements"
