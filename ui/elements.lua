@@ -435,7 +435,6 @@ end
 
 --#endregion
 
-
 --#region Player Display
 
 UI.PlayerDisplay = UI.Element:new({})
@@ -467,6 +466,61 @@ function UI.PlayerDisplay:drawInstance()
     end
 
     love.graphics.setColor(r,g,b,a)
+end
+
+--#endregion
+
+--#region Scrollable View
+
+UI.ScrollableView = UI.Element:new({})
+
+function UI.ScrollableView:draw()
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    love.graphics.push()
+    love.graphics.translate(x, y)
+
+    if not self.hidden then
+        if type(self.drawInstance) == "function" then
+            self:drawInstance()
+        end
+
+        love.graphics.stencil(self.drawInstance)
+        love.graphics.setStencilTest("gequal", 1)
+        love.graphics.translate(-(self.scrollX or 0), -(self.scrollY or 0))
+
+        for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+            if type(child) == "table" and type(child.draw) == "function" then
+                child:draw()
+            end
+        end
+
+        love.graphics.setStencilTest()
+    end
+
+    love.graphics.pop()
+end
+
+UI.ScrollableView.drawInstance = UI.Panel.drawInstance
+
+function UI.ScrollableView:scroll(mx,my,sx,sy)
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    local _,u_pos = self:getHighestChild()
+    local _,d_pos = self:getLowestChild()
+    local _,l_pos = self:getLeftmostChild()
+    local _,r_pos = self:getRightmostChild()
+    local minScrollY = math.max(0,u_pos+h/2)
+    local maxScrollY = math.min(0,d_pos-h/2)
+    local minScrollX = math.max(0,l_pos+w/2)
+    local maxScrollX = math.min(0,r_pos-w/2)
+    self.scrollX = math.max(minScrollX, math.min(maxScrollX, (self.scrollX or 0) + sx))
+    self.scrollY = math.max(minScrollY, math.min(maxScrollY, (self.scrollY or 0) + sy))
 end
 
 --#endregion

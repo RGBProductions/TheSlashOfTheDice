@@ -104,12 +104,13 @@ function Game.Entity:mousepressed(x, y, b)
 end
 
 
-function Game.Particle:new(x, y, lifespan, vx, vy, damp)
+function Game.Particle:new(x, y, lifespan, vx, vy, damp, size)
     local o = {}
     o.x = x
     o.y = y
     o.vx = vx or 0
     o.vy = vy or 0
+    o.size = size or 1
     o.damp = damp or 5
     o.lifespan = lifespan or 0.5
     o.time = love.timer.getTime()
@@ -120,8 +121,10 @@ function Game.Particle:new(x, y, lifespan, vx, vy, damp)
 end
 
 function Game.Particle:update(dt)
-    self.vx = self.vx - (self.vx/self.damp)
-    self.vy = self.vy - (self.vy/self.damp)
+    local blendAmt = 1/((self.damp/(self.damp-1))^60)
+    local blend = math.pow(blendAmt,dt)
+    self.vx = self.vx*blend
+    self.vy = self.vy*blend
     self.x = self.x + self.vx*dt*60
     self.y = self.y + self.vy*dt*60
 end
