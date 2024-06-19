@@ -12,7 +12,7 @@ end
 local blendAmt = 1/((5/4)^60)
 local tutorialBounds = 1024
 
-function AddNewPlayer(forceColor,keepStats,netinfo,isOwn)
+function AddNewPlayer(customization,keepStats,netinfo,isOwn)
     player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["update"] = EntityTypes.player.update, ["keypressed"] = function(self, k) end, ["mousepressed"] = EntityTypes.player.mousepressed, ["draw"] = EntityTypes.player.draw}, {
         slashTime = 0,
         lastPos = {0,0},
@@ -28,7 +28,7 @@ function AddNewPlayer(forceColor,keepStats,netinfo,isOwn)
         damageFactor = love.math.random(5, 10),
         critFactor = love.math.random(),
         isOwn = isOwn,
-        color = forceColor
+        customization = customization
     })
     if netinfo then
         player.data.netinfo = netinfo
@@ -229,7 +229,7 @@ function scene.load(args)
     SixStreak = 0
 
     Entities = {}
-    player = AddNewPlayer(Settings.customization.color or {0,1,1}, nil, IsMultiplayer and Net.ClientID)
+    player = AddNewPlayer(Settings.customization, nil, IsMultiplayer and Net.ClientID)
     if IsMultiplayer and Net.Hosting then
         for _,p in ipairs(Net.Room.players) do
             local stats = {Defense = 1, Attack = 1, Luck = 0}
@@ -773,7 +773,7 @@ function scene.keypressed(k)
     end
     if k == "space" and #GetEntitiesWithID("player") == 0 and not Spectating then
         if GameSetups[Gamemode].canRespawn then
-            AddNewPlayer(Settings.customization.color or {0,1,1}, Gamemode == "calm")
+            AddNewPlayer(Settings.customization, Gamemode == "calm")
             IsDead = false
         elseif IsMultiplayer then
             Spectating = true
@@ -797,7 +797,7 @@ function scene.mousepressed(x, y, b, t, p)
             local itm = math.floor((y-my)/lrfont:getHeight())
             if itm == 0 then
                 if GameSetups[Gamemode].canRespawn then
-                    AddNewPlayer(Settings.customization.color or {0,1,1}, Gamemode == "calm")
+                    AddNewPlayer(Settings.customization, Gamemode == "calm")
                     IsDead = false
                 elseif IsMultiplayer then
                     Spectating = true
@@ -1121,7 +1121,7 @@ function scene.gamepadpressed(stick,b)
             ShowGameMenu = not ShowGameMenu
         else
             if GameSetups[Gamemode].canRespawn then
-                AddNewPlayer(Settings.customization.color or {0,1,1}, Gamemode == "calm")
+                AddNewPlayer(Settings.customization, Gamemode == "calm")
                 IsDead = false
             elseif IsMultiplayer then
                 Spectating = true
