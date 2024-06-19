@@ -520,28 +520,32 @@ local customizeMenu = UI.Element:new({
                         })
                     },
                     onclick = function(self)
+                        local h,s,v = hsx.rgb2hsv(Settings.customization.color[1],Settings.customization.color[2],Settings.customization.color[3])
                         local popup = UI.Panel:new({
-                            width = 480,
-                            height = 320,
-                            background = function() return GetTheme().popup_error.background end,
-                            border = function() return GetTheme().popup_error.border end,
+                            width = 288,
+                            height = 368,
+                            background = function() return GetTheme().popup_info.background end,
+                            border = function() return GetTheme().popup_info.border end,
                             children = {
-                                UI.Text:new({
-                                    width = 448,
-                                    height = 208,
+                                UI.ColorPicker:new({
+                                    id = "colorpicker",
+                                    x = 0,
                                     y = -40,
-                                    alignHoriz = "center",
-                                    alignVert = "center",
-                                    text = function() return Localize("error.unimplemented") end
+                                    width = 256,
+                                    height = 256,
+                                    hue = h,
+                                    saturation = s,
+                                    value = v
                                 }),
                                 UI.Button:new({
-                                    id = "assist",
+                                    id = "apply",
                                     width = 256,
                                     height = 64,
-                                    y = 112,
+                                    y = 136,
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
+                                        Settings.customization.color = me.parent:getChildById("colorpicker"):getRGB()
                                         table.remove(Dialogs, table.index(Dialogs, me.parent))
                                     end,
                                     cursor = "hand",
@@ -606,7 +610,7 @@ local customizeMenu = UI.Element:new({
                                     text = function() return Localize("error.unimplemented") end
                                 }),
                                 UI.Button:new({
-                                    id = "assist",
+                                    id = "close",
                                     width = 256,
                                     height = 64,
                                     y = 112,
@@ -677,7 +681,7 @@ local customizeMenu = UI.Element:new({
                                     text = function() return Localize("error.unimplemented") end
                                 }),
                                 UI.Button:new({
-                                    id = "assist",
+                                    id = "close",
                                     width = 256,
                                     height = 64,
                                     y = 112,
@@ -748,7 +752,7 @@ local customizeMenu = UI.Element:new({
                                     text = function() return Localize("error.unimplemented") end
                                 }),
                                 UI.Button:new({
-                                    id = "assist",
+                                    id = "close",
                                     width = 256,
                                     height = 64,
                                     y = 112,
@@ -801,7 +805,10 @@ local customizeMenu = UI.Element:new({
                     height = 48
                 })
             },
-            onclick = function() SetMenu("main") end
+            onclick = function()
+                WriteSettings()
+                SetMenu("main")
+            end
         })
     }
 })

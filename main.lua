@@ -331,6 +331,19 @@ if love.filesystem.getInfo("settings.json") then
     Settings = table.merge(Settings, itms)
 end
 
+function WriteSettings()
+    local s,r = pcall(json.encode,Settings)
+    if not s then
+        print("Failed to save settings: " .. r)
+        return
+    end
+    local s2,r2 = pcall(love.filesystem.write, "settings.json", r)
+    if not s2 then
+        print("Failed to save settings: " .. r2)
+        return
+    end
+end
+
 ThemePresets = {}
 for _,itm in ipairs(love.filesystem.getDirectoryItems("default/themes")) do
     local name = itm:sub(1,-6)
