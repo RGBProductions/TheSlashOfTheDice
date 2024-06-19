@@ -48,31 +48,6 @@ function love.graphics.getHeight()
     return _gh()-ViewMargin
 end
 
-local enableHttps = not IsMobile
--- if love.filesystem.getInfo("https.so") or love.filesystem.getInfo("https.dll") then
---     enableHttps = true
--- end
-if enableHttps then
-    -- if love.filesystem.getInfo("https.so") then love.filesystem.write("https.so", love.filesystem.read("https.so")) end
-    -- if love.filesystem.getInfo("https.dll") then love.filesystem.write("https.dll", love.filesystem.read("https.dll")) end
-    local s,r = pcall(require, "https")
-    if not s then
-        print("Failed to load HTTPS module, ignoring")
-        enableHttps = false
-    else
-        https = r
-    end
-end
-
--- if love.filesystem.getInfo("discord-rpc.dll") then
---     love.filesystem.write("discord-rpc.dll", love.filesystem.read("discord-rpc.dll"))
---     love.filesystem.write("libdiscord-rpc.dll", love.filesystem.read("discord-rpc.dll"))
--- end
--- if love.filesystem.getInfo("discord-rpc.so") then
---     love.filesystem.write("discord-rpc.so", love.filesystem.read("discord-rpc.so"))
---     love.filesystem.write("libdiscord-rpc.so", love.filesystem.read("discord-rpc.so"))
--- end
-
 do
     local s,r = pcall(require, "lib.discordRPC")
     if s then
