@@ -112,6 +112,8 @@ EntityTypes = {
             local blend = math.pow(blendAmt,dt)
             self.vx = blend*(self.vx)
             self.vy = blend*(self.vy)
+
+            local ox,oy = self.x,self.y
     
             self.x = self.x + self.vx*dt*60
             if Gamemode == "tutorial" and (self.x < -tutorialBounds or self.x > tutorialBounds) then
@@ -150,6 +152,12 @@ EntityTypes = {
                         end
                     end
                 end
+            end
+
+            self.stepTime = (self.stepTime or 0)+math.abs(self.x-ox)/128+math.abs(self.y-oy)/128
+            if self.stepTime >= 1/5 then
+                Events.fire("step", {player = self, x = self.x, y = self.y})
+                self.stepTime = 0
             end
     
             TutorialValues["MovementTotal"] = TutorialValues["MovementTotal"] + math.sqrt((self.vx*dt*60)^2 + (self.vy*dt*60)^2)

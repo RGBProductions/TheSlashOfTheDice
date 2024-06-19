@@ -733,6 +733,7 @@ function scene.update(dt)
 
     if hadPlayer and #GetEntitiesWithID("player") <= 0 then
         -- Just died
+        Events.fire("player_death")
         if Gamemode == "default" then
             Achievements.SetMax("default_6_waves", Score)
             Achievements.SetMax("default_10_waves", Score)
