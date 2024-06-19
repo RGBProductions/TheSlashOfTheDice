@@ -220,7 +220,16 @@ EntityTypes = {
                     love.graphics.setColor(1,0,0)
                 end
                 love.graphics.rectangle("fill", x, y, scale, scale)
-
+                if customization.hat then
+                    local hat = Cosmetics.Hats[customization.hat]
+                    if hat then
+                        love.graphics.setColor(1,1,1)
+                        love.graphics.draw(hat.image,x+scale/2+hat.anchor[1],y+scale/2+hat.anchor[2],0, hat.scale, hat.scale,hat.image:getWidth()/2,hat.image:getHeight()/2)
+                        love.graphics.setColor(customization.color or {0,1,1})
+                    end
+                    else
+                        print("no hat?" .. customization.hat)
+                    end
                 if not self.hidehp then
                     love.graphics.setColor(1,0,0)
                     love.graphics.rectangle("fill", x-(96-scale)/2, y-scale/2-16, 96, 12)

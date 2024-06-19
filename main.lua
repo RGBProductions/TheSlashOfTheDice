@@ -1,6 +1,6 @@
 utf8 = require "utf8"
 hsx = require "lib.hsx"
-
+require "cosmetics"
 function utf8.sub(txt, i, j)
     local o1 = (utf8.offset(txt,i) or (#txt))-1
     local o2 = (utf8.offset(txt,j+1) or (#txt+1))-1
@@ -301,6 +301,8 @@ Settings = {
         death_effect = nil
     }
 }
+
+Cosmetics.Search("default/cosmetics")
 if love.filesystem.getInfo("settings.json") then
     local itms = json.decode(love.filesystem.read("settings.json"))
     Settings = table.merge(Settings, itms)
