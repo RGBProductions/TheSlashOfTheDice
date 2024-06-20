@@ -39,6 +39,11 @@
         "title.menu.multiplayer": "Multiplayer",
         "title.menu.customization": "Player Customization",
 
+        "title.customization.color": "Change Color",
+        "title.customization.trail": "Select Trail",
+        "title.customization.death_effect": "Select Death Effect",
+        "title.customization.hat": "Select Hat",
+
         "title.credits": "Credits",
         "title.achievements": "Achievements",
         

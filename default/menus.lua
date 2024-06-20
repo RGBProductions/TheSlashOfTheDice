@@ -551,15 +551,27 @@ local customizeMenu = UI.Element:new({
                     onclick = function(self)
                         local h,s,v = hsx.rgb2hsv(Settings.customization.color[1],Settings.customization.color[2],Settings.customization.color[3])
                         local popup = UI.Panel:new({
-                            width = 288,
-                            height = 368,
+                            width = 480,
+                            height = 448,
                             background = function() return GetTheme().popup_info.background end,
                             border = function() return GetTheme().popup_info.border end,
                             children = {
+                                UI.Text:new({
+                                    clickThrough = true,
+                                    x = 0,
+                                    y = -176,
+                                    width = 480,
+                                    height = 64,
+                                    text = function() return Localize("title.customization.color") end,
+                                    font = xlfont_2x,
+                                    fontScale = 0.5,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }),
                                 UI.ColorPicker:new({
                                     id = "colorpicker",
                                     x = 0,
-                                    y = -40,
+                                    y = -40+40,
                                     width = 256,
                                     height = 256,
                                     hue = h,
@@ -570,7 +582,7 @@ local customizeMenu = UI.Element:new({
                                     id = "apply",
                                     width = 256,
                                     height = 64,
-                                    y = 136,
+                                    y = 136+40,
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
@@ -645,7 +657,7 @@ local customizeMenu = UI.Element:new({
                             width = 432,
                             height = 288,
                             x = 0,
-                            y = -40,
+                            y = 0,
                             id = "options",
                             children = {},
                             scrollX = 0,
@@ -693,16 +705,28 @@ local customizeMenu = UI.Element:new({
                         end
                         local popup = UI.Panel:new({
                             width = 464,
-                            height = 400,
+                            height = 480,
                             background = function() return GetTheme().popup_info.background end,
                             border = function() return GetTheme().popup_info.border end,
                             children = {
+                                UI.Text:new({
+                                    clickThrough = true,
+                                    x = 0,
+                                    y = -192,
+                                    width = 464,
+                                    height = 64,
+                                    text = function() return Localize("title.customization.trail") end,
+                                    font = xlfont_2x,
+                                    fontScale = 0.5,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }),
                                 options,
                                 UI.Button:new({
                                     id = "close",
                                     width = 256,
                                     height = 64,
-                                    y = 152,
+                                    y = 192,
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
@@ -776,7 +800,7 @@ local customizeMenu = UI.Element:new({
                             width = 432,
                             height = 288,
                             x = 0,
-                            y = -40,
+                            y = 0,
                             id = "options",
                             children = {},
                             scrollX = 0,
@@ -824,16 +848,28 @@ local customizeMenu = UI.Element:new({
                         end
                         local popup = UI.Panel:new({
                             width = 464,
-                            height = 400,
+                            height = 480,
                             background = function() return GetTheme().popup_info.background end,
                             border = function() return GetTheme().popup_info.border end,
                             children = {
+                                UI.Text:new({
+                                    clickThrough = true,
+                                    x = 0,
+                                    y = -192,
+                                    width = 464,
+                                    height = 64,
+                                    text = function() return Localize("title.customization.death_effect") end,
+                                    font = xlfont_2x,
+                                    fontScale = 0.5,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }),
                                 options,
                                 UI.Button:new({
                                     id = "close",
                                     width = 256,
                                     height = 64,
-                                    y = 152,
+                                    y = 192,
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
@@ -907,7 +943,7 @@ local customizeMenu = UI.Element:new({
                             width = 432,
                             height = 288,
                             x = 0,
-                            y = -40,
+                            y = 0,
                             id = "options",
                             children = {},
                             scrollX = 0,
@@ -952,16 +988,28 @@ local customizeMenu = UI.Element:new({
                         end
                         local popup = UI.Panel:new({
                             width = 464,
-                            height = 400,
+                            height = 480,
                             background = function() return GetTheme().popup_info.background end,
                             border = function() return GetTheme().popup_info.border end,
                             children = {
+                                UI.Text:new({
+                                    clickThrough = true,
+                                    x = 0,
+                                    y = -192,
+                                    width = 464,
+                                    height = 64,
+                                    text = function() return Localize("title.customization.hat") end,
+                                    font = xlfont_2x,
+                                    fontScale = 0.5,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }),
                                 options,
                                 UI.Button:new({
                                     id = "close",
                                     width = 256,
                                     height = 64,
-                                    y = 152,
+                                    y = 192,
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
