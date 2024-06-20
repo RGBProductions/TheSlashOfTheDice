@@ -171,7 +171,12 @@
         "playtesting": "Playtest mode - Press Escape to return to customization",
 
         "customization.none": "None",
-        
+
+        "customization.help.color": "Changes the color of the player.",
+        "customization.help.trail": "Changes the effect that happens when the player moves.",
+        "customization.help.death_effect": "Changes the effect that happens when the player dies.",
+        "customization.help.hat": "Changes the player's hat.",
+
         "customization.hats.top_hat.name": "Top Hat",
         "customization.hats.top_hat.description": "A fancy hat for distinguished individuals.\n\nOr just because you like top hats.",
         "customization.hats.double_top_hat.name": "Double Top Hat",
