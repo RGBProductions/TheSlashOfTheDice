@@ -30,7 +30,7 @@ function UI.Button:drawInstance()
     if border and (border.width or 0) > 0 then
         love.graphics.setColor(border.color or {1,1,1})
         love.graphics.setLineWidth(border.width or 0)
-        love.graphics.rectangle("line", -w/2, -h/2, w, h, rounding)
+        love.graphics.rectangle("line", -w/2+(border.width or 0)/2, -h/2+(border.width or 0)/2, w-(border.width or 0), h-(border.width or 0), rounding)
     end
 
     if ShowDebugInfo then
@@ -158,7 +158,7 @@ function UI.Panel:drawInstance()
     if border and (border.width or 0) > 0 then
         love.graphics.setColor(border.color or {1,1,1})
         love.graphics.setLineWidth(border.width or 0)
-        love.graphics.rectangle("line", -w/2, -h/2, w, h, rounding)
+        love.graphics.rectangle("line", -w/2+(border.width or 0)/2, -h/2+(border.width or 0)/2, w-(border.width or 0), h-(border.width or 0), rounding)
     end
 
     if ShowDebugInfo then

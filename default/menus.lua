@@ -464,7 +464,8 @@ local customizeMenu = UI.Element:new({
     id = "customizeMenu",
     children = {
         UI.Panel:new({
-            background = function () return GetTheme().button_secondary.background end,
+            background = function() return GetTheme().button_secondary.background end,
+            border = function() return GetTheme().button_secondary.border end,
             width = 96,
             height = 96,
             x = -240,
@@ -481,7 +482,8 @@ local customizeMenu = UI.Element:new({
             }
         }),
         UI.Button:new({
-            background = function () return GetTheme().button_primary.background end,
+            background = function() return GetTheme().button_primary.background end,
+            border = function() return GetTheme().button_primary.border end,
             cursor = "hand",
             width = 64,
             height = 64,
