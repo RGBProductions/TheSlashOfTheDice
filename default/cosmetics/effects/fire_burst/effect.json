@@ -1,7 +1,6 @@
 {
-    "events": [
-        {
-            "name": "player_death",
+    "events": {
+        "player_death": {
             "actions": [
                 {
                     "type": "particle_burst",
@@ -14,5 +13,5 @@
                 }
             ]
         }
-    ]
+    }
 }

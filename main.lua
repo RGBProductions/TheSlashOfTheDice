@@ -1,6 +1,7 @@
 utf8 = require "utf8"
 hsx = require "lib.hsx"
-require "cosmetics"
+json = require "json"
+
 function utf8.sub(txt, i, j)
     local o1 = (utf8.offset(txt,i) or (#txt))-1
     local o2 = (utf8.offset(txt,j+1) or (#txt+1))-1
@@ -13,7 +14,6 @@ do
         websocket = r
     end
 end
-json = require "json"
 
 love.filesystem.getInfo = love.filesystem.getInfo or function() return nil end
 
@@ -163,6 +163,7 @@ require "network"
 require "achievements"
 require "ui"
 require "menus"
+require "cosmetics"
 
 require "default.menus"
 
@@ -303,7 +304,6 @@ Settings = {
 }
 
 Cosmetics.Search("default/cosmetics")
-
 if love.filesystem.getInfo("settings.json") then
     local itms = json.decode(love.filesystem.read("settings.json"))
     Settings = table.merge(Settings, itms)
@@ -336,6 +336,8 @@ function WriteSettings()
         return
     end
 end
+
+Cosmetics.Search("default/cosmetics")
 
 ThemePresets = {}
 for _,itm in ipairs(love.filesystem.getDirectoryItems("default/themes")) do

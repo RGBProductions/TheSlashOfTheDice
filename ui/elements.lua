@@ -30,7 +30,7 @@ function UI.Button:drawInstance()
     if border and (border.width or 0) > 0 then
         love.graphics.setColor(border.color or {1,1,1})
         love.graphics.setLineWidth(border.width or 0)
-        love.graphics.rectangle("line", -w/2, -h/2, w, h, rounding)
+        love.graphics.rectangle("line", -w/2+(border.width or 0)/2, -h/2+(border.width or 0)/2, w-(border.width or 0), h-(border.width or 0), rounding)
     end
 
     if ShowDebugInfo then
@@ -158,7 +158,7 @@ function UI.Panel:drawInstance()
     if border and (border.width or 0) > 0 then
         love.graphics.setColor(border.color or {1,1,1})
         love.graphics.setLineWidth(border.width or 0)
-        love.graphics.rectangle("line", -w/2, -h/2, w, h, rounding)
+        love.graphics.rectangle("line", -w/2+(border.width or 0)/2, -h/2+(border.width or 0)/2, w-(border.width or 0), h-(border.width or 0), rounding)
     end
 
     if ShowDebugInfo then
@@ -470,11 +470,12 @@ end
 
 --#endregion
 
---#region Scrollable View
+--#region Scrollable Panel
 
-UI.ScrollableView = UI.Element:new({})
+UI.ScrollablePanel = UI.Element:new({})
 
-function UI.ScrollableView:draw()
+function UI.ScrollablePanel:draw(stencilValue)
+    stencilValue = stencilValue or 0
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
     local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
     
@@ -485,42 +486,196 @@ function UI.ScrollableView:draw()
     love.graphics.translate(x, y)
 
     if not self.hidden then
-        if type(self.drawInstance) == "function" then
-            self:drawInstance()
+        local function draw()
+            if type(self.drawInstance) == "function" then
+                self:drawInstance()
+            end
         end
 
-        love.graphics.stencil(self.drawInstance)
-        love.graphics.setStencilTest("gequal", 1)
+        draw()
+
+        love.graphics.stencil(draw, "increment")
+        stencilValue = stencilValue + 1
+        love.graphics.push()
         love.graphics.translate(-(self.scrollX or 0), -(self.scrollY or 0))
 
         for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
             if type(child) == "table" and type(child.draw) == "function" then
-                child:draw()
+                love.graphics.setStencilTest("gequal", stencilValue)
+                child:draw(stencilValue)
+                love.graphics.setStencilTest()
             end
         end
 
-        love.graphics.setStencilTest()
+        love.graphics.pop()
+        love.graphics.stencil(draw, "decrement")
     end
 
     love.graphics.pop()
 end
 
-UI.ScrollableView.drawInstance = UI.Panel.drawInstance
+function UI.ScrollablePanel:drawInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    local background = self.background or {1,1,1}
+    local border = self.border or {color = {1,1,1}, width = 0}
+    local rounding = self.rounding or 0
 
-function UI.ScrollableView:scroll(mx,my,sx,sy)
+    if type(background) == "function" then background = background(self) end
+    if type(border) == "function" then border = border(self) end
+    if type(rounding) == "function" then rounding = rounding(self) end
+
+    local r,g,b,a = love.graphics.getColor()
+    local lw = love.graphics.getLineWidth()
+
+    if type(background) == "table" then
+        love.graphics.setColor(background)
+        love.graphics.rectangle("fill", -w/2, -h/2, w, h)
+    elseif type(background.getWidth) == "function" then
+        love.graphics.setColor(1,1,1)
+        love.graphics.draw(background, -w/2, -h/2, 0, w/background:getWidth(), h/background:getHeight())
+    end
+
+    if border and (border.width or 0) > 0 then
+        love.graphics.setColor(border.color or {1,1,1})
+        love.graphics.setLineWidth(border.width or 0)
+        love.graphics.rectangle("line", -w/2, -h/2, w, h, rounding)
+    end
+
+    if ShowDebugInfo then
+        love.graphics.setLineWidth(2)
+        love.graphics.setColor(1,1,1)
+        love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    end
+
+    love.graphics.setColor(r,g,b,a)
+    love.graphics.setLineWidth(lw)
+end
+
+function UI.ScrollablePanel:click(mx,my,b)
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
     local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
 
-    local _,u_pos = self:getHighestChild()
-    local _,d_pos = self:getLowestChild()
-    local _,l_pos = self:getLeftmostChild()
-    local _,r_pos = self:getRightmostChild()
-    local minScrollY = math.max(0,u_pos+h/2)
-    local maxScrollY = math.min(0,d_pos-h/2)
-    local minScrollX = math.max(0,l_pos+w/2)
-    local maxScrollX = math.min(0,r_pos-w/2)
-    self.scrollX = math.max(minScrollX, math.min(maxScrollX, (self.scrollX or 0) + sx))
-    self.scrollY = math.max(minScrollY, math.min(maxScrollY, (self.scrollY or 0) + sy))
+    if self.clickThrough or self.hidden then
+        return false, self
+    end
+
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
+        if type(child) == "table" and type(child.click) == "function" then
+            local clicked = child:click(mx-x+(self.scrollX or 0),my-y+(self.scrollY or 0),b)
+            if clicked then
+                return clicked,child
+            end
+        end
+    end
+    
+    if mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2 then
+        if (not self.disabled) and type(self.clickInstance) == "function" then self:clickInstance(mx-x,my-y,b) end
+        return true, self
+    end
+    return false, self
+end
+
+function UI.ScrollablePanel:scroll(mx,my,sx,sy)
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    if self.scrollThrough or self.hidden then
+        return false, self
+    end
+
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
+        if type(child) == "table" and type(child.scroll) == "function" then
+            local scrolled = child:scroll(mx-x+(self.scrollX or 0),my-y+(self.scrollY or 0),sx,sy)
+            if scrolled then
+                return scrolled, child
+            end
+        end
+    end
+    
+    if (not self.disabled) and type(self.scrollInstance) == "function" then self:scrollInstance(mx-x,my-y,sx,sy) end
+    return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
+end
+
+function UI.ScrollablePanel:scrollInstance(mx,my,sx,sy)
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    local _,u_pos = self:getHighestPoint()
+    local _,d_pos = self:getLowestPoint()
+    local _,l_pos = self:getLeftmostPoint()
+    local _,r_pos = self:getRightmostPoint()
+    local minScrollY = math.min(0,u_pos+h/2)
+    local maxScrollY = math.max(0,d_pos-h/2)
+    local minScrollX = math.min(0,l_pos+w/2)
+    local maxScrollX = math.max(0,r_pos-w/2)
+    self.scrollX = math.max(minScrollX, math.min(maxScrollX, (self.scrollX or 0) - sx*16))
+    self.scrollY = math.max(minScrollY, math.min(maxScrollY, (self.scrollY or 0) - sy*16))
+end
+
+function UI.ScrollablePanel:mousemove(mx,my,dx,dy)
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    if self.hidden then
+        return false, self
+    end
+
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
+        if type(child) == "table" and type(child.mousemove) == "function" then
+            local moved = child:mousemove(mx-x+(self.scrollX or 0),my-y+(self.scrollY or 0),dx,dy)
+            if moved then
+                return moved, child
+            end
+        end
+    end
+    
+    if (not self.disabled) and type(self.mousemoveInstance) == "function" then self:mousemoveInstance(mx-x,my-y,dx,dy) end
+    return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
+end
+
+function UI.ScrollablePanel:getCursor(mx,my)
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    if self.hidden or self.clickThrough then
+        return nil
+    end
+
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
+        if type(child) == "table" and type(child.getCursor) == "function" then
+            local cursor = child:getCursor(mx-x+(self.scrollX or 0),my-y+(self.scrollY or 0))
+            if cursor then
+                return cursor
+            end
+        end
+    end
+    
+    if mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2 then
+        return self.cursor
+    end
+    return nil
 end
 
 --#endregion

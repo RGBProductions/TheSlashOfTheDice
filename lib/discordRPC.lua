@@ -1,6 +1,12 @@
 ---@diagnostic disable: undefined-field
 local ffi = require "ffi"
-local discordRPClib = ffi.load("discord-rpc")
+local discordRPClib
+local os = love.system.getOS()
+if os == "Linux" or os == "Android" then
+    discordRPClib = ffi.load("./discord-rpc.so")
+else
+    discordRPClib = ffi.load("discord-rpc")
+end
 
 ffi.cdef[[
 typedef struct DiscordRichPresence {

@@ -39,6 +39,11 @@
         "title.menu.multiplayer": "Multiplayer",
         "title.menu.customization": "Player Customization",
 
+        "title.customization.color": "Change Color",
+        "title.customization.trail": "Select Trail",
+        "title.customization.death_effect": "Select Death Effect",
+        "title.customization.hat": "Select Hat",
+
         "title.credits": "Credits",
         "title.achievements": "Achievements",
         
@@ -170,11 +175,18 @@
 
         "playtesting": "Playtest mode - Press Escape to return to customization",
 
-        "cosmetics.hats.top_hat.name": "Top Hat",
-        "cosmetics.hats.top_hat.description": "A fancy hat for distinguished individuals.\n\nOr just because you like top hats.",
-        "cosmetics.hats.double_top_hat.name": "Double Top Hat",
-        "cosmetics.hats.double_top_hat.description": "Double the top hats, double the fashion... I think.",
-        "cosmetics.hats.red_dude.name": "Red Dude",
-        "cosmetics.hats.red_dude.description": "YOU CANT JUST THROW TRASH AT THE ENEMIES WTF"
+        "customization.none": "None",
+
+        "customization.help.color": "Changes the color of the player.",
+        "customization.help.trail": "Changes the effect that happens when the player moves.",
+        "customization.help.death_effect": "Changes the effect that happens when the player dies.",
+        "customization.help.hat": "Changes the player's hat.",
+
+        "customization.hats.top_hat.name": "Top Hat",
+        "customization.hats.top_hat.description": "A fancy hat for distinguished individuals.\n\nOr just because you like top hats.",
+        "customization.hats.double_top_hat.name": "Double Top Hat",
+        "customization.hats.double_top_hat.description": "Double the top hats, double the fashion... I think.",
+        "customization.hats.red_dude.name": "Red Dude",
+        "customization.hats.red_dude.description": "YOU CANT JUST THROW TRASH AT THE ENEMIES WTF"
     }
 }

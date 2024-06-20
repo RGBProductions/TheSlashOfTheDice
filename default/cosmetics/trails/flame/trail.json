@@ -1,7 +1,6 @@
 {
-    "events": [
-        {
-            "name": "step",
+    "events": {
+        "step": {
             "actions": [
                 {
                     "type": "particle",
@@ -12,5 +11,5 @@
                 }
             ]
         }
-    ]
+    }
 }
