@@ -943,7 +943,7 @@ local customizeMenu = UI.Element:new({
                                     y = y + 96 + 16
                                 end
                             end
-                            addOption(nil, {image = noCosmetic, scale = 1})
+                            addOption(nil, {image = noCosmetic, scale = 0.5})
                             for name,data in pairs(Cosmetics.Hats) do
                                 addOption(name,data)
                             end
