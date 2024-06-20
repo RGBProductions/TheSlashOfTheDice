@@ -67,7 +67,8 @@ function UI.Element:removeChild(child)
     end
 end
 
-function UI.Element:draw()
+function UI.Element:draw(stencilValue)
+    stencilValue = stencilValue or 0
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
     local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
     
@@ -84,7 +85,7 @@ function UI.Element:draw()
 
         for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
             if type(child) == "table" and type(child.draw) == "function" then
-                child:draw()
+                child:draw(stencilValue)
             end
         end
     end
@@ -169,7 +170,7 @@ function UI.Element:scroll(mx,my,sx,sy)
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
     local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
 
-    if self.hidden then
+    if self.scrollThrough or self.hidden then
         return false, self
     end
 

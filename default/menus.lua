@@ -6,6 +6,8 @@ for _,itm in ipairs(love.filesystem.getDirectoryItems("assets/images/ui/button_i
     end
 end
 
+local noCosmetic = love.graphics.newImage("assets/images/ui/none.png")
+
 local mainMenu = UI.Element:new({
     children = {
         UI.Button:new({
@@ -637,27 +639,68 @@ local customizeMenu = UI.Element:new({
                         })
                     },
                     onclick = function(self)
+                        local options = UI.ScrollablePanel:new({
+                            width = 432,
+                            height = 288,
+                            x = 0,
+                            y = -40,
+                            id = "options",
+                            children = {},
+                            scrollX = 0,
+                            scrollY = 0,
+                            background = {0,0,0,0}
+                        })
+                        do
+                            local x,y = 0,0
+                            local function addOption(id)
+                                local button = UI.Button:new({
+                                    scrollThrough = true,
+                                    id = id,
+                                    x = x-168,
+                                    y = y-96,
+                                    width = 96,
+                                    height = 96,
+                                    background = function(me) return GetTheme()[Settings.customization.trail == me.id and "button_primary" or "button_secondary"].background end,
+                                    border = function(me) return GetTheme()[Settings.customization.trail == me.id and "button_primary" or "button_secondary"].border end,
+                                    onclick = function(me) Settings.customization.trail = me.id end,
+                                    cursor = "hand",
+                                    children = {
+                                        UI.Text:new({
+                                            width = 96,
+                                            height = 96,
+                                            text = function(me) return Localize(me.id == nil and "customization.none" or ("customization.trails."..me.id..".name")) end,
+                                            color = function() return GetTheme().button_secondary.text end,
+                                            font = mdfont_2x,
+                                            fontScale = 0.5,
+                                            alignHoriz = "center",
+                                            alignVert = "center"
+                                        })
+                                    }
+                                })
+                                options:addChild(button)
+                                x = x + 96 + 16
+                                if x >= 432 then
+                                    x = 0
+                                    y = y + 96 + 16
+                                end
+                            end
+                            addOption(nil)
+                            for name,_ in pairs(Cosmetics.Trails) do
+                                addOption(name)
+                            end
+                        end
                         local popup = UI.Panel:new({
-                            width = 480,
-                            height = 320,
-                            background = function() return GetTheme().popup_error.background end,
-                            border = function() return GetTheme().popup_error.border end,
+                            width = 464,
+                            height = 400,
+                            background = function() return GetTheme().popup_info.background end,
+                            border = function() return GetTheme().popup_info.border end,
                             children = {
-                                UI.Text:new({
-                                    width = 448,
-                                    height = 208,
-                                    y = -40,
-                                    alignHoriz = "center",
-                                    alignVert = "center",
-                                    font = lgfont_2x,
-                                    fontScale = 0.5,
-                                    text = function() return Localize("error.unimplemented") end
-                                }),
+                                options,
                                 UI.Button:new({
                                     id = "close",
                                     width = 256,
                                     height = 64,
-                                    y = 112,
+                                    y = 152,
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
@@ -727,27 +770,68 @@ local customizeMenu = UI.Element:new({
                         })
                     },
                     onclick = function(self)
+                        local options = UI.ScrollablePanel:new({
+                            width = 432,
+                            height = 288,
+                            x = 0,
+                            y = -40,
+                            id = "options",
+                            children = {},
+                            scrollX = 0,
+                            scrollY = 0,
+                            background = {0,0,0,0}
+                        })
+                        do
+                            local x,y = 0,0
+                            local function addOption(id)
+                                local button = UI.Button:new({
+                                    scrollThrough = true,
+                                    id = id,
+                                    x = x-168,
+                                    y = y-96,
+                                    width = 96,
+                                    height = 96,
+                                    background = function(me) return GetTheme()[Settings.customization.death_effect == me.id and "button_primary" or "button_secondary"].background end,
+                                    border = function(me) return GetTheme()[Settings.customization.death_effect == me.id and "button_primary" or "button_secondary"].border end,
+                                    onclick = function(me) Settings.customization.death_effect = me.id end,
+                                    cursor = "hand",
+                                    children = {
+                                        UI.Text:new({
+                                            width = 96,
+                                            height = 96,
+                                            text = function(me) return Localize(me.id == nil and "customization.none" or ("customization.effects."..me.id..".name")) end,
+                                            color = function() return GetTheme().button_secondary.text end,
+                                            font = mdfont_2x,
+                                            fontScale = 0.5,
+                                            alignHoriz = "center",
+                                            alignVert = "center"
+                                        })
+                                    }
+                                })
+                                options:addChild(button)
+                                x = x + 96 + 16
+                                if x >= 432 then
+                                    x = 0
+                                    y = y + 96 + 16
+                                end
+                            end
+                            addOption(nil)
+                            for name,_ in pairs(Cosmetics.Effects) do
+                                addOption(name)
+                            end
+                        end
                         local popup = UI.Panel:new({
-                            width = 480,
-                            height = 320,
-                            background = function() return GetTheme().popup_error.background end,
-                            border = function() return GetTheme().popup_error.border end,
+                            width = 464,
+                            height = 400,
+                            background = function() return GetTheme().popup_info.background end,
+                            border = function() return GetTheme().popup_info.border end,
                             children = {
-                                UI.Text:new({
-                                    width = 448,
-                                    height = 208,
-                                    y = -40,
-                                    alignHoriz = "center",
-                                    alignVert = "center",
-                                    font = lgfont_2x,
-                                    fontScale = 0.5,
-                                    text = function() return Localize("error.unimplemented") end
-                                }),
+                                options,
                                 UI.Button:new({
                                     id = "close",
                                     width = 256,
                                     height = 64,
-                                    y = 112,
+                                    y = 152,
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
@@ -817,27 +901,65 @@ local customizeMenu = UI.Element:new({
                         })
                     },
                     onclick = function(self)
+                        local options = UI.ScrollablePanel:new({
+                            width = 432,
+                            height = 288,
+                            x = 0,
+                            y = -40,
+                            id = "options",
+                            children = {},
+                            scrollX = 0,
+                            scrollY = 0,
+                            background = {0,0,0,0}
+                        })
+                        do
+                            local x,y = 0,0
+                            local function addOption(id,data)
+                                local button = UI.Button:new({
+                                    scrollThrough = true,
+                                    id = id,
+                                    x = x-168,
+                                    y = y-96,
+                                    width = 96,
+                                    height = 96,
+                                    background = function(me) return GetTheme()[Settings.customization.hat == me.id and "button_primary" or "button_secondary"].background end,
+                                    border = function(me) return GetTheme()[Settings.customization.hat == me.id and "button_primary" or "button_secondary"].border end,
+                                    onclick = function(me) Settings.customization.hat = me.id end,
+                                    cursor = "hand",
+                                    children = {}
+                                })
+                                if data then
+                                    button:addChild(UI.Image:new({
+                                        clickThrough = true,
+                                        image = data.image,
+                                        width = data.image:getWidth()*data.scale,
+                                        height = data.image:getHeight()*data.scale
+                                    }))
+                                end
+                                options:addChild(button)
+                                x = x + 96 + 16
+                                if x >= 432 then
+                                    x = 0
+                                    y = y + 96 + 16
+                                end
+                            end
+                            addOption(nil, {image = noCosmetic, scale = 1})
+                            for name,data in pairs(Cosmetics.Hats) do
+                                addOption(name,data)
+                            end
+                        end
                         local popup = UI.Panel:new({
-                            width = 480,
-                            height = 320,
-                            background = function() return GetTheme().popup_error.background end,
-                            border = function() return GetTheme().popup_error.border end,
+                            width = 464,
+                            height = 400,
+                            background = function() return GetTheme().popup_info.background end,
+                            border = function() return GetTheme().popup_info.border end,
                             children = {
-                                UI.Text:new({
-                                    width = 448,
-                                    height = 208,
-                                    y = -40,
-                                    alignHoriz = "center",
-                                    alignVert = "center",
-                                    font = lgfont_2x,
-                                    fontScale = 0.5,
-                                    text = function() return Localize("error.unimplemented") end
-                                }),
+                                options,
                                 UI.Button:new({
                                     id = "close",
                                     width = 256,
                                     height = 64,
-                                    y = 112,
+                                    y = 152,
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
