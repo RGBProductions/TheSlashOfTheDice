@@ -1,5 +1,6 @@
 utf8 = require "utf8"
 hsx = require "lib.hsx"
+json = require "json"
 
 function utf8.sub(txt, i, j)
     local o1 = (utf8.offset(txt,i) or (#txt))-1
@@ -13,7 +14,6 @@ do
         websocket = r
     end
 end
-json = require "json"
 
 love.filesystem.getInfo = love.filesystem.getInfo or function() return nil end
 
