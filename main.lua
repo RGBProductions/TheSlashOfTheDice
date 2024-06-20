@@ -317,7 +317,7 @@ function StepHandler(event)
         local actions = trail.events["step"].actions
         for _,v in ipairs(actions) do
             if v.type == "particle" then
-                table.insert(Particles, Game.Particle:new(event.x, event.y, v.life, 0, 0, 0, v.size))
+                table.insert(Particles, Game.Particle:new(event.x, event.y, v.life, v.velocity[1], v.velocity[2], 0, v.size))
             end
         end
     end

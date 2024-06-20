@@ -28,7 +28,8 @@ function Cosmetics.ReadTrail(dir)
                 spawnRadius = v2.spawnRadius,
                 size = v2.size,
                 life = v2.life,
-                image = love.graphics.newImage(dir.."/"..v2.image)
+                velocity = v2.velocity or {0,0},
+                image = love.graphics.newImage(dir.."/"..v2.image..".png")
             }
             table.insert(actions,action)
         end
@@ -54,7 +55,7 @@ function Cosmetics.ReadEffect(dir)
                 size = v2.size,
                 amount = v2.amount,
                 life = v2.life,
-                image = love.graphics.newImage(dir..v2.image)
+                image = love.graphics.newImage(dir.."/"..v2.image..".png")
             }
             table.insert(actions,action)
         end
