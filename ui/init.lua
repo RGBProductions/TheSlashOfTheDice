@@ -262,16 +262,18 @@ function UI.Element:getChildById(id,dontRecurse)
     return nil
 end
 
-function UI.Element:getHighestChild(dontRecurse)
+function UI.Element:getHighestChild(dontRecurse,oy)
+    oy = oy or 0
     local highest,pos = nil,math.huge
     for _,child in ipairs(self.children or {}) do
         if type(child) == "table" then
-            local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+            local y = ((type(child.y) == "function" and child.y(child)) or (child.y or 0)) + oy
             if y < pos then
                 highest = child
+                pos = y
             end
             if (not dontRecurse) then
-                local r_highest, r_pos = child:getHighestChild()
+                local r_highest, r_pos = child:getHighestChild(dontRecurse,y)
                 if r_pos < pos then
                     highest = r_highest
                 end
@@ -281,16 +283,18 @@ function UI.Element:getHighestChild(dontRecurse)
     return highest,pos
 end
 
-function UI.Element:getLowestChild(dontRecurse)
+function UI.Element:getLowestChild(dontRecurse,oy)
+    oy = oy or 0
     local lowest,pos = nil,-math.huge
     for _,child in ipairs(self.children or {}) do
         if type(child) == "table" then
-            local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+            local y = ((type(child.y) == "function" and child.y(child)) or (child.y or 0)) + oy
             if y > pos then
                 lowest = child
+                pos = y
             end
             if (not dontRecurse) then
-                local r_lowest, r_pos = child:getLowestChild()
+                local r_lowest, r_pos = child:getLowestChild(dontRecurse,y)
                 if r_pos > pos then
                     lowest = r_lowest
                 end
@@ -300,35 +304,39 @@ function UI.Element:getLowestChild(dontRecurse)
     return lowest,pos
 end
 
-function UI.Element:getLeftmostChild(dontRecurse)
-    local leftest,pos = nil,math.huge
+function UI.Element:getLeftmostChild(dontRecurse,ox)
+    ox = ox or 0
+    local leftmost,pos = nil,math.huge
     for _,child in ipairs(self.children or {}) do
         if type(child) == "table" then
-            local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+            local x = ((type(child.x) == "function" and child.x(child)) or (child.x or 0)) + ox
             if x < pos then
-                leftest = child
+                leftmost = child
+                pos = x
             end
             if (not dontRecurse) then
-                local r_leftest, r_pos = child:getLeftestChild()
+                local r_leftmost, r_pos = child:getLeftmostChild(dontRecurse,x)
                 if r_pos < pos then
-                    leftest = r_leftest
+                    leftmost = r_leftmost
                 end
             end
         end
     end
-    return leftest,pos
+    return leftmost,pos
 end
 
-function UI.Element:getRightmostChild(dontRecurse)
+function UI.Element:getRightmostChild(dontRecurse,ox)
+    ox = ox or 0
     local rightest,pos = nil,-math.huge
     for _,child in ipairs(self.children or {}) do
         if type(child) == "table" then
-            local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+            local x = ((type(child.x) == "function" and child.x(child)) or (child.x or 0)) + ox
             if x > pos then
                 rightest = child
+                pos = x
             end
             if (not dontRecurse) then
-                local r_rightest, r_pos = child:getRightestChild()
+                local r_rightest, r_pos = child:getRightmostChild(dontRecurse,x)
                 if r_pos > pos then
                     rightest = r_rightest
                 end
@@ -336,6 +344,98 @@ function UI.Element:getRightmostChild(dontRecurse)
         end
     end
     return rightest,pos
+end
+
+function UI.Element:getHighestPoint(dontRecurse,oy)
+    oy = oy or 0
+    local h_self = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    local highest,pos = nil,-h_self/2
+    for _,child in ipairs(self.children or {}) do
+        if type(child) == "table" then
+            local y = ((type(child.y) == "function" and child.y(child)) or (child.y or 0)) + oy
+            local h = (type(child.height) == "function" and child.height(child)) or (child.height or 0)
+            if y-h/2 < pos then
+                highest = child
+                pos = y-h/2
+            end
+            if (not dontRecurse) then
+                local r_highest, r_pos = child:getHighestPoint(dontRecurse,y)
+                if r_pos < pos then
+                    highest = r_highest
+                end
+            end
+        end
+    end
+    return highest,pos
+end
+
+function UI.Element:getLowestPoint(dontRecurse,oy)
+    oy = oy or 0
+    local h_self = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    local lowest,pos = nil,h_self/2
+    for _,child in ipairs(self.children or {}) do
+        if type(child) == "table" then
+            local y = ((type(child.y) == "function" and child.y(child)) or (child.y or 0)) + oy
+            local h = (type(child.height) == "function" and child.height(child)) or (child.height or 0)
+            if y+h/2 > pos then
+                lowest = child
+                pos = y+h/2
+            end
+            if (not dontRecurse) then
+                local r_lowest, r_pos = child:getLowestPoint(dontRecurse,y)
+                if r_pos < pos then
+                    lowest = r_lowest
+                end
+            end
+        end
+    end
+    return lowest,pos
+end
+
+function UI.Element:getLeftmostPoint(dontRecurse,ox)
+    ox = ox or 0
+    local w_self = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local leftmost,pos = nil,-w_self/2
+    for _,child in ipairs(self.children or {}) do
+        if type(child) == "table" then
+            local x = ((type(child.x) == "function" and child.x(child)) or (child.x or 0)) + ox
+            local w = (type(child.width) == "function" and child.width(child)) or (child.width or 0)
+            if x-w/2 < pos then
+                leftmost = child
+                pos = x-w/2
+            end
+            if (not dontRecurse) then
+                local r_leftmost, r_pos = child:getLeftmostPoint(dontRecurse,x)
+                if r_pos < pos then
+                    leftmost = r_leftmost
+                end
+            end
+        end
+    end
+    return leftmost,pos
+end
+
+function UI.Element:getRightmostPoint(dontRecurse,ox)
+    ox = ox or 0
+    local w_self = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local rightmost,pos = nil,w_self/2
+    for _,child in ipairs(self.children or {}) do
+        if type(child) == "table" then
+            local x = ((type(child.x) == "function" and child.x(child)) or (child.x or 0)) + ox
+            local w = (type(child.width) == "function" and child.width(child)) or (child.width or 0)
+            if x+w/2 > pos then
+                rightmost = child
+                pos = x+w/2
+            end
+            if (not dontRecurse) then
+                local r_rightmost, r_pos = child:getRightmostPoint(dontRecurse,x)
+                if r_pos < pos then
+                    rightmost = r_rightmost
+                end
+            end
+        end
+    end
+    return rightmost,pos
 end
 
 --#endregion

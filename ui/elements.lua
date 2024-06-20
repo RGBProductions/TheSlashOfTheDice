@@ -470,11 +470,11 @@ end
 
 --#endregion
 
---#region Scrollable View
+--#region Scrollable Panel
 
-UI.ScrollableView = UI.Element:new({})
+UI.ScrollablePanel = UI.Element:new({})
 
-function UI.ScrollableView:draw()
+function UI.ScrollablePanel:draw()
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
     local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
     
@@ -505,16 +505,16 @@ function UI.ScrollableView:draw()
     love.graphics.pop()
 end
 
-UI.ScrollableView.drawInstance = UI.Panel.drawInstance
+UI.ScrollablePanel.drawInstance = UI.Panel.drawInstance
 
-function UI.ScrollableView:scroll(mx,my,sx,sy)
+function UI.ScrollablePanel:scroll(mx,my,sx,sy)
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
     local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
 
-    local _,u_pos = self:getHighestChild()
-    local _,d_pos = self:getLowestChild()
-    local _,l_pos = self:getLeftmostChild()
-    local _,r_pos = self:getRightmostChild()
+    local _,u_pos = self:getHighestPoint()
+    local _,d_pos = self:getLowestPoint()
+    local _,l_pos = self:getLeftmostPoint()
+    local _,r_pos = self:getRightmostPoint()
     local minScrollY = math.max(0,u_pos+h/2)
     local maxScrollY = math.min(0,d_pos-h/2)
     local minScrollX = math.max(0,l_pos+w/2)
