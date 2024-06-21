@@ -182,6 +182,12 @@
         "customization.help.death_effect": "Changes the effect that happens when the player dies.",
         "customization.help.hat": "Changes the player's hat.",
 
+        "customization.trails.flame.name": "Flame",
+        "customization.trails.flame.description": "You leave a path of fire wherever you go.",
+
+        "customization.effects.fire_burst.name": "Fire Burst",
+        "customization.effects.fire_burst.description": "So THAT'S what you're filled with. Huh.",
+
         "customization.hats.top_hat.name": "Top Hat",
         "customization.hats.top_hat.description": "A fancy hat for distinguished individuals.\n\nOr just because you like top hats.",
         "customization.hats.double_top_hat.name": "Double Top Hat",
