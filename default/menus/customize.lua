@@ -227,6 +227,7 @@ local customizeMenu = UI.Element:new({
                                     }))
                                 else
                                     button:addChild(UI.Text:new({
+                                        clickThrough = true,
                                         width = 96,
                                         height = 96,
                                         text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.trails."..me.parent.id..".name")) end,
@@ -369,6 +370,7 @@ local customizeMenu = UI.Element:new({
                                     cursor = "hand",
                                     children = {
                                         UI.Text:new({
+                                            clickThrough = true,
                                             width = 96,
                                             height = 96,
                                             text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.effects."..me.parent.id..".name")) end,
