@@ -5,7 +5,7 @@
                 {
                     "type": "particle",
                     "spawnRadius": 0.125,
-                    "size": [0.5,1],
+                    "size": [0.25,0.3],
                     "life": 0.5,
                     "image": "flame"
                 }

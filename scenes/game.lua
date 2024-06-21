@@ -4,11 +4,6 @@
 
 local scene = {}
 
-function rand(min, max)
-    max = max + 1
-    return math.floor(love.math.random()*(max-min)+min)
-end
-
 local blendAmt = 1/((5/4)^60)
 local tutorialBounds = 1024
 

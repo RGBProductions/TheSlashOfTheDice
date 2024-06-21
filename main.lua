@@ -146,6 +146,15 @@ function table.join(t, s)
     return res
 end
 
+function rand(min, max)
+    max = max + 1
+    return math.floor(love.math.random()*(max-min)+min)
+end
+
+function randFloat(min,max)
+    return love.math.random()*(max-min)+min
+end
+
 AchievementUnlocks = {}
 
 function UnlockAchievement(id, titleText)
@@ -318,7 +327,7 @@ function StepHandler(event)
         local actions = trail.events.step.actions
         for _,v in ipairs(actions) do
             if v.type == "particle" then
-                local particle = Game.Particle:new(event.x, event.y, v.life, v.velocity[1], v.velocity[2], 0, math.random(v.size[1],v.size[2]))
+                local particle = Game.Particle:new(event.x, event.y, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]))
                 particle.image = v.image
                 table.insert(Particles, particle)
             end
