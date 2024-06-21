@@ -307,7 +307,7 @@ Settings = {
     customization = {
         color = {0,1,1},
         hat = nil,
-        trail = "flame",
+        trail = nil,
         death_effect = nil
     }
 }
