@@ -298,7 +298,7 @@ Settings = {
     customization = {
         color = {0,1,1},
         hat = nil,
-        trail = nil,
+        trail = "flame",
         death_effect = nil
     }
 }
@@ -314,12 +314,16 @@ end
 function StepHandler(event) 
     if Settings.customization.trail then
         local trail = Cosmetics.Trails[Settings.customization.trail]
-        local actions = trail.events["step"].actions
+        if trail.events.step then
+        local actions = trail.events.step.actions
         for _,v in ipairs(actions) do
             if v.type == "particle" then
-                table.insert(Particles, Game.Particle:new(event.x, event.y, v.life, v.velocity[1], v.velocity[2], 0, v.size))
+                local particle = Game.Particle:new(event.x, event.y, v.life, v.velocity[1], v.velocity[2], 0, math.random(v.size[1],v.size[2]))
+                particle.image = v.image
+                table.insert(Particles, particle)
             end
         end
+    end
     end
 end
 Events.on("step",StepHandler)

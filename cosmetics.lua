@@ -20,9 +20,9 @@ function Cosmetics.ReadTrail(dir)
     local trailsettings = json.decode(love.filesystem.read(dir.."/trail.json"))
     local id = dir:split("/")[4]
     local events = {}
-    for _,v in ipairs(trailsettings.events) do
+    for i,v in pairs(trailsettings.events) do
         local actions = {}
-        for _,v2 in ipairs(v.actions) do
+        for _,v2 in pairs(v.actions) do
             local action = {
                 type = v2.type,
                 spawnRadius = v2.spawnRadius,
@@ -33,8 +33,8 @@ function Cosmetics.ReadTrail(dir)
             }
             table.insert(actions,action)
         end
-        local event = {name=v.name, actions=actions}
-        events[v.name] = event
+        local event = {name=i, actions=actions}
+        events[i] = event
     end
     local trail = {events=events}
     Cosmetics.Trails[id] = trail
