@@ -154,7 +154,7 @@ EntityTypes = {
                 end
             end
 
-            self.stepTime = (self.stepTime or 0)+math.abs(self.x-ox)/128+math.abs(self.y-oy)/128
+            self.stepTime = (self.stepTime or 0)+math.sqrt((self.x-ox)^2+(self.y-oy)^2)/128
             if self.stepTime >= 1/5 then
                 Events.fire("step", {player = self, x = self.x, y = self.y})
                 self.stepTime = 0
