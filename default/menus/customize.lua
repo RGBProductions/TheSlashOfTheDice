@@ -218,12 +218,28 @@ local customizeMenu = UI.Element:new({
                                     cursor = "hand",
                                     children = {}
                                 })
+                                button:addChild(UI.Text:new({
+                                    clickThrough = true,
+                                    y = 60,
+                                    width = 96,
+                                    height = 24,
+                                    text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.trails."..me.parent.id..".name")) end,
+                                    color = function() return GetTheme().button_secondary.text end,
+                                    font = mdfont_2x,
+                                    fontScale = function(me)
+                                        local text = me.text(me)
+                                        local width = me.font:getWidth(text)/2
+                                        return math.min(1,me.width/width)*0.5
+                                    end,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }))
                                 if data and data.icon then
                                     button:addChild(UI.Image:new({
                                         clickThrough = true,
                                         image = data.icon,
-                                        width = data.icon:getWidth()*(data.scale or 1),
-                                        height = data.icon:getHeight()*(data.scale or 1)
+                                        width = 64,
+                                        height = 64
                                     }))
                                 else
                                     button:addChild(UI.Text:new({
@@ -242,10 +258,10 @@ local customizeMenu = UI.Element:new({
                                 x = x + 96 + 16
                                 if x >= 432 then
                                     x = 0
-                                    y = y + 96 + 16
+                                    y = y + 120 + 16
                                 end
                             end
-                            addOption(nil, {icon = NoCosmeticIcon, scale = 0.5})
+                            addOption(nil, {icon = NoCosmeticIcon})
                             for name,data in pairs(Cosmetics.Trails) do
                                 addOption(name,data)
                             end
@@ -356,7 +372,7 @@ local customizeMenu = UI.Element:new({
                         })
                         do
                             local x,y = 0,0
-                            local function addOption(id)
+                            local function addOption(id,data)
                                 local button = UI.Button:new({
                                     scrollThrough = true,
                                     id = id,
@@ -368,28 +384,52 @@ local customizeMenu = UI.Element:new({
                                     border = function(me) return GetTheme()[Settings.customization.death_effect == me.id and "button_primary" or "button_secondary"].border end,
                                     onclick = function(me) Settings.customization.death_effect = me.id end,
                                     cursor = "hand",
-                                    children = {
-                                        UI.Text:new({
-                                            clickThrough = true,
-                                            width = 96,
-                                            height = 96,
-                                            text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.effects."..me.parent.id..".name")) end,
-                                            color = function() return GetTheme().button_secondary.text end,
-                                            font = mdfont_2x,
-                                            fontScale = 0.5,
-                                            alignHoriz = "center",
-                                            alignVert = "center"
-                                        })
-                                    }
+                                    children = {}
                                 })
+                                button:addChild(UI.Text:new({
+                                    clickThrough = true,
+                                    y = 60,
+                                    width = 96,
+                                    height = 24,
+                                    text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.effects."..me.parent.id..".name")) end,
+                                    color = function() return GetTheme().button_secondary.text end,
+                                    font = mdfont_2x,
+                                    fontScale = function(me)
+                                        local text = me.text(me)
+                                        local width = me.font:getWidth(text)/2
+                                        return math.min(1,me.width/width)*0.5
+                                    end,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }))
+                                if data and data.icon then
+                                    button:addChild(UI.Image:new({
+                                        clickThrough = true,
+                                        image = data.icon,
+                                        width = 64,
+                                        height = 64
+                                    }))
+                                else
+                                    button:addChild(UI.Text:new({
+                                        clickThrough = true,
+                                        width = 96,
+                                        height = 96,
+                                        text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.effects."..me.parent.id..".name")) end,
+                                        color = function() return GetTheme().button_secondary.text end,
+                                        font = mdfont_2x,
+                                        fontScale = 0.5,
+                                        alignHoriz = "center",
+                                        alignVert = "center"
+                                    }))
+                                end
                                 options:addChild(button)
                                 x = x + 96 + 16
                                 if x >= 432 then
                                     x = 0
-                                    y = y + 96 + 16
+                                    y = y + 120 + 16
                                 end
                             end
-                            addOption(nil)
+                            addOption(nil, {icon = NoCosmeticIcon})
                             for name,_ in pairs(Cosmetics.Effects) do
                                 addOption(name)
                             end
@@ -514,6 +554,22 @@ local customizeMenu = UI.Element:new({
                                     cursor = "hand",
                                     children = {}
                                 })
+                                button:addChild(UI.Text:new({
+                                    clickThrough = true,
+                                    y = 60,
+                                    width = 96,
+                                    height = 24,
+                                    text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.hats."..me.parent.id..".name")) end,
+                                    color = function() return GetTheme().button_secondary.text end,
+                                    font = mdfont_2x,
+                                    fontScale = function(me)
+                                        local text = me.text(me)
+                                        local width = me.font:getWidth(text)/2
+                                        return math.min(1,me.width/width)*0.5
+                                    end,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }))
                                 if data then
                                     button:addChild(UI.Image:new({
                                         clickThrough = true,
@@ -526,7 +582,7 @@ local customizeMenu = UI.Element:new({
                                 x = x + 96 + 16
                                 if x >= 432 then
                                     x = 0
-                                    y = y + 96 + 16
+                                    y = y + 120 + 16
                                 end
                             end
                             addOption(nil, {image = NoCosmeticIcon, scale = 0.5})
