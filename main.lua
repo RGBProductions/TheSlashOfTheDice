@@ -312,7 +312,6 @@ Settings = {
     }
 }
 
-Cosmetics.Search("default/cosmetics")
 if love.filesystem.getInfo("settings.json") then
     local itms = json.decode(love.filesystem.read("settings.json"))
     Settings = table.merge(Settings, itms)
