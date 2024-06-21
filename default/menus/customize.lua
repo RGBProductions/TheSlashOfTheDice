@@ -218,7 +218,7 @@ local customizeMenu = UI.Element:new({
                                     cursor = "hand",
                                     children = {}
                                 })
-                                if data then
+                                if data and data.icon then
                                     button:addChild(UI.Image:new({
                                         clickThrough = true,
                                         image = data.icon,
@@ -229,7 +229,7 @@ local customizeMenu = UI.Element:new({
                                     button:addChild(UI.Text:new({
                                         width = 96,
                                         height = 96,
-                                        text = function(me) return Localize(me.id == nil and "customization.none" or ("customization.trails."..me.id..".name")) end,
+                                        text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.trails."..me.parent.id..".name")) end,
                                         color = function() return GetTheme().button_secondary.text end,
                                         font = mdfont_2x,
                                         fontScale = 0.5,
@@ -371,7 +371,7 @@ local customizeMenu = UI.Element:new({
                                         UI.Text:new({
                                             width = 96,
                                             height = 96,
-                                            text = function(me) return Localize(me.id == nil and "customization.none" or ("customization.effects."..me.id..".name")) end,
+                                            text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.effects."..me.parent.id..".name")) end,
                                             color = function() return GetTheme().button_secondary.text end,
                                             font = mdfont_2x,
                                             fontScale = 0.5,
