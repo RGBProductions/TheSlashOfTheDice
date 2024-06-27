@@ -234,10 +234,35 @@ function scene.keypressed(k)
             end
         end
     end
-    if Conversion[k] then
-        k = Conversion[k]
+    local hasDialog = #Dialogs > 0
+    for d = #Dialogs, 1, -1 do
+        local dialog = Dialogs[d]
+        if dialog.keypress then
+            local hit,elem = dialog:keypress(k)
+            if hit then
+                break
+            end
+        end
     end
-    
+    if (Menus[CurrentMenu] or {}).keypress and not hasDialog then
+        (Menus[CurrentMenu] or {}):keypress(k)
+    end
+end
+
+function scene.textinput(t)
+    local hasDialog = #Dialogs > 0
+    for d = #Dialogs, 1, -1 do
+        local dialog = Dialogs[d]
+        if dialog.textinput then
+            local hit,elem = dialog:textinput(t)
+            if hit then
+                break
+            end
+        end
+    end
+    if (Menus[CurrentMenu] or {}).textinput and not hasDialog then
+        (Menus[CurrentMenu] or {}):textinput(t)
+    end
 end
 
 function scene.mousemoved(x, y, dx, dy)
