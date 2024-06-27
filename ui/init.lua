@@ -15,9 +15,9 @@ function Color(code)
 end
 
 function HexCodeOf(r,g,b)
-    local R = string.format("%x", math.floor(r*255)):upper()
-    local G = string.format("%x", math.floor(g*255)):upper()
-    local B = string.format("%x", math.floor(b*255)):upper()
+    local R = string.format("%x", math.floor(r*255+0.5)):upper()
+    local G = string.format("%x", math.floor(g*255+0.5)):upper()
+    local B = string.format("%x", math.floor(b*255+0.5)):upper()
     R = ("0"):rep(2-#R)..R
     G = ("0"):rep(2-#G)..G
     B = ("0"):rep(2-#B)..B
