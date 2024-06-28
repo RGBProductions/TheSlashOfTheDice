@@ -29,7 +29,7 @@ function scene.load(args)
     if logoName then
         logoName = "logo-" .. logoName
     else
-        logoName = "logo"
+        logoName = "logo-en"
     end
     Logo = love.graphics.newImage("assets/images/ui/" .. logoName .. ".png")
     LogoPos = love.graphics.getHeight()
