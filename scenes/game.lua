@@ -769,7 +769,7 @@ function scene.keypressed(k)
     end
     if k == "space" and #GetEntitiesWithID("player") == 0 and not Spectating then
         if GameSetups[Gamemode].canRespawn then
-            AddNewPlayer(Settings.customization, Gamemode == "calm")
+            AddNewPlayer(Settings.customization, Gamemode == "calm" or Gamemode == "tutorial")
             IsDead = false
         elseif IsMultiplayer then
             Spectating = true
@@ -793,7 +793,7 @@ function scene.mousepressed(x, y, b, t, p)
             local itm = math.floor((y-my)/lrfont:getHeight())
             if itm == 0 then
                 if GameSetups[Gamemode].canRespawn then
-                    AddNewPlayer(Settings.customization, Gamemode == "calm")
+                    AddNewPlayer(Settings.customization, Gamemode == "calm" or Gamemode == "tutorial")
                     IsDead = false
                 elseif IsMultiplayer then
                     Spectating = true
@@ -1117,7 +1117,7 @@ function scene.gamepadpressed(stick,b)
             ShowGameMenu = not ShowGameMenu
         else
             if GameSetups[Gamemode].canRespawn then
-                AddNewPlayer(Settings.customization, Gamemode == "calm")
+                AddNewPlayer(Settings.customization, Gamemode == "calm" or Gamemode == "tutorial")
                 IsDead = false
             elseif IsMultiplayer then
                 Spectating = true
