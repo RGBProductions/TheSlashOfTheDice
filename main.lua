@@ -316,8 +316,22 @@ if love.filesystem.getInfo("settings.json") then
     local itms = json.decode(love.filesystem.read("settings.json"))
     Settings = table.merge(Settings, itms)
 end
-function DeathHandler() 
-print("died")
+function DeathHandler(event) 
+    if Settings.customization.death_effect then
+        local trail = Cosmetics.Effects[Settings.customization.death_effect]
+        if trail.events.player_death then
+        local actions = trail.events.player_death.actions
+        print(actions)
+        for _,v in ipairs(actions) do
+            print(v.type)
+            if v.type == "particle_burst" then
+                local particle = Game.Particle:new(event.x, event.y, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]))
+                particle.image = v.image
+                table.insert(Particles, particle)
+            end 
+        end
+    end
+end
 end
 function StepHandler(event) 
     if Settings.customization.trail then

@@ -51,8 +51,8 @@ function Cosmetics.ReadEffect(dir)
             local action = {
                 type = v2.type,
                 spawnRadius = v2.spawnRadius,
-                velocity = v2.velocity,
-                size = v2.size,
+                velocity = v2.velocity or {0,0},
+                size = v2.size or {0,0},
                 amount = v2.amount,
                 life = v2.life,
                 image = love.graphics.newImage(dir.."/"..v2.image..".png")
