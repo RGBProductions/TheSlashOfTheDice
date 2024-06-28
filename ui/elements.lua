@@ -239,7 +239,7 @@ function UI.TextInput:draw(stencilValue)
         if self.input:hasLargeSelection() then
             love.graphics.setColor(0,0.5,1,0.5)
             love.graphics.rectangle("fill", startX+a, -h/2, b-a, h)
-        else
+        elseif (love.timer.getTime() - (self.clickTime or 0))%1 <= 0.5 then
             love.graphics.setColor(1,1,1)
             love.graphics.rectangle("fill", startX+a-1, -h/2, 2, h)
         end
@@ -322,6 +322,7 @@ end
 function UI.TextInput:clickInstance(mx,my,b)
     if b == 1 then
         self.selected = true
+        self.clickTime = love.timer.getTime()
         local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
         local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
         local searchX,searchY,searchW,searchH = 0,0,w,h
