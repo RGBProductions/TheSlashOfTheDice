@@ -8,8 +8,7 @@
                     "velocity": [8,16],
                     "size": [0.5,1],
                     "amount": 32,
-                    "life": 0.5,
-                    "image": "flame"
+                    "life": 0.5
                 }
             ]
         }

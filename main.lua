@@ -318,17 +318,26 @@ if love.filesystem.getInfo("settings.json") then
     Settings = table.merge(Settings, itms)
 end
 function DeathHandler(event) 
+    print("DeathHandler")
     if Settings.customization.death_effect then
+        print("Has effect in settings")
         local trail = Cosmetics.Effects[Settings.customization.death_effect]
         if trail.events.player_death then
+        print("death")
         local actions = trail.events.player_death.actions
         print(actions)
         for _,v in ipairs(actions) do
             print(v.type)
             if v.type == "particle_burst" then
-                local particle = Game.Particle:new(event.x, event.y, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]))
-                particle.image = v.image
-                table.insert(Particles, particle)
+                for _=1,v.amount do
+                    local dir = randFloat(0,2*math.pi)
+                    local vx,vy = math.sin(dir), math.cos(dir)
+                    local velocity = v.velocity
+                    if type(velocity) == "table" then velocity = randFloat(velocity[1],velocity[2]) end
+                    local particle = Game.Particle:new(event.x, event.y, v.life, vx*velocity, vy*velocity, 20, randFloat(v.size[1],v.size[2]))
+                    particle.image = v.image
+                    table.insert(Particles, particle)
+                end
             end 
         end
     end
@@ -341,7 +350,8 @@ function StepHandler(event)
         local actions = trail.events.step.actions
         for _,v in ipairs(actions) do
             if v.type == "particle" then
-                local particle = Game.Particle:new(event.x, event.y, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]))
+                local sx,sy = randFloat(-v.spawnRadius,v.spawnRadius),randFloat(-v.spawnRadius,v.spawnRadius)
+                local particle = Game.Particle:new(event.x+sx, event.y+sy, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]))
                 particle.image = v.image
                 table.insert(Particles, particle)
             end

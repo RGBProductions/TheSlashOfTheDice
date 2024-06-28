@@ -45,22 +45,22 @@ function Cosmetics.ReadEffect(dir)
     local effectSettings = json.decode(love.filesystem.read(dir.."/effect.json"))
     local id = dir:split("/")[4]
     local events = {}
-    for _,v in ipairs(effectSettings.events) do
+    for i,v in pairs(effectSettings.events) do
         local actions = {}
-        for _,v2 in ipairs(v.actions) do
+        for _,v2 in pairs(v.actions) do
             local action = {
                 type = v2.type,
                 spawnRadius = v2.spawnRadius,
-                velocity = v2.velocity or {0,0},
-                size = v2.size or {0,0},
-                amount = v2.amount,
+                size = v2.size,
                 life = v2.life,
-                image = love.graphics.newImage(dir.."/"..v2.image..".png")
+                amount = v2.amount,
+                velocity = v2.velocity or {0,0},
+                image = (type(v2.image) == "string") and love.graphics.newImage(dir.."/"..v2.image..".png") or nil
             }
             table.insert(actions,action)
         end
-        local event = {name=v.name, actions=actions}
-        events[v.name] = event
+        local event = {name=i, actions=actions}
+        events[i] = event
     end
     local trail = {events=events}
     Cosmetics.Effects[id] = trail
