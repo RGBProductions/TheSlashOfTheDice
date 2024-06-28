@@ -34,7 +34,7 @@ function GetPoolByID(id)
         local Stats = player:get("stats")
         local die = {}
         -- Calculate Total Statistic Score
-        local statscore = (Stats["Attack"]/150)*0.4 + (Stats["Defense"]/150)*0.4 + (Stats["Luck"]/90)*0.2
+        local statscore = math.max(0,math.min(1,(Stats["Attack"]/150)*0.4 + (Stats["Defense"]/150)*0.4 + (Stats["Luck"]/90)*0.2))
         local istatscore = 1-statscore
         for n = 1, istatscore*8 do
             table.insert(die, 6)
