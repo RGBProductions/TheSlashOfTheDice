@@ -1,5 +1,6 @@
 utf8 = require "utf8"
 hsx = require "lib.hsx"
+typingutil = require "lib.typingutil"
 json = require "json"
 
 function utf8.sub(txt, i, j)

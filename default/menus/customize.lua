@@ -90,14 +90,14 @@ local customizeMenu = UI.Element:new({
                         local h,s,v = hsx.rgb2hsv(Settings.customization.color[1],Settings.customization.color[2],Settings.customization.color[3])
                         local popup = UI.Panel:new({
                             width = 480,
-                            height = 448,
+                            height = 488,
                             background = function() return GetTheme().popup_info.background end,
                             border = function() return GetTheme().popup_info.border end,
                             children = {
                                 UI.Text:new({
                                     clickThrough = true,
                                     x = 0,
-                                    y = -176,
+                                    y = -196,
                                     width = 480,
                                     height = 64,
                                     text = function() return Localize("title.customization.color") end,
@@ -109,18 +109,56 @@ local customizeMenu = UI.Element:new({
                                 UI.ColorPicker:new({
                                     id = "colorpicker",
                                     x = 0,
-                                    y = -40+40,
+                                    y = -20,
                                     width = 256,
                                     height = 256,
                                     hue = h,
                                     saturation = s,
-                                    value = v
+                                    value = v,
+                                    oncolorchanged = function(me,hsv,rgb)
+                                        me.parent:getChildById("hexcode").input.content = HexCodeOf(rgb[1],rgb[2],rgb[3])
+                                    end
+                                }),
+                                UI.TextInput:new({
+                                    id = "hexcode",
+                                    x = 0,
+                                    y = 132,
+                                    width = 256,
+                                    height = 32,
+                                    background = function() return GetTheme().button_secondary.background end,
+                                    border = function() return GetTheme().button_secondary.border end,
+                                    initWith = function(me)
+                                        return HexCodeOf(unpack(Settings.customization.color))
+                                    end,
+                                    onvaluechanged = function(me,value)
+                                        local S,R = pcall(Color,value)
+                                        if S then
+                                            me.parent:getChildById("colorpicker"):setRGB(unpack(R))
+                                        end
+                                    end,
+                                    children = {
+                                        UI.Text:new({
+                                            clickThrough = true,
+                                            width = 256,
+                                            height = 32,
+                                            alignHoriz = "center",
+                                            alignVert = "center",
+                                            font = lgfont_2x,
+                                            fontScale = 0.5,
+                                            text = function (me)
+                                                if me.parent.selected then
+                                                    return me.parent.input.content
+                                                end
+                                                return HexCodeOf(unpack(me.parent.parent:getChildById("colorpicker"):getRGB()))
+                                            end
+                                        })
+                                    }
                                 }),
                                 UI.Button:new({
                                     id = "apply",
                                     width = 256,
                                     height = 64,
-                                    y = 136+40,
+                                    y = 156+40,
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)

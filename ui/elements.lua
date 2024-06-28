@@ -173,6 +173,220 @@ end
 
 --#endregion
 
+--#region Text Input
+
+UI.TextInput = UI.Element:new({})
+
+function UI.TextInput:initInstance()
+    if not self.input then
+        local initWith = (type(self.initWith) == "function" and self.initWith(self)) or (self.initWith or "")
+        self.input = typingutil.newInputObj(tostring(initWith), self.maxLength)
+    end
+end
+
+function UI.TextInput:draw(stencilValue)
+    stencilValue = stencilValue or 0
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    love.graphics.push()
+    love.graphics.translate(x, y)
+
+    if not self.hidden then
+        if type(self.drawInstance) == "function" then
+            self:drawInstance()
+        end
+
+        for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+            if type(child) == "table" and type(child.draw) == "function" then
+                child:draw(stencilValue)
+            end
+        end
+    end
+
+    if self.selected then
+        local searchX,searchY,searchW,searchH = 0,0,w,h
+        local align = "center"
+        local font = mdfont
+        local fontscale = 1
+        local text = self:getChildByType(UI.Text,true)
+        if text then
+            searchX = (type(text.x) == "function" and text.x(text)) or (text.x or 0)
+            searchY = (type(text.y) == "function" and text.y(text)) or (text.y or 0)
+            searchW = (type(text.width) == "function" and text.width(text)) or (text.width or 0)
+            searchH = (type(text.height) == "function" and text.height(text)) or (text.height or 0)
+            align = (type(text.alignHoriz) == "function" and text.alignHoriz(text)) or (text.alignHoriz or "left")
+            font = (type(text.font) == "function" and text.font(text)) or (text.font or lgfont)
+            fontscale = (type(text.fontScale) == "function" and text.fontScale(text)) or (text.fontScale or 1)
+        end
+        local textWidth = font:getWidth(self.input.content)*fontscale
+        local baseX = searchX-searchW/2
+        local ox = 0
+        if align == "center" then
+            ox = (searchW-textWidth)/2
+        end
+        if align == "right" then
+            ox = searchW-textWidth
+        end
+        local startX = baseX+ox
+        local textA = utf8.sub(self.input.content, 1, self.input:getMinSelection())
+        local textB = utf8.sub(self.input.content, 1, self.input:getMaxSelection())
+        local a = font:getWidth(textA)*fontscale
+        local b = font:getWidth(textB)*fontscale
+        if self.input:hasLargeSelection() then
+            love.graphics.setColor(0,0.5,1,0.5)
+            love.graphics.rectangle("fill", startX+a, -h/2, b-a, h)
+        elseif (love.timer.getTime() - (self.clickTime or 0))%1 <= 0.5 then
+            love.graphics.setColor(1,1,1)
+            love.graphics.rectangle("fill", startX+a-1, -h/2, 2, h)
+        end
+        love.graphics.setColor(1,1,1)
+    end
+
+    love.graphics.pop()
+end
+
+function UI.TextInput:drawInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    local background = self.background or {1,1,1}
+    local border = self.border or {color = {1,1,1}, width = 0}
+    local rounding = self.rounding or 0
+
+    if type(background) == "function" then background = background(self) end
+    if type(border) == "function" then border = border(self) end
+    if type(rounding) == "function" then rounding = rounding(self) end
+
+    local r,g,b,a = love.graphics.getColor()
+    local lw = love.graphics.getLineWidth()
+
+    if type(background) == "table" then
+        love.graphics.setColor(background)
+        love.graphics.rectangle("fill", -w/2, -h/2, w, h)
+    elseif type(background.getWidth) == "function" then
+        love.graphics.setColor(1,1,1)
+        love.graphics.draw(background, -w/2, -h/2, 0, w/background:getWidth(), h/background:getHeight())
+    end
+
+    if border and (border.width or 0) > 0 then
+        love.graphics.setColor(border.color or {1,1,1})
+        love.graphics.setLineWidth(border.width or 0)
+        love.graphics.rectangle("line", -w/2+(border.width or 0)/2, -h/2+(border.width or 0)/2, w-(border.width or 0), h-(border.width or 0), rounding)
+    end
+
+    if ShowDebugInfo then
+        love.graphics.setLineWidth(2)
+        love.graphics.setColor(1,1,1)
+        love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    end
+
+    love.graphics.setColor(r,g,b,a)
+    love.graphics.setLineWidth(lw)
+end
+
+function UI.TextInput:click(mx,my,b)
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    if self.clickThrough or self.hidden then
+        return false, self
+    end
+
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
+        if type(child) == "table" and type(child.click) == "function" then
+            local clicked = child:click(mx-x,my-y,b)
+            if clicked then
+                return clicked,child
+            end
+        end
+    end
+    
+    if mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2 then
+        if (not self.disabled) and type(self.clickInstance) == "function" then self:clickInstance(mx-x,my-y,b) end
+        return true, self
+    else
+        self.selected = false
+    end
+    return false, self
+end
+
+function UI.TextInput:clickInstance(mx,my,b)
+    if b == 1 then
+        self.selected = true
+        self.clickTime = love.timer.getTime()
+        local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+        local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+        local searchX,searchY,searchW,searchH = 0,0,w,h
+        local align = "center"
+        local font = mdfont
+        local fontscale = 1
+        local text = self:getChildByType(UI.Text,true)
+        if text then
+            searchX = (type(text.x) == "function" and text.x(text)) or (text.x or 0)
+            searchY = (type(text.y) == "function" and text.y(text)) or (text.y or 0)
+            searchW = (type(text.width) == "function" and text.width(text)) or (text.width or 0)
+            searchH = (type(text.height) == "function" and text.height(text)) or (text.height or 0)
+            align = (type(text.alignHoriz) == "function" and text.alignHoriz(text)) or (text.alignHoriz or "left")
+            font = (type(text.font) == "function" and text.font(text)) or (text.font or lgfont)
+            fontscale = (type(text.fontScale) == "function" and text.fontScale(text)) or (text.fontScale or 1)
+        end
+
+        local textWidth = font:getWidth(self.input.content)*fontscale
+        local baseX = searchX-searchW/2
+        local ox = 0
+        if align == "center" then
+            ox = (searchW-textWidth)/2
+        end
+        if align == "right" then
+            ox = searchW-textWidth
+        end
+        local startX = baseX+ox
+        local lastTextPos = 0
+        local textPos = 0
+        while startX + font:getWidth(utf8.sub(self.input.content, 1, textPos))*fontscale < mx and textPos <= utf8.len(self.input.content) do
+            lastTextPos = textPos
+            textPos = textPos + 1
+        end
+        local d1 = math.abs((startX + font:getWidth(utf8.sub(self.input.content, 1, lastTextPos))*fontscale) - mx)
+        local d2 = math.abs((startX + font:getWidth(utf8.sub(self.input.content, 1, textPos))*fontscale) - mx)
+        local sel = textPos
+        if d1 < d2 then
+            sel = lastTextPos
+        end
+        self.input.selection[1] = sel
+        self.input.selection[2] = sel
+    end
+end
+
+function UI.TextInput:textinputInstance(t)
+    if self.selected then
+        self.input:textinput(t)
+        if type(self.onvaluechanged) == "function" then
+            self:onvaluechanged(self.input.content)
+        end
+    end
+end
+
+function UI.TextInput:keypressInstance(k)
+    if self.selected then
+        self.input:defaultKeyboard(k)
+        if type(self.onvaluechanged) == "function" then
+            self:onvaluechanged(self.input.content)
+        end
+    end
+end
+
+--#endregion
+
 --#region Slider
 
 UI.Slider = UI.Element:new({})

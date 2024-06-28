@@ -15,9 +15,9 @@ function Color(code)
 end
 
 function HexCodeOf(r,g,b)
-    local R = string.format("%x", math.floor(r*255)):upper()
-    local G = string.format("%x", math.floor(g*255)):upper()
-    local B = string.format("%x", math.floor(b*255)):upper()
+    local R = string.format("%x", math.floor(r*255+0.5)):upper()
+    local G = string.format("%x", math.floor(g*255+0.5)):upper()
+    local B = string.format("%x", math.floor(b*255+0.5)):upper()
     R = ("0"):rep(2-#R)..R
     G = ("0"):rep(2-#G)..G
     B = ("0"):rep(2-#B)..B
@@ -41,8 +41,15 @@ function UI.Element:new(data)
     end
 
     self.__index = self -- assign the index to this element
+
+    if type(element.initInstance) == "function" then
+        element:initInstance()
+    end
+
     return element
 end
+
+function UI.Element:initInstance() end
 
 function UI.Element:setParent(parent, i)
     if self.parent then
@@ -163,6 +170,56 @@ end
 
 function UI.Element:releaseInstance(mx,my,b) end
 
+function UI.Element:keypress(k)
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
+        if type(child) == "table" and type(child.keypress) == "function" then
+            local released = child:keypress(k)
+            -- if released then
+            --     return released,child
+            -- end
+        end
+    end
+    
+    if (not self.disabled) and type(self.keypressInstance) == "function" then self:keypressInstance(k) end
+    return true,self
+    -- return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
+end
+
+function UI.Element:keypressInstance(k) end
+
+function UI.Element:textinput(t)
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
+        if type(child) == "table" and type(child.textinput) == "function" then
+            local released = child:textinput(t)
+            -- if released then
+            --     return released,child
+            -- end
+        end
+    end
+    
+    if (not self.disabled) and type(self.textinputInstance) == "function" then self:textinputInstance(t) end
+    return true,self
+    -- return mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2, self
+end
+
+function UI.Element:textinputInstance(t) end
+
 function UI.Element:scroll(mx,my,sx,sy)
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
     local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
@@ -254,6 +311,22 @@ function UI.Element:getChildById(id,dontRecurse)
                 return child
             elseif (not dontRecurse) then
                 local found = child:getChildById(id)
+                if found then
+                    return found
+                end
+            end
+        end
+    end
+    return nil
+end
+
+function UI.Element:getChildByType(t,dontRecurse)
+    for _,child in ipairs(self.children or {}) do
+        if type(child) == "table" then
+            if child.__index == t then
+                return child
+            elseif (not dontRecurse) then
+                local found = child:getChildByType(t)
                 if found then
                     return found
                 end
