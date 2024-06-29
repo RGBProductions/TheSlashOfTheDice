@@ -418,7 +418,7 @@ end
 local saveTime = 0
 
 GlobalTime = 0
-local presenceTimer = 0
+local presenceTimer = 15
 
 function love.update(dt)
     local t = love.timer.getTime()
@@ -443,7 +443,7 @@ function love.update(dt)
         saveTime = 0
     end
     presenceTimer = presenceTimer + dt
-    if presenceTimer >= 2 then
+    if presenceTimer >= 15 then
         if DiscordRPC then DiscordRPC.updatePresence(DiscordPresence) end
         presenceTimer = 0
     end
