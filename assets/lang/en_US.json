@@ -185,14 +185,31 @@
         "customization.trails.flame.name": "Flame",
         "customization.trails.flame.description": "You leave a path of fire wherever you go.",
 
+        "customization.effects.burst.name": "Burst",
+        "customization.effects.burst.description": "I knew this game was missing particle effects.",
         "customization.effects.fire_burst.name": "Fire Burst",
         "customization.effects.fire_burst.description": "So THAT'S what you're filled with. Huh.",
+        "customization.effects.error.name": "Error",
+        "customization.effects.error.description": "Error: scenes/game.lua:665: attempt to index global 'player' (a nil value)",
 
         "customization.hats.top_hat.name": "Top Hat",
         "customization.hats.top_hat.description": "A fancy hat for distinguished individuals.\n\nOr just because you like top hats.",
         "customization.hats.double_top_hat.name": "Double Top Hat",
         "customization.hats.double_top_hat.description": "Double the top hats, double the fashion... I think.",
         "customization.hats.red_dude.name": "Red Dude",
-        "customization.hats.red_dude.description": "YOU CANT JUST THROW TRASH AT THE ENEMIES WTF"
+        "customization.hats.red_dude.description": "YOU CANT JUST THROW TRASH AT THE ENEMIES WTF",
+
+        "customization.hats.pride_aro.name": "Aromantic Flag",
+        "customization.hats.pride_asex.name": "Asexual Flag",
+        "customization.hats.pride_bi.name": "Bisexual Flag",
+        "customization.hats.pride_fluid.name": "Genderfluid Flag",
+        "customization.hats.pride_gay.name": "Gay Flag",
+        "customization.hats.pride_inter.name": "Intersex Flag",
+        "customization.hats.pride_les.name": "Lesbian Flag",
+        "customization.hats.pride_pan.name": "Pansexual Flag",
+        "customization.hats.pride_prog.name": "Progress Flag",
+        "customization.hats.pride_trans.name": "Transgender Flag",
+        "customization.hats.pride_transfem.name": "Transfem Flag",
+        "customization.hats.pride_transmasc.name": "Transmasc Flag"
     }
 }
