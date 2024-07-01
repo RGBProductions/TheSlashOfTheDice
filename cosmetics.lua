@@ -6,7 +6,8 @@ Cosmetics = {
 
 function Cosmetics.ReadHat(dir)
    local hatsettings = json.decode(love.filesystem.read(dir.."/hat.json"))
-   local id = dir:split("/")[4]
+   local spl = dir:split("/")
+   local id = spl[#spl]
    local hat = {
     image = love.graphics.newImage(dir.."/hat.png"),
     anchor = hatsettings.anchor,
@@ -18,7 +19,8 @@ end
 
 function Cosmetics.ReadTrail(dir)
     local trailsettings = json.decode(love.filesystem.read(dir.."/trail.json"))
-    local id = dir:split("/")[4]
+    local spl = dir:split("/")
+    local id = spl[#spl]
     local events = {}
     for i,v in pairs(trailsettings.events) do
         local actions = {}
@@ -43,7 +45,8 @@ end
 function Cosmetics.ReadEffect(dir)
     --todo: yep
     local effectSettings = json.decode(love.filesystem.read(dir.."/effect.json"))
-    local id = dir:split("/")[4]
+    local spl = dir:split("/")
+    local id = spl[#spl]
     local events = {}
     for i,v in pairs(effectSettings.events) do
         local actions = {}
