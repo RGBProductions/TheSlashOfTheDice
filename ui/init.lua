@@ -350,6 +350,7 @@ function UI.Element:getHighestChild(dontRecurse,oy)
                 local r_highest, r_pos = child:getHighestChild(dontRecurse,y)
                 if r_pos < pos then
                     highest = r_highest
+                    pos = r_pos
                 end
             end
         end
@@ -371,6 +372,7 @@ function UI.Element:getLowestChild(dontRecurse,oy)
                 local r_lowest, r_pos = child:getLowestChild(dontRecurse,y)
                 if r_pos > pos then
                     lowest = r_lowest
+                    pos = r_pos
                 end
             end
         end
@@ -392,6 +394,7 @@ function UI.Element:getLeftmostChild(dontRecurse,ox)
                 local r_leftmost, r_pos = child:getLeftmostChild(dontRecurse,x)
                 if r_pos < pos then
                     leftmost = r_leftmost
+                    pos = r_pos
                 end
             end
         end
@@ -413,6 +416,7 @@ function UI.Element:getRightmostChild(dontRecurse,ox)
                 local r_rightest, r_pos = child:getRightmostChild(dontRecurse,x)
                 if r_pos > pos then
                     rightest = r_rightest
+                    pos = r_pos
                 end
             end
         end
@@ -436,6 +440,7 @@ function UI.Element:getHighestPoint(dontRecurse,oy)
                 local r_highest, r_pos = child:getHighestPoint(dontRecurse,y)
                 if r_pos < pos then
                     highest = r_highest
+                    pos = r_pos
                 end
             end
         end
@@ -457,8 +462,9 @@ function UI.Element:getLowestPoint(dontRecurse,oy)
             end
             if (not dontRecurse) then
                 local r_lowest, r_pos = child:getLowestPoint(dontRecurse,y)
-                if r_pos < pos then
+                if r_pos > pos then
                     lowest = r_lowest
+                    pos = r_pos
                 end
             end
         end
@@ -482,6 +488,7 @@ function UI.Element:getLeftmostPoint(dontRecurse,ox)
                 local r_leftmost, r_pos = child:getLeftmostPoint(dontRecurse,x)
                 if r_pos < pos then
                     leftmost = r_leftmost
+                    pos = r_pos
                 end
             end
         end
@@ -503,8 +510,9 @@ function UI.Element:getRightmostPoint(dontRecurse,ox)
             end
             if (not dontRecurse) then
                 local r_rightmost, r_pos = child:getRightmostPoint(dontRecurse,x)
-                if r_pos < pos then
+                if r_pos > pos then
                     rightmost = r_rightmost
+                    pos = r_pos
                 end
             end
         end
