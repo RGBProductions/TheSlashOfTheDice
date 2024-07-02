@@ -189,6 +189,8 @@
         "customization.effects.burst.description": "I knew this game was missing particle effects.",
         "customization.effects.fire_burst.name": "Fire Burst",
         "customization.effects.fire_burst.description": "So THAT'S what you're filled with. Huh.",
+        "customization.effects.explosion.name": "Explosion",
+        "customization.effects.explosion.description": "oops",
         "customization.effects.error.name": "Error",
         "customization.effects.error.description": "Error: scenes/game.lua:665: attempt to index global 'player' (a nil value)",
 

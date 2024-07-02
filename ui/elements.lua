@@ -49,6 +49,68 @@ end
 
 --#endregion
 
+--#region Toggle
+
+UI.Toggle = UI.Element:new({})
+
+function UI.Toggle:drawInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    local background = self.background or {1,1,1}
+    local fill = self.fill or {0,0.5,1}
+    local border = self.border or {color = {1,1,1}, width = 0}
+    local rounding = self.rounding or 0
+
+    if type(background) == "function" then background = background(self) end
+    if type(fill) == "function" then fill = fill(self) end
+    if type(border) == "function" then border = border(self) end
+    if type(rounding) == "function" then rounding = rounding(self) end
+
+    local r,g,b,a = love.graphics.getColor()
+    local lw = love.graphics.getLineWidth()
+
+    if type(background) == "table" then
+        love.graphics.setColor(background)
+        love.graphics.rectangle("fill", -w/2, -h/2, w, h)
+    elseif type(background.getWidth) == "function" then
+        love.graphics.setColor(1,1,1)
+        love.graphics.draw(background, -w/2, -h/2, 0, w/background:getWidth(), h/background:getHeight())
+    end
+
+    if self.value then
+        if type(fill) == "table" then
+            love.graphics.setColor(fill)
+            love.graphics.rectangle("fill", -(w*0.75)/2, -(h*0.75)/2, (w*0.75), (h*0.75))
+        elseif type(fill.getWidth) == "function" then
+            love.graphics.setColor(1,1,1)
+            love.graphics.draw(fill, -(w*0.75)/2, -(h*0.75)/2, 0, (w*0.75)/fill:getWidth(), (h*0.75)/fill:getHeight())
+        end
+    end
+
+    if border and (border.width or 0) > 0 then
+        love.graphics.setColor(border.color or {1,1,1})
+        love.graphics.setLineWidth(border.width or 0)
+        love.graphics.rectangle("line", -w/2+(border.width or 0)/2, -h/2+(border.width or 0)/2, w-(border.width or 0), h-(border.width or 0), rounding)
+    end
+
+    if ShowDebugInfo then
+        love.graphics.setLineWidth(2)
+        love.graphics.setColor(1,1,1)
+        love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    end
+
+    love.graphics.setColor(r,g,b,a)
+    love.graphics.setLineWidth(lw)
+end
+
+function UI.Toggle:clickInstance(mx,my,b)
+    self.value = not self.value
+    if type(self.ontoggle) == "function" then self:ontoggle(self.value) end
+end
+
+--#endregion
+
 --#region Text
 
 UI.Text = UI.Element:new({})
