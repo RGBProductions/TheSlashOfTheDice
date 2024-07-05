@@ -188,7 +188,7 @@ local sVideoMenu = UI.Element:new({
                     fill = 1,
                     initWith = function() return Settings.video.ui_scale end,
                     onvaluechanged = function(self,value)
-                        tempSettings.videoui_scale = value
+                        tempSettings.video.ui_scale = value
                         self:getChildByType(UI.TextInput).input.content = tostring(math.floor(value*100)/100)
                     end,
                     children = {
@@ -224,7 +224,7 @@ local sVideoMenu = UI.Element:new({
                             },
                             onvaluechanged = function(self,value)
                                 local num = tonumber(value) or 0
-                                tempSettings.videoui_scale = num
+                                tempSettings.video.ui_scale = num
                                 self.parent.fill = math.max(self.parent.min,math.min(self.parent.max,num))
                             end,
                             onconfirm = function(self,value)
@@ -244,7 +244,7 @@ local sVideoMenu = UI.Element:new({
                     fill = 1,
                     initWith = function() return Settings.video.background_brightness*100 end,
                     onvaluechanged = function(self,value)
-                        tempSettings.videobackground_brightness = value/100
+                        tempSettings.video.background_brightness = value/100
                         self:getChildByType(UI.TextInput).input.content = tostring(math.floor(value))
                     end,
                     children = {
@@ -280,7 +280,7 @@ local sVideoMenu = UI.Element:new({
                             },
                             onvaluechanged = function(self,value)
                                 local num = tonumber(value) or 0
-                                tempSettings.videobackground_brightness = num/100
+                                tempSettings.video.background_brightness = num/100
                                 self.parent.fill = math.max(self.parent.min,math.min(self.parent.max,num))
                             end,
                             onconfirm = function(self,value)
