@@ -376,6 +376,9 @@ function UI.TextInput:click(mx,my,b)
         if (not self.disabled) and type(self.clickInstance) == "function" then self:clickInstance(mx-x,my-y,b) end
         return true, self
     else
+        if type(self.onconfirm) == "function" then
+            self:onconfirm(self.input.content)
+        end
         self.selected = false
     end
     return false, self
@@ -444,6 +447,12 @@ function UI.TextInput:keypressInstance(k)
         if type(self.onvaluechanged) == "function" then
             self:onvaluechanged(self.input.content)
         end
+        if k == "return" then
+            if type(self.onconfirm) == "function" then
+                self:onconfirm(self.input.content)
+            end
+            self.selected = false
+        end
     end
 end
 
@@ -452,6 +461,11 @@ end
 --#region Slider
 
 UI.Slider = UI.Element:new({})
+
+function UI.Slider:initInstance()
+    local initWith = (type(self.initWith) == "function" and self.initWith(self)) or (self.initWith or self.fill)
+    self.fill = initWith
+end
 
 function UI.Slider:drawInstance()
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)

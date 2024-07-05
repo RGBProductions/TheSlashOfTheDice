@@ -31,7 +31,7 @@ function scene.load(args)
     else
         logoName = "logo-en"
     end
-    Logo = love.graphics.newImage("assets/images/ui/" .. logoName .. ".png")
+    Logo = GetLogo(logoName)
     LogoPos = love.graphics.getHeight()
 
     CurrentMenu = args.menu or "main"

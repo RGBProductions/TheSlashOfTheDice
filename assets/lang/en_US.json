@@ -35,6 +35,9 @@
 
         "title.menu.play": "Play Game",
         "title.menu.settings": "Settings",
+        "title.menu.video_settings": "Video Settings",
+        "title.menu.audio_settings": "Audio Settings",
+        "title.menu.gameplay_settings": "Gameplay Settings",
         "title.menu.singleplayer": "Play Game",
         "title.menu.multiplayer": "Multiplayer",
         "title.menu.customization": "Player Customization",
@@ -43,6 +46,8 @@
         "title.customization.trail": "Select Trail",
         "title.customization.death_effect": "Select Death Effect",
         "title.customization.hat": "Select Hat",
+
+        "title.language": "Select Language",
 
         "title.credits": "Credits",
         "title.achievements": "Achievements",
@@ -67,6 +72,16 @@
         "button.settings.video": "Video",
         "button.settings.audio": "Audio",
         "button.settings.gameplay": "Gameplay",
+
+        "settings.color_by_operator": "Color by Operator",
+        "settings.ui_scale": "UI Scale",
+        "settings.background_brightness": "Background Brightness",
+        "settings.language": "Language",
+        "settings.music_volume": "Music Volume",
+        "settings.sound_volume": "Sound Volume",
+        "settings.dice_mode": "Dice Mode",
+        "settings.auto_aim_on": "Auto Aim",
+        "settings.auto_aim_limit": "Auto Aim Limit",
 
         "button.customize.color": "Color",
         "button.customize.trail": "Trail",

@@ -17,3 +17,8 @@ function GetTextDelay()
     local lang = Settings.language or "en_US"
     return (Languages[lang] or {}).textDelay or (1/40)
 end
+
+function GetLanguageName(lang)
+    lang = lang or (Settings.language or "en_US")
+    return (Languages[lang] or {}).name or lang
+end

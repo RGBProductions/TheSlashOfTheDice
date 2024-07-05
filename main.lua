@@ -84,6 +84,7 @@ else
 end
 
 -- smfont = love.graphics.getFont()
+
 smfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12)
 mdfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*FontScale)
 lgfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*FontScale)
@@ -175,7 +176,13 @@ require "ui"
 require "menus"
 require "cosmetics"
 
-require "default.menus"
+Logos = {}
+
+function GetLogo(name)
+    if Logos[name] then return Logos[name] end
+    Logos[name] = love.graphics.newImage("assets/images/ui/" .. name .. ".png")
+    return Logos[name]
+end
 
 if not love.filesystem.getInfo("achievements.txt") then
     Achievements.Save("achievements.txt")
@@ -317,6 +324,9 @@ if love.filesystem.getInfo("settings.json") then
     local itms = json.decode(love.filesystem.read("settings.json"))
     Settings = table.merge(Settings, itms)
 end
+
+require "default.menus"
+
 function DeathHandler(event) 
     print("DeathHandler")
     if Settings.customization.death_effect then
