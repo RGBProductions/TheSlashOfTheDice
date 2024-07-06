@@ -172,10 +172,6 @@ function scene.draw()
 
     love.graphics.setFont(lgfont)
 
-    local f8 = "This menu is incomplete\nPress F8 to use the old menu"
-    local height = lgfont:getHeight()*(#(({lgfont:getWrap(f8,lgfont:getWidth(f8))})[2]))
-    love.graphics.printf(f8, love.graphics.getWidth()-lgfont:getWidth(f8), love.graphics.getHeight() - height, lgfont:getWidth(f8), "right")
-
     if checkingUpdate then
         love.graphics.setColor(1,1,1,0.75)
         love.graphics.printf(Localize("update.checking"), 0, love.graphics.getHeight() - lgfont:getHeight(), love.graphics.getWidth(), "center")

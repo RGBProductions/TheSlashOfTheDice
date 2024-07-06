@@ -227,7 +227,7 @@ EntityTypes = {
                 if self:get("slashTime") and self:get("slashTime") >= 0 then
                     love.graphics.setColor(1,0,0)
                 end
-                if self.invincibility > 0 then
+                if (self.invincibility or 0) > 0 then
                     local r,g,b,a = love.graphics.getColor()
                     love.graphics.setColor(r,g,b,0.5)
                 end

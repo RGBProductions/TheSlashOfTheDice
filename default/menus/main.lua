@@ -43,6 +43,9 @@ local mainMenu = UI.Element:new({
             background = function() return GetTheme().button_secondary.background end,
             border = function() return GetTheme().button_secondary.border end,
             cursor = "hand",
+            onclick = function()
+                SceneManager.LoadScene("scenes/achievements")
+            end,
             children = {
                 UI.Image:new({
                     clickThrough = true,
@@ -77,6 +80,9 @@ local mainMenu = UI.Element:new({
             background = function() return GetTheme().button_secondary.background end,
             border = function() return GetTheme().button_secondary.border end,
             cursor = "hand",
+            onclick = function()
+                SceneManager.LoadScene("scenes/credits")
+            end,
             children = {
                 UI.Image:new({
                     clickThrough = true,
