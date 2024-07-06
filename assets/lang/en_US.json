@@ -48,6 +48,7 @@
         "title.customization.hat": "Select Hat",
 
         "title.language": "Select Language",
+        "title.dice_mode": "Select Dice Mode",
 
         "title.credits": "Credits",
         "title.achievements": "Achievements",
@@ -82,6 +83,12 @@
         "settings.dice_mode": "Dice Mode",
         "settings.auto_aim_on": "Auto Aim",
         "settings.auto_aim_limit": "Auto Aim Limit",
+
+        "dice_mode.0": "Legacy",
+        "dice_mode.1": "Even",
+        "dice_mode.2": "Situational",
+        "dice_mode.3": "Unfair",
+        "dice_mode.4": "Blessed",
 
         "button.customize.color": "Color",
         "button.customize.trail": "Trail",
@@ -173,6 +180,7 @@
         "credits.ui": "UI Design",
         "credits.testing": "Beta Testing",
         "credits.ios_macos": "MacOS and iOS Builds",
+        "credits.translation": "Translation",
         "credits.you_header": "And thank you",
         "credits.you_text": "for playing this game!",
 

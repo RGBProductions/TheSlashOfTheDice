@@ -71,7 +71,7 @@ local settingsMenu = UI.Element:new({
                         })
                     },
                     onclick = function(self)
-                        tempSettings = table.merge({},Settings[self.id] or {})
+                        tempSettings = table.merge({},Settings)
                         SetMenu(self.id.."Settings")
                     end
                 }),
@@ -100,7 +100,7 @@ local settingsMenu = UI.Element:new({
                         })
                     },
                     onclick = function(self)
-                        tempSettings = table.merge({},Settings[self.id] or {})
+                        tempSettings = table.merge({},Settings)
                         SetMenu(self.id.."Settings")
                     end
                 })
@@ -521,9 +521,123 @@ local sAudioMenu = UI.Element:new({
             id = "options",
             x = 0,
             y = 0,
-            width = 480,
+            width = 640,
             height = 240,
-            children = {}
+            background = {0,0,0,0},
+            children = {
+                UI.Slider:new({
+                    id = "music_volume",
+                    x = 112,
+                    y = -104,
+                    width = 256,
+                    height = 24,
+                    min = 0, max = 100, step = 1,
+                    fill = 1,
+                    initWith = function() return Settings.audio.music_volume end,
+                    onvaluechanged = function(self,value)
+                        tempSettings.audio.music_volume = value
+                        self:getChildByType(UI.TextInput).input.content = tostring(math.floor(value))
+                    end,
+                    children = {
+                        UI.Text:new({
+                            text = function() return Localize("settings.music_volume") end,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
+                            x = -272,
+                            y = 0,
+                            width = 320,
+                            height = 32,
+                            alignHoriz = "left",
+                            alignVert = "center"
+                        }),
+                        UI.TextInput:new({
+                            background = function() return GetTheme().button_secondary.background end,
+                            border = function() return GetTheme().button_secondary.border end,
+                            x = 176,
+                            width = 64,
+                            height = 24,
+                            initWith = function() return math.floor(Settings.audio.music_volume) end,
+                            children = {
+                                UI.Text:new({
+                                    text = function(me) return me.parent.input.content end,
+                                    font = mdfont_2x,
+                                    fontScale = 0.5,
+                                    width = 64,
+                                    height = 24,
+                                    alignHoriz = "center",
+                                    alignVert = "center",
+                                    clickThrough = true
+                                })
+                            },
+                            onvaluechanged = function(self,value)
+                                local num = tonumber(value) or 0
+                                tempSettings.audio.music_volume = num
+                                self.parent.fill = math.max(self.parent.min,math.min(self.parent.max,num))
+                            end,
+                            onconfirm = function(self,value)
+                                local num = tonumber(value) or 0
+                                self.input.content = tostring(math.max(self.parent.min,math.min(self.parent.max,num)))
+                            end
+                        })
+                    }
+                }),
+                UI.Slider:new({
+                    id = "sound_volume",
+                    x = 112,
+                    y = -56,
+                    width = 256,
+                    height = 24,
+                    min = 0, max = 100, step = 1,
+                    fill = 1,
+                    initWith = function() return Settings.audio.sound_volume end,
+                    onvaluechanged = function(self,value)
+                        tempSettings.audio.sound_volume = value
+                        self:getChildByType(UI.TextInput).input.content = tostring(math.floor(value))
+                    end,
+                    children = {
+                        UI.Text:new({
+                            text = function() return Localize("settings.sound_volume") end,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
+                            x = -272,
+                            y = 0,
+                            width = 320,
+                            height = 32,
+                            alignHoriz = "left",
+                            alignVert = "center"
+                        }),
+                        UI.TextInput:new({
+                            background = function() return GetTheme().button_secondary.background end,
+                            border = function() return GetTheme().button_secondary.border end,
+                            x = 176,
+                            width = 64,
+                            height = 24,
+                            initWith = function() return math.floor(Settings.audio.sound_volume) end,
+                            children = {
+                                UI.Text:new({
+                                    text = function(me) return me.parent.input.content end,
+                                    font = mdfont_2x,
+                                    fontScale = 0.5,
+                                    width = 64,
+                                    height = 24,
+                                    alignHoriz = "center",
+                                    alignVert = "center",
+                                    clickThrough = true
+                                })
+                            },
+                            onvaluechanged = function(self,value)
+                                local num = tonumber(value) or 0
+                                tempSettings.audio.sound_volume = num
+                                self.parent.fill = math.max(self.parent.min,math.min(self.parent.max,num))
+                            end,
+                            onconfirm = function(self,value)
+                                local num = tonumber(value) or 0
+                                self.input.content = tostring(math.max(self.parent.min,math.min(self.parent.max,num)))
+                            end
+                        })
+                    }
+                }),
+            }
         }),
         UI.Button:new({
             id = "apply",
