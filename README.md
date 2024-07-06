@@ -10,3 +10,13 @@
 ### **Made for the GMTK 2022 Game Jam!**
 
 You are placed into an endless world, with endless waves of enemies attacking you. Can you defeat them all, or will luck prove to be an obstacle?
+
+### Dependencies
+
+This game uses two libraries:
+- [HTTPS](https://github.com/love2d/lua-https/actions/)
+- [Discord RPC](https://github.com/discord/discord-rpc/releases/latest)
+
+Make sure to get the correct release for your operating system!
+
+If these libraries are installed incorrectly, some functionality may be lost!

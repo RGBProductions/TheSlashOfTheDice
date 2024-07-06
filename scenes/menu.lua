@@ -7,6 +7,11 @@ function SetMenu(m)
     MenuSelection = 1
 end
 
+local scrollVelocity = 0
+local scrollTarget = {0,0}
+local isPress = false
+local isTouchHeld = false
+
 function scene.load(args)
     StopMusic()
     InGame = false
@@ -90,10 +95,44 @@ function scene.load(args)
     table.insert(MenuVersions, {name = "LÖVE", version = major .. "." .. minor .. " (" .. name .. ")"})
 end
 
+local function scroll(mx,my,x,y)
+    local screenWidth = 1280
+    local screenHeight = 720
+    local leftMargin = 160
+    local rightMargin = 160
+    local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local bottomMargin = 64-(LogoPos-16)
+    local centerpoint = {
+        (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
+        (topMargin+(love.graphics.getHeight()-bottomMargin))/2
+    }
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local m_x = (mx-centerpoint[1])/scale
+    local m_y = (my-centerpoint[2])/scale
+    local hasDialog = #Dialogs > 0
+    for d = #Dialogs, 1, -1 do
+        local dialog = Dialogs[d]
+        if dialog.scroll then
+            local hit,elem = dialog:scroll((mx-love.graphics.getWidth()/2)/scale,(my-love.graphics.getHeight()/2)/scale, x, y)
+            if hit then
+                break
+            end
+        end
+    end
+    if (Menus[CurrentMenu] or {}).scroll and not hasDialog then
+        (Menus[CurrentMenu] or {}):scroll(m_x, m_y, x, y)
+    end
+end
+
 function scene.update(dt)
     MenuTime = MenuTime + dt
     local blend = math.pow(1/(16^3), dt)
     LogoPos = blend*(LogoPos-16)+16
+
+    scrollVelocity = math.max(0,math.abs(scrollVelocity)-dt)*math.sign(scrollVelocity)
+    if not isTouchHeld then
+        scroll(scrollTarget[1],scrollTarget[2],0,scrollVelocity)
+    end
     -- LogoPos = LogoPos - ((LogoPos-16)/8)
 end
 
@@ -290,7 +329,8 @@ function scene.mousemoved(x, y, dx, dy)
     end
 end
 
-function scene.mousepressed(x, y, b)
+function scene.mousepressed(x, y, b, t)
+    if t then return end
     local screenWidth = 1280
     local screenHeight = 720
     local leftMargin = 160
@@ -348,34 +388,30 @@ function scene.mousereleased(x, y, b)
     end
 end
 
+function scene.touchpressed(id,x,y)
+    scrollTarget = {x,y}
+    isPress = true
+    isTouchHeld = true
+end
+
+function scene.touchmoved(id,x,y,dx,dy)
+    if math.abs(x-scrollTarget[1]) >= 8 or math.abs(y-scrollTarget[2]) >= 8 then
+        isPress = false
+        scrollVelocity = dy/16
+        scroll(scrollTarget[1],scrollTarget[2],0,dy/16)
+    end
+end
+
+function scene.touchreleased(id,x,y)
+    if isPress then
+        scene.mousepressed(scrollTarget[1],scrollTarget[2],1)
+    end
+    isPress = false
+    isTouchHeld = false
+end
+
 function scene.wheelmoved(x, y)
-    local screenWidth = 1280
-    local screenHeight = 720
-    local leftMargin = 160
-    local rightMargin = 160
-    local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
-    local bottomMargin = 64-(LogoPos-16)
-    local centerpoint = {
-        (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
-        (topMargin+(love.graphics.getHeight()-bottomMargin))/2
-    }
-    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
-    local mx,my = love.mouse.getPosition()
-    local m_x = (mx-centerpoint[1])/scale
-    local m_y = (my-centerpoint[2])/scale
-    local hasDialog = #Dialogs > 0
-    for d = #Dialogs, 1, -1 do
-        local dialog = Dialogs[d]
-        if dialog.scroll then
-            local hit,elem = dialog:scroll((mx-love.graphics.getWidth()/2)/scale,(my-love.graphics.getHeight()/2)/scale, x, y)
-            if hit then
-                break
-            end
-        end
-    end
-    if (Menus[CurrentMenu] or {}).scroll and not hasDialog then
-        (Menus[CurrentMenu] or {}):scroll(m_x, m_y, x, y)
-    end
+    scroll(love.mouse.getX(),love.mouse.getY(),x,y)
 end
 
 return scene
