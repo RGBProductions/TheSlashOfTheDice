@@ -827,6 +827,29 @@ function UI.ScrollablePanel:drawInstance()
         love.graphics.draw(background, -w/2, -h/2, 0, w/background:getWidth(), h/background:getHeight())
     end
 
+    local _,u_pos = self:getHighestPoint()
+    local _,d_pos = self:getLowestPoint()
+    local _,l_pos = self:getLeftmostPoint()
+    local _,r_pos = self:getRightmostPoint()
+    local minScrollY = math.min(0,u_pos+h/2)
+    local maxScrollY = math.max(0,d_pos-h/2)
+    local minScrollX = math.min(0,l_pos+w/2)
+    local maxScrollX = math.max(0,r_pos-w/2)
+    local minScrollY2 = math.min(0,u_pos)
+    local maxScrollY2 = math.max(0,d_pos)
+    local minScrollX2 = math.min(0,l_pos)
+    local maxScrollX2 = math.max(0,r_pos)
+    local scrollDiff = maxScrollY-minScrollY
+    local scrollDiff2 = maxScrollY2-minScrollY2
+    local scrollFrac = ((self.scrollY or 0)+minScrollY)/scrollDiff
+    if scrollDiff2 > h then
+        love.graphics.setColor(0.25,0.25,0.25)
+        love.graphics.rectangle("fill", w/2, -h/2, 8, h)
+        love.graphics.setColor(1,1,1)
+        local barH = h/math.max(h,scrollDiff2)*h
+        love.graphics.rectangle("fill", w/2, -h/2+scrollFrac*(h-barH), 8, barH)
+    end
+
     if border and (border.width or 0) > 0 then
         love.graphics.setColor(border.color or {1,1,1})
         love.graphics.setLineWidth(border.width or 0)

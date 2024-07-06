@@ -10,13 +10,43 @@ local playMenu = UI.Element:new({
             alignHoriz = "center",
             text = function() return Localize("title.menu.play") end
         }),
-        UI.Element:new({
+        UI.ScrollablePanel:new({
             id = "modes",
             x = 0,
-            y = -80,
+            y = 0,
+            width = 256,
+            height = 224,
+            background = {0,0,0,0},
             children = {
                 UI.Button:new({
+                    scrollThrough = true,
                     id = "tutorial",
+                    x = 0,
+                    y = -80,
+                    width = 256,
+                    height = 64,
+                    background = function() return GetTheme().button_secondary.background end,
+                    border = function() return GetTheme().button_secondary.border end,
+                    cursor = "hand",
+                    children = {
+                        UI.Text:new({
+                            clickThrough = true,
+                            x = 0,
+                            y = 0,
+                            width = 256,
+                            height = 64,
+                            text = function(self) return Localize("gamemode."..self.parent.id) end,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
+                            alignHoriz = "center",
+                            alignVert = "center"
+                        })
+                    },
+                    onclick = function(self) SceneManager.LoadScene("scenes/game", {mode = self.id}) end
+                }),
+                UI.Button:new({
+                    scrollThrough = true,
+                    id = "default",
                     x = 0,
                     y = 0,
                     width = 256,
@@ -41,7 +71,8 @@ local playMenu = UI.Element:new({
                     onclick = function(self) SceneManager.LoadScene("scenes/game", {mode = self.id}) end
                 }),
                 UI.Button:new({
-                    id = "default",
+                    scrollThrough = true,
+                    id = "enemy_rush",
                     x = 0,
                     y = 80,
                     width = 256,
@@ -66,13 +97,14 @@ local playMenu = UI.Element:new({
                     onclick = function(self) SceneManager.LoadScene("scenes/game", {mode = self.id}) end
                 }),
                 UI.Button:new({
-                    id = "enemy_rush",
+                    scrollThrough = true,
+                    id = "calm",
                     x = 0,
                     y = 160,
                     width = 256,
                     height = 64,
-                    background = function() return GetTheme().button_secondary.background end,
-                    border = function() return GetTheme().button_secondary.border end,
+                    background = function() return GetTheme()[Achievements.IsUnlocked("default_30_waves") and "button_secondary" or "button_back"].background end,
+                    border = function() return GetTheme()[Achievements.IsUnlocked("default_30_waves") and "button_secondary" or "button_back"].border end,
                     cursor = "hand",
                     children = {
                         UI.Text:new({
@@ -88,7 +120,12 @@ local playMenu = UI.Element:new({
                             alignVert = "center"
                         })
                     },
-                    onclick = function(self) SceneManager.LoadScene("scenes/game", {mode = self.id}) end
+                    onclick = function(self)
+                        if Achievements.IsUnlocked("default_30_waves") then
+                            SceneManager.LoadScene("scenes/game", {mode = self.id})
+                        else
+                        end
+                    end
                 })
             }
         }),
