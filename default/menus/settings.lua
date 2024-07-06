@@ -715,9 +715,236 @@ local sGameplayMenu = UI.Element:new({
             id = "options",
             x = 0,
             y = 0,
-            width = 480,
+            width = 640,
             height = 240,
-            children = {}
+            background = {0,0,0,0},
+            children = {
+                UI.Button:new({
+                    id = "dice_mode",
+                    cursor = "hand",
+                    x = 112,
+                    y = -104,
+                    width = 256,
+                    height = 32,
+                    background = function() return GetTheme().button_secondary.background end,
+                    border = function() return GetTheme().button_secondary.border end,
+                    onclick = function()
+                        local options = UI.ScrollablePanel:new({
+                            width = 432,
+                            height = 288,
+                            x = 0,
+                            y = 0,
+                            id = "options",
+                            children = {},
+                            scrollX = 0,
+                            scrollY = 0,
+                            background = {0,0,0,0}
+                        })
+                        do
+                            local y = 0
+                            local function addOption(id)
+                                local button = UI.Button:new({
+                                    scrollThrough = true,
+                                    id = id,
+                                    x = 0,
+                                    y = y-96,
+                                    width = 256,
+                                    height = 32,
+                                    background = function(me) return GetTheme()[tempSettings.gameplay.dice_mode == me.id and "button_primary" or "button_secondary"].background end,
+                                    border = function(me) return GetTheme()[tempSettings.gameplay.dice_mode == me.id and "button_primary" or "button_secondary"].border end,
+                                    onclick = function(me)
+                                        tempSettings.gameplay.dice_mode = me.id
+                                    end,
+                                    cursor = "hand",
+                                    children = {}
+                                })
+                                button:addChild(UI.Text:new({
+                                    clickThrough = true,
+                                    y = 0,
+                                    width = 256,
+                                    height = 24,
+                                    text = function(me) return Localize("dice_mode."..me.parent.id) end,
+                                    color = function() return GetTheme().button_secondary.text end,
+                                    font = lgfont_2x,
+                                    fontScale = function(self)
+                                        local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                        local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,(256-32)/width)
+                                    end,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }))
+                                options:addChild(button)
+                                y = y + 48
+                            end
+                            addOption(0)
+                            addOption(1)
+                            addOption(2)
+                            addOption(3)
+                            if Achievements.IsUnlocked("extreme_luck") then addOption(4) end
+                        end
+                        local popup = UI.Panel:new({
+                            width = 464,
+                            height = 480,
+                            background = function() return GetTheme().popup_info.background end,
+                            border = function() return GetTheme().popup_info.border end,
+                            children = {
+                                UI.Text:new({
+                                    clickThrough = true,
+                                    x = 0,
+                                    y = -192,
+                                    width = 464,
+                                    height = 64,
+                                    text = function() return Localize("title.dice_mode") end,
+                                    font = xlfont_2x,
+                                    fontScale = 0.5,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }),
+                                options,
+                                UI.Button:new({
+                                    id = "close",
+                                    width = 256,
+                                    height = 64,
+                                    y = 192,
+                                    background = function() return GetTheme().button_secondary.background end,
+                                    border = function() return GetTheme().button_secondary.border end,
+                                    onclick = function(me)
+                                        table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                    end,
+                                    cursor = "hand",
+                                    children = {
+                                        UI.Text:new({
+                                            clickThrough = true,
+                                            x = 0,
+                                            y = 0,
+                                            width = 256,
+                                            height = 64,
+                                            text = function() return Localize("button.ok") end,
+                                            color = function() return GetTheme().button_secondary.text end,
+                                            font = lgfont_2x,
+                                            fontScale = 0.5,
+                                            alignHoriz = "center",
+                                            alignVert = "center"
+                                        })
+                                    },
+                                })
+                            }
+                        })
+                        table.insert(Dialogs, popup)
+                    end,
+                    children = {
+                        UI.Text:new({
+                            text = function() return Localize("settings.dice_mode") end,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
+                            x = -272,
+                            y = 0,
+                            width = 320,
+                            height = 32,
+                            alignHoriz = "left",
+                            alignVert = "center"
+                        }),
+                        UI.Text:new({
+                            text = function() return Localize("dice_mode."..tempSettings.gameplay.dice_mode) end,
+                            font = lgfont_2x,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,(256-32)/width)
+                            end,
+                            x = 0,
+                            y = 0,
+                            width = 256,
+                            height = 32,
+                            clickThrough = true,
+                            alignHoriz = "center",
+                            alignVert = "center"
+                        })
+                    }
+                }),
+                UI.Toggle:new({
+                    id = "auto_aim_on",
+                    cursor = "hand",
+                    x = 112,
+                    y = -56,
+                    width = 32,
+                    height = 32,
+                    value = function() return Settings.gameplay.auto_aim_on end,
+                    ontoggle = function(self,value) tempSettings.gameplay.auto_aim_on = value end,
+                    children = {
+                        UI.Text:new({
+                            text = function() return Localize("settings.auto_aim_on") end,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
+                            x = -272,
+                            y = 0,
+                            width = 320,
+                            height = 32,
+                            alignHoriz = "left",
+                            alignVert = "center"
+                        })
+                    }
+                }),
+                UI.Slider:new({
+                    id = "auto_aim_limit",
+                    x = 112,
+                    y = -8,
+                    width = 256,
+                    height = 24,
+                    min = 0, max = 180, step = 1,
+                    fill = 1,
+                    initWith = function() return Settings.gameplay.auto_aim_limit end,
+                    onvaluechanged = function(self,value)
+                        tempSettings.gameplay.auto_aim_limit = value
+                        self:getChildByType(UI.TextInput).input.content = tostring(math.floor(value))
+                    end,
+                    children = {
+                        UI.Text:new({
+                            text = function() return Localize("settings.auto_aim_limit") end,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
+                            x = -272,
+                            y = 0,
+                            width = 320,
+                            height = 32,
+                            alignHoriz = "left",
+                            alignVert = "center"
+                        }),
+                        UI.TextInput:new({
+                            background = function() return GetTheme().button_secondary.background end,
+                            border = function() return GetTheme().button_secondary.border end,
+                            x = 176,
+                            width = 64,
+                            height = 24,
+                            initWith = function() return math.floor(Settings.gameplay.auto_aim_limit) end,
+                            children = {
+                                UI.Text:new({
+                                    text = function(me) return me.parent.input.content end,
+                                    font = mdfont_2x,
+                                    fontScale = 0.5,
+                                    width = 64,
+                                    height = 24,
+                                    alignHoriz = "center",
+                                    alignVert = "center",
+                                    clickThrough = true
+                                })
+                            },
+                            onvaluechanged = function(self,value)
+                                local num = tonumber(value) or 0
+                                tempSettings.gameplay.auto_aim_limit = num
+                                self.parent.fill = math.max(self.parent.min,math.min(self.parent.max,num))
+                            end,
+                            onconfirm = function(self,value)
+                                local num = tonumber(value) or 0
+                                self.input.content = tostring(math.max(self.parent.min,math.min(self.parent.max,num)))
+                            end
+                        })
+                    }
+                }),
+            }
         }),
         UI.Button:new({
             id = "apply",
