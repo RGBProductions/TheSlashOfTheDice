@@ -13,7 +13,6 @@ function Cosmetics.ReadHat(dir)
     anchor = hatsettings.anchor,
     scale = hatsettings.scale
    }
-   print("print"..id)
    Cosmetics.Hats[id] = hat
 end
 
