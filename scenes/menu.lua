@@ -390,6 +390,7 @@ end
 
 function scene.touchpressed(id,x,y)
     scrollTarget = {x,y}
+    scrollVelocity = 0
     isPress = true
     isTouchHeld = true
 end
