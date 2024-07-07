@@ -286,7 +286,15 @@ EntityTypes = {
             self.vy = blend*(self.vy)+0
 
             self.x = self.x + self.vx*dt*60
+            if Gamemode == "tutorial" and (self.x < -tutorialBounds or self.x > tutorialBounds) then
+                self.x = math.max(-tutorialBounds,math.min(tutorialBounds,self.x))
+                self.vx = 0
+            end
             self.y = self.y + self.vy*dt*60
+            if Gamemode == "tutorial" and (self.y < -tutorialBounds or self.y > tutorialBounds) then
+                self.y = math.max(-tutorialBounds,math.min(tutorialBounds,self.y))
+                self.vy = 0
+            end
 
             if (IsMultiplayer and Net.Hosting) or (not IsMultiplayer) then
                 if m <= 3*64 and self:get("slashTime") <= 0 and self:get("cooldown") <= 0 then
