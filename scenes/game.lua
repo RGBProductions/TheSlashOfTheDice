@@ -1068,11 +1068,13 @@ function scene.draw()
 
     if ShowMobileUI then
         love.graphics.setLineWidth(8)
-        love.graphics.circle("line", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+64, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-64, Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
-        love.graphics.circle("fill", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+64+Thumbstick.x, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-64+Thumbstick.y, Thumbstick.innerRad*ViewScale*Settings.video.ui_scale)
+        love.graphics.circle("line", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+96, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-96, Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
+        love.graphics.circle("fill", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+96+Thumbstick.x, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-96+Thumbstick.y, Thumbstick.innerRad*ViewScale*Settings.video.ui_scale)
         love.graphics.setLineWidth(8)
-        love.graphics.circle("line", love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings.video.ui_scale-64, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-64, Slashstick.radius*ViewScale*Settings.video.ui_scale)
-        if not Spectating then love.graphics.draw(SlashIcon, love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings.video.ui_scale-64, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-64, 0, (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getWidth(), (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getHeight(), SlashIcon:getWidth()/2, SlashIcon:getHeight()/2) end
+        if not Spectating then
+            love.graphics.circle("line", love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, Slashstick.radius*ViewScale*Settings.video.ui_scale)
+            love.graphics.draw(SlashIcon, love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-64, 0, (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getWidth(), (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getHeight(), SlashIcon:getWidth()/2, SlashIcon:getHeight()/2)
+        end
         love.graphics.rectangle("line", love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64, 64, Pausebutton.size*ViewScale*Settings.video.ui_scale, Pausebutton.size*ViewScale*Settings.video.ui_scale)
         love.graphics.draw(PauseIcon, love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64, 64, 0, Pausebutton.size/PauseIcon:getWidth()*Settings.video.ui_scale, Pausebutton.size/PauseIcon:getHeight()*Settings.video.ui_scale)
     end
