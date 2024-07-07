@@ -453,7 +453,7 @@ function scene.touchmoved(id,x,y,dx,dy)
     local m_dy = dy/scale
 
     if allowScroll then
-        if math.abs(m_x2-m_x) >= 8 or math.abs(m_y2-m_y) >= 8 then
+        if math.abs(m_x2-m_x) >= 8/scale or math.abs(m_y2-m_y) >= 8/scale then
             isPress = false
             scrollVelocity = m_dy/16
             scroll(scrollTarget[1],scrollTarget[2],0,m_dy/16)
