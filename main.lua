@@ -329,17 +329,12 @@ end
 
 require "default.menus"
 
-function DeathHandler(event) 
-    print("DeathHandler")
+function DeathHandler(event)
     if Settings.customization.death_effect then
-        print("Has effect in settings")
         local trail = Cosmetics.Effects[Settings.customization.death_effect]
         if trail.events.player_death then
-        print("death")
         local actions = trail.events.player_death.actions
-        print(actions)
         for _,v in ipairs(actions) do
-            print(v.type)
             if v.type == "particle_burst" then
                 for _=1,v.amount do
                     local dir = randFloat(0,2*math.pi)
@@ -350,7 +345,7 @@ function DeathHandler(event)
                     particle.image = v.image
                     table.insert(Particles, particle)
                 end
-            end 
+            end
         end
     end
 end
