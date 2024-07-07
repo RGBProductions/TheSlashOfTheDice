@@ -195,6 +195,8 @@
         "error.banned": "You were banned by the room host. You will not be able to rejoin.",
         "error.disconnected": "You were disconnected from the server. Check your internet connection and try again.",
         "error.formatted": "There was an error: %s",
+        
+        "calm_not_unlocked": "Defeat 30 waves in Default to unlock this gamemode!",
 
         "playtesting": "Playtest mode - Press Escape to return to customization",
 
