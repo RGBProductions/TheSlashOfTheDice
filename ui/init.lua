@@ -145,6 +145,38 @@ end
 
 function UI.Element:clickInstance(mx,my,b) end
 
+function UI.Element:touch(mx,my)
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    if self.clickThrough or self.hidden then
+        return false, self
+    end
+
+    local children = (type(self.children) == "table" and self.children or {})
+    for i = #children, 1, -1 do
+        local child = children[i]
+        if type(child) == "table" and type(child.touch) == "function" then
+            local clicked,_,v = child:touch(mx-x,my-y)
+            if clicked then
+                return clicked,child,v
+            end
+        end
+    end
+    
+    if mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2 then
+        local v
+        if (not self.disabled) and type(self.touchInstance) == "function" then v = self:touchInstance(mx-x,my-y) end
+        return true, self, v
+    end
+    return false, self, nil
+end
+
+function UI.Element:touchInstance(mx,my,b) end
+
 function UI.Element:release(mx,my,b)
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
     local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)

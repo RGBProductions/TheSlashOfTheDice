@@ -380,6 +380,7 @@ function UI.TextInput:click(mx,my,b)
             self:onconfirm(self.input.content)
         end
         self.selected = false
+        love.keyboard.setTextInput(false)
     end
     return false, self
 end
@@ -387,6 +388,7 @@ end
 function UI.TextInput:clickInstance(mx,my,b)
     if b == 1 then
         self.selected = true
+        love.keyboard.setTextInput(true)
         self.clickTime = love.timer.getTime()
         local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
         local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
@@ -452,6 +454,7 @@ function UI.TextInput:keypressInstance(k)
                 self:onconfirm(self.input.content)
             end
             self.selected = false
+            love.keyboard.setTextInput(false)
         end
     end
 end
@@ -528,6 +531,11 @@ function UI.Slider:drawInstance()
 
     love.graphics.setColor(r,g,b,a)
     love.graphics.setLineWidth(lw)
+end
+
+function UI.Slider:touchInstance(mx,my)
+    self:clickInstance(mx,my,1)
+    return true -- dont allow scroll
 end
 
 function UI.Slider:clickInstance(mx,my,b)
@@ -623,6 +631,11 @@ function UI.ColorPicker:drawInstance()
 
     love.graphics.setColor(r,g,b,a)
     love.graphics.setLineWidth(lw)
+end
+
+function UI.ColorPicker:touchInstance(mx,my)
+    self:clickInstance(mx,my,1)
+    return true -- dont allow scroll
 end
 
 function UI.ColorPicker:clickInstance(mx,my,b)

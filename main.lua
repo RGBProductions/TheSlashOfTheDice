@@ -3,6 +3,8 @@ hsx = require "lib.hsx"
 typingutil = require "lib.typingutil"
 json = require "json"
 
+love.keyboard.setKeyRepeat(true)
+
 function utf8.sub(txt, i, j)
     local o1 = (utf8.offset(txt,i) or (#txt))-1
     local o2 = (utf8.offset(txt,j+1) or (#txt+1))-1

@@ -9,6 +9,7 @@ end
 
 local scrollVelocity = 0
 local scrollTarget = {0,0}
+local allowScroll = false
 local isPress = false
 local isTouchHeld = false
 
@@ -389,24 +390,84 @@ function scene.mousereleased(x, y, b)
 end
 
 function scene.touchpressed(id,x,y)
-    scrollTarget = {x,y}
+    allowScroll = true
+
+    local screenWidth = 1280
+    local screenHeight = 720
+    local leftMargin = 160
+    local rightMargin = 160
+    local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local bottomMargin = 64-(LogoPos-16)
+    local centerpoint = {
+        (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
+        (topMargin+(love.graphics.getHeight()-bottomMargin))/2
+    }
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local m_x = (x-centerpoint[1])/scale
+    local m_y = (y-centerpoint[2])/scale
+    local hasDialog = #Dialogs > 0
+    for d = #Dialogs, 1, -1 do
+        local dialog = Dialogs[d]
+        if dialog.touch then
+            local hit,elem,preventScroll = dialog:touch((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale)
+            if hit then
+                if preventScroll then
+                    allowScroll = false
+                end
+                break
+            end
+        end
+    end
+    if (Menus[CurrentMenu] or {}).touch and not hasDialog then
+        local hit,elem,preventScroll = (Menus[CurrentMenu] or {}):touch(m_x, m_y)
+        if hit then
+            if preventScroll then
+                allowScroll = false
+            end
+        end
+    end
+
+    scrollTarget = {m_x,m_y}
     scrollVelocity = 0
     isPress = true
     isTouchHeld = true
 end
 
 function scene.touchmoved(id,x,y,dx,dy)
-    if math.abs(x-scrollTarget[1]) >= 8 or math.abs(y-scrollTarget[2]) >= 8 then
-        isPress = false
-        scrollVelocity = dy/16
-        scroll(scrollTarget[1],scrollTarget[2],0,dy/16)
+    local screenWidth = 1280
+    local screenHeight = 720
+    local leftMargin = 160
+    local rightMargin = 160
+    local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local bottomMargin = 64-(LogoPos-16)
+    local centerpoint = {
+        (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
+        (topMargin+(love.graphics.getHeight()-bottomMargin))/2
+    }
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local m_x = (scrollTarget[1]-centerpoint[1])/scale
+    local m_y = (scrollTarget[2]-centerpoint[2])/scale
+    local m_x2 = (x-centerpoint[1])/scale
+    local m_y2 = (y-centerpoint[2])/scale
+    local m_dx = dx/scale
+    local m_dy = dy/scale
+
+    if allowScroll then
+        if math.abs(m_x2-m_x) >= 8 or math.abs(m_y2-m_y) >= 8 then
+            isPress = false
+            scrollVelocity = m_dy/16
+            scroll(scrollTarget[1],scrollTarget[2],0,m_dy/16)
+        end
+    else
+        scene.mousemoved(x,y,dx,dy)
     end
 end
 
 function scene.touchreleased(id,x,y)
-    if isPress then
-        scene.mousepressed(scrollTarget[1],scrollTarget[2],1)
+    if isPress and allowScroll then
+        scene.mousepressed(x,y,1)
     end
+    scene.mousereleased(x,y,1)
     isPress = false
     isTouchHeld = false
 end
