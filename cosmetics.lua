@@ -38,7 +38,11 @@ function Cosmetics.ReadTrail(dir)
         local event = {name=i, actions=actions}
         events[i] = event
     end
-    local trail = {events=events}
+    local icon
+    if love.filesystem.getInfo(dir.."/icon.png") then
+        icon = love.graphics.newImage(dir.."/icon.png")
+    end
+    local trail = {events=events,icon=icon}
     Cosmetics.Trails[id] = trail
 end
 
@@ -65,7 +69,11 @@ function Cosmetics.ReadEffect(dir)
         local event = {name=i, actions=actions}
         events[i] = event
     end
-    local trail = {events=events}
+    local icon
+    if love.filesystem.getInfo(dir.."/icon.png") then
+        icon = love.graphics.newImage(dir.."/icon.png")
+    end
+    local trail = {events=events,icon=icon}
     Cosmetics.Effects[id] = trail
 end
 

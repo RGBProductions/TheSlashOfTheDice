@@ -23,6 +23,7 @@ love.filesystem.getInfo = love.filesystem.getInfo or function() return nil end
 ShowMobileUI = IsMobile
 
 ShowDebugInfo = false
+FrameStep = false
 DrawTime = 0
 UpdateTime = 0
 
@@ -428,7 +429,16 @@ local saveTime = 0
 GlobalTime = 0
 local presenceTimer = 15
 
-function love.update(dt)
+function love.update(dt,step)
+    if FrameStep and not step then
+        for _,particle in ipairs(Particles) do
+            particle.time = particle.time + dt
+        end
+        for _,indicator in ipairs(DamageIndicators) do
+            indicator.time = indicator.time + dt
+        end
+        return
+    end
     local t = love.timer.getTime()
 
     if updateChannel:getCount() > 0 then
@@ -495,6 +505,12 @@ function love.keypressed(k)
     end
     if k == "f3" then
         ShowDebugInfo = not ShowDebugInfo
+    end
+    if k == "f4" then
+        FrameStep = not FrameStep
+    end
+    if k == "f5" and FrameStep then
+        love.update(1/60,true)
     end
     ShowMobileUI = false
     SceneManager.KeyPressed(k)

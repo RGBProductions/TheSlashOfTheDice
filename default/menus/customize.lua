@@ -468,8 +468,8 @@ local customizeMenu = UI.Element:new({
                                 end
                             end
                             addOption(nil, {icon = NoCosmeticIcon})
-                            for name,_ in pairs(Cosmetics.Effects) do
-                                addOption(name)
+                            for name,data in pairs(Cosmetics.Effects) do
+                                addOption(name, data)
                             end
                         end
                         local popup = UI.Panel:new({
