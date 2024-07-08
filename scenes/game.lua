@@ -1021,7 +1021,7 @@ function scene.draw()
 
     if Gamemode == "playtest" then
         love.graphics.setColor(0,0,0)
-        local txt = Localize("playtesting")
+        local txt = Localize("playtesting" .. (IsMobile and "_mobile" or ""))
         pcall(love.graphics.printf, txt, 0, pos-2, love.graphics.getWidth(), "center")
         pcall(love.graphics.printf, txt, 0, pos-2, love.graphics.getWidth(), "center")
         pcall(love.graphics.printf, txt, 0, pos+2, love.graphics.getWidth(), "center")
@@ -1073,7 +1073,7 @@ function scene.draw()
         love.graphics.setLineWidth(8)
         if not Spectating then
             love.graphics.circle("line", love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, Slashstick.radius*ViewScale*Settings.video.ui_scale)
-            love.graphics.draw(SlashIcon, love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-64, 0, (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getWidth(), (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getHeight(), SlashIcon:getWidth()/2, SlashIcon:getHeight()/2)
+            love.graphics.draw(SlashIcon, love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, 0, (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getWidth(), (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getHeight(), SlashIcon:getWidth()/2, SlashIcon:getHeight()/2)
         end
         love.graphics.rectangle("line", love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64, 64, Pausebutton.size*ViewScale*Settings.video.ui_scale, Pausebutton.size*ViewScale*Settings.video.ui_scale)
         love.graphics.draw(PauseIcon, love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64, 64, 0, Pausebutton.size/PauseIcon:getWidth()*Settings.video.ui_scale, Pausebutton.size/PauseIcon:getHeight()*Settings.video.ui_scale)
