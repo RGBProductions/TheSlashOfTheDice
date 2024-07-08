@@ -1,0 +1,16 @@
+{
+    "events": {
+        "step": {
+            "actions": [
+                {
+                    "type": "particle",
+                    "spawnRadius": 16,
+                    "size": [0.05,0.1],
+                    "life": 2,
+                    "angle": [0,360],
+                    "image": "snow"
+                }
+            ]
+        }
+    }
+}

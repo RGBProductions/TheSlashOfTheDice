@@ -891,7 +891,7 @@ function scene.draw()
         local x,y = orb.x-Camera.x+love.graphics.getWidth()/2, orb.y-Camera.y+love.graphics.getHeight()/2
         local scale = (orb.lifespan-(love.timer.getTime()-orb.time))*16/(orb.lifespan/0.5)
         if orb.image then
-            love.graphics.draw(orb.image, x, y, 0, scale*orb.size, scale*orb.size, orb.image:getWidth()/2, orb.image:getHeight()/2)
+            love.graphics.draw(orb.image, x, y, orb.angle, scale*orb.size, scale*orb.size, orb.image:getWidth()/2, orb.image:getHeight()/2)
         else
             love.graphics.setColor(1,1,1)
             love.graphics.circle("fill", x, y, scale*orb.size)

@@ -358,7 +358,8 @@ function StepHandler(event)
         for _,v in ipairs(actions) do
             if v.type == "particle" then
                 local sx,sy = randFloat(-v.spawnRadius,v.spawnRadius),randFloat(-v.spawnRadius,v.spawnRadius)
-                local particle = Game.Particle:new(event.x+sx, event.y+sy, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]))
+                local a = randFloat(v.angle[1],v.angle[2])
+                local particle = Game.Particle:new(event.x+sx, event.y+sy, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]), a)
                 particle.image = v.image
                 table.insert(Particles, particle)
             end

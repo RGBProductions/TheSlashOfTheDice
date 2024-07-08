@@ -29,6 +29,7 @@ function Cosmetics.ReadTrail(dir)
                 spawnRadius = v2.spawnRadius,
                 size = v2.size,
                 life = v2.life,
+                angle = v2.angle or {0,0},
                 velocity = v2.velocity or {0,0},
                 image = love.graphics.newImage(dir.."/"..v2.image..".png")
             }

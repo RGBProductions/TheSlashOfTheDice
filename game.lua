@@ -104,7 +104,7 @@ function Game.Entity:mousepressed(x, y, b)
 end
 
 
-function Game.Particle:new(x, y, lifespan, vx, vy, damp, size)
+function Game.Particle:new(x, y, lifespan, vx, vy, damp, size, angle)
     local o = {}
     o.x = x
     o.y = y
@@ -112,6 +112,7 @@ function Game.Particle:new(x, y, lifespan, vx, vy, damp, size)
     o.vy = vy or 0
     o.size = size or 1
     o.damp = damp or 5
+    o.angle = angle or 0
     o.lifespan = lifespan or 0.5
     o.time = love.timer.getTime()
 
