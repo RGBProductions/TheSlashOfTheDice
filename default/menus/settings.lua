@@ -168,10 +168,15 @@ local sVideoMenu = UI.Element:new({
                         UI.Text:new({
                             text = function() return Localize("settings.color_by_operator") end,
                             font = lgfont_2x,
-                            fontScale = 0.5,
-                            x = -272,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
                             y = 0,
-                            width = 320,
+                            width = 288,
                             height = 32,
                             alignHoriz = "left",
                             alignVert = "center"
@@ -195,10 +200,15 @@ local sVideoMenu = UI.Element:new({
                         UI.Text:new({
                             text = function() return Localize("settings.ui_scale") end,
                             font = lgfont_2x,
-                            fontScale = 0.5,
-                            x = -272,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
                             y = 0,
-                            width = 320,
+                            width = 288,
                             height = 32,
                             alignHoriz = "left",
                             alignVert = "center"
@@ -251,10 +261,15 @@ local sVideoMenu = UI.Element:new({
                         UI.Text:new({
                             text = function() return Localize("settings.background_brightness") end,
                             font = lgfont_2x,
-                            fontScale = 0.5,
-                            x = -272,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
                             y = 0,
-                            width = 320,
+                            width = 288,
                             height = 32,
                             alignHoriz = "left",
                             alignVert = "center"
@@ -421,10 +436,15 @@ local sVideoMenu = UI.Element:new({
                         UI.Text:new({
                             text = function() return Localize("settings.language") end,
                             font = lgfont_2x,
-                            fontScale = 0.5,
-                            x = -272,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
                             y = 0,
-                            width = 320,
+                            width = 288,
                             height = 32,
                             alignHoriz = "left",
                             alignVert = "center"
@@ -547,10 +567,15 @@ local sAudioMenu = UI.Element:new({
                         UI.Text:new({
                             text = function() return Localize("settings.music_volume") end,
                             font = lgfont_2x,
-                            fontScale = 0.5,
-                            x = -272,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
                             y = 0,
-                            width = 320,
+                            width = 288,
                             height = 32,
                             alignHoriz = "left",
                             alignVert = "center"
@@ -603,10 +628,15 @@ local sAudioMenu = UI.Element:new({
                         UI.Text:new({
                             text = function() return Localize("settings.sound_volume") end,
                             font = lgfont_2x,
-                            fontScale = 0.5,
-                            x = -272,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
                             y = 0,
-                            width = 320,
+                            width = 288,
                             height = 32,
                             alignHoriz = "left",
                             alignVert = "center"
@@ -848,10 +878,15 @@ local sGameplayMenu = UI.Element:new({
                         UI.Text:new({
                             text = function() return Localize("settings.dice_mode") end,
                             font = lgfont_2x,
-                            fontScale = 0.5,
-                            x = -272,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
                             y = 0,
-                            width = 320,
+                            width = 288,
                             height = 32,
                             alignHoriz = "left",
                             alignVert = "center"
@@ -888,10 +923,15 @@ local sGameplayMenu = UI.Element:new({
                         UI.Text:new({
                             text = function() return Localize("settings.auto_aim_on") end,
                             font = lgfont_2x,
-                            fontScale = 0.5,
-                            x = -272,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
                             y = 0,
-                            width = 320,
+                            width = 288,
                             height = 32,
                             alignHoriz = "left",
                             alignVert = "center"
@@ -915,10 +955,15 @@ local sGameplayMenu = UI.Element:new({
                         UI.Text:new({
                             text = function() return Localize("settings.auto_aim_limit") end,
                             font = lgfont_2x,
-                            fontScale = 0.5,
-                            x = -272,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
                             y = 0,
-                            width = 320,
+                            width = 288,
                             height = 32,
                             alignHoriz = "left",
                             alignVert = "center"
