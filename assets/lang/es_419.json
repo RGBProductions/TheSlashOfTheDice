@@ -123,7 +123,7 @@
 
         "gamemode.tutorial": "Tutorial",
         "gamemode.default": "Default",
-        "gamemode.enemy_rush":"Enemy Rush",
+        "gamemode.enemy_rush": "Acometida Enemiga",
         "gamemode.calm": "Tranquilo",
 
         "achievement.complete_tutorial.name": "Degollador certificado",
@@ -206,9 +206,9 @@
         "customization.help.color": "Cambia el color del jugador.",
         "customization.help.trail": "Cambia el efecto que se produce cuando el jugador se mueve.",
         "customization.help.death_effect": "Cambia el efecto que ocurre cuando el jugador muere.",
-        "customizacion.help.hat": "Cambia el sombrero del jugador.",
+        "customization.help.hat": "Cambia el sombrero del jugador.",
 
-        "customizacion.trails.flame.name": "Fuego",
+        "customization.trails.flame.name": "Fuego",
         "customization.trails.flame.description": "Dejas un camino de fuego por donde pasas.",
         "customization.trails.snowy.name": "Nevado",
         "customization.trails.snowy.description": "Incluso en verano, eres así de chulo.",
@@ -222,7 +222,7 @@
         "customization.effects.error.name": "Error",
         "customization.effects.error.description": "Error: scenes/game.lua:665: attempt to index global 'player' (a nil value)",
 
-        "customizacion.hats.top_hat.name": "Sombrero de copa",
+        "customization.hats.top_hat.name": "Sombrero de copa",
         "customization.hats.top_hat.description": "Un sombrero elegante para personas distinguidas.\n\nO simplemente porque te gustan los sombreros de copa.",
         "customization.hats.double_top_hat.name": "Sombrero de copa doble",
         "customization.hats.double_top_hat.description": "Doble sombrero de copa, doble moda... creo.",

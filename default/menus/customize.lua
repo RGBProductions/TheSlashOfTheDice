@@ -102,7 +102,12 @@ local customizeMenu = UI.Element:new({
                                     height = 64,
                                     text = function() return Localize("title.customization.color") end,
                                     font = xlfont_2x,
-                                    fontScale = 0.5,
+                                    fontScale = function(me)
+                                        local text = (type(me.text) == "function" and me:text()) or (me.text or "")
+                                        local font = (type(me.font) == "function" and me:font()) or (me.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,(464-32)/width)
+                                    end,
                                     alignHoriz = "center",
                                     alignVert = "center"
                                 }),
@@ -318,7 +323,12 @@ local customizeMenu = UI.Element:new({
                                     height = 64,
                                     text = function() return Localize("title.customization.trail") end,
                                     font = xlfont_2x,
-                                    fontScale = 0.5,
+                                    fontScale = function(me)
+                                        local text = (type(me.text) == "function" and me:text()) or (me.text or "")
+                                        local font = (type(me.font) == "function" and me:font()) or (me.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,(464-32)/width)
+                                    end,
                                     alignHoriz = "center",
                                     alignVert = "center"
                                 }),
@@ -486,7 +496,12 @@ local customizeMenu = UI.Element:new({
                                     height = 64,
                                     text = function() return Localize("title.customization.death_effect") end,
                                     font = xlfont_2x,
-                                    fontScale = 0.5,
+                                    fontScale = function(me)
+                                        local text = (type(me.text) == "function" and me:text()) or (me.text or "")
+                                        local font = (type(me.font) == "function" and me:font()) or (me.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,(464-32)/width)
+                                    end,
                                     alignHoriz = "center",
                                     alignVert = "center"
                                 }),
@@ -642,7 +657,12 @@ local customizeMenu = UI.Element:new({
                                     height = 64,
                                     text = function() return Localize("title.customization.hat") end,
                                     font = xlfont_2x,
-                                    fontScale = 0.5,
+                                    fontScale = function(me)
+                                        local text = (type(me.text) == "function" and me:text()) or (me.text or "")
+                                        local font = (type(me.font) == "function" and me:font()) or (me.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,(464-32)/width)
+                                    end,
                                     alignHoriz = "center",
                                     alignVert = "center"
                                 }),
