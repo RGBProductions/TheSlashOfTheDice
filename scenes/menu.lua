@@ -445,8 +445,8 @@ function scene.touchmoved(id,x,y,dx,dy)
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
     local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
-    local m_x = (scrollTarget[1]-centerpoint[1])/scale
-    local m_y = (scrollTarget[2]-centerpoint[2])/scale
+    local m_x = scrollTarget[1]
+    local m_y = scrollTarget[2]
     local m_x2 = (x-centerpoint[1])/scale
     local m_y2 = (y-centerpoint[2])/scale
     local m_dx = dx/scale
