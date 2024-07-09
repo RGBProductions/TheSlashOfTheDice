@@ -994,8 +994,13 @@ function scene.draw()
         local Stats = player:get("stats")
         love.graphics.setFont(lgfont)
         local pos = 0
-        for name,value in pairs(Stats) do
-            love.graphics.print(Localize("stat.display"):format(Localize("stat." .. name:lower()),math.round(value*100)/100), 0, pos)
+        local order = {
+            "Attack",
+            "Defense",
+            "Luck"
+        }
+        for _,name in ipairs(order) do
+            love.graphics.print(Localize("stat.display"):format(Localize("stat." .. name:lower()),math.round(Stats[name]*100)/100), 0, pos)
             pos = pos + lgfont:getHeight()
         end
     end
