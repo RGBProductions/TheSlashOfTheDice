@@ -4,6 +4,8 @@ Cosmetics = {
     Effects = {}
 }
 
+-- Credit to MichaelEpicA for writing the core functionality for cosmetics
+
 function Cosmetics.ReadHat(dir)
    local hatsettings = json.decode(love.filesystem.read(dir.."/hat.json"))
    local spl = dir:split("/")
