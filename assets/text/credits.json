@@ -12,6 +12,9 @@
     {"type": "header", "label": "credits.ui"},
     {"type": "name", "label": "TotallyNotFrisk"},
 
+    {"type": "header", "label": "credits.translation"},
+    {"type": "name", "label": "Just J - Español (Latinoamérica)"},
+
     {"type": "header", "label": "credits.testing"},
     {"type": "name", "label": "EastCoastBraiden"},
     {"type": "name", "label": "nicholas"},
