@@ -376,7 +376,12 @@ local sVideoMenu = UI.Element:new({
                                     height = 64,
                                     text = function() return Localize("title.language") end,
                                     font = xlfont_2x,
-                                    fontScale = 0.5,
+                                    fontScale = function(me)
+                                        local text = (type(me.text) == "function" and me:text()) or (me.text or "")
+                                        local font = (type(me.font) == "function" and me:font()) or (me.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,(464-32)/width)
+                                    end,
                                     alignHoriz = "center",
                                     alignVert = "center"
                                 }),
@@ -798,7 +803,12 @@ local sGameplayMenu = UI.Element:new({
                                     height = 64,
                                     text = function() return Localize("title.dice_mode") end,
                                     font = xlfont_2x,
-                                    fontScale = 0.5,
+                                    fontScale = function(me)
+                                        local text = (type(me.text) == "function" and me:text()) or (me.text or "")
+                                        local font = (type(me.font) == "function" and me:font()) or (me.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,(464-32)/width)
+                                    end,
                                     alignHoriz = "center",
                                     alignVert = "center"
                                 }),
