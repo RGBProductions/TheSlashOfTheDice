@@ -55,6 +55,7 @@ end
 EntityTypes = {
     player = {
         update = function(self, dt)
+            self:set("lastPos", {self.x, self.y})
             self:set("slashTime", self:get("slashTime")-dt)
             self:set("bufferTime", (self:get("bufferTime") or 0)-dt)
             local speed = 2
@@ -166,11 +167,12 @@ EntityTypes = {
             Camera.ty = self.y
     
             if self:get("slashTime") > 0 then
-                local ox = self:get("lastPos")[1]-self.x
-                local oy = self:get("lastPos")[2]-self.y
+                local lx,ly = self:get("lastPos")[1],self:get("lastPos")[2]
+                local ox = self.x-lx
+                local oy = self.y-ly
                 local len = math.sqrt(ox^2+oy^2)/4
                 for i = 1, len do
-                    table.insert(Particles, Game.Particle:new(self.x-ox*i/len, self.y-oy*i/len))
+                    table.insert(Particles, Game.Particle:new(lx+ox*i/len, ly+oy*i/len))
                 end
                 local ents = GetEntityCollisions(self)
                 for _,ent in pairs(ents) do
@@ -201,8 +203,6 @@ EntityTypes = {
                     self:set("bufferTime", 0)
                 end
             end
-    
-            self:set("lastPos", {self.x, self.y})
     
             if IsMultiplayer then
                 Net.Send({type = "player_update", x = self.x, y = self.y, vx = self.vx, vy = self.vy, stats = self:get("stats")})
