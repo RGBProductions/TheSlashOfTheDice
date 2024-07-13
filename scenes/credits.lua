@@ -18,7 +18,7 @@ function scene.draw()
     love.graphics.setFont(xlfont)
     love.graphics.printf(Localize("title.credits"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight() - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)
-    if not IsMobile then
+    if not ShowMobileUI then
         love.graphics.printf(Localize("key.goback"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*2+ViewMargin - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     else
         love.graphics.draw(BackIcon, 64, 64, 0, 64/BackIcon:getWidth()*Settings.video.ui_scale, 64/BackIcon:getHeight()*Settings.video.ui_scale)
@@ -84,7 +84,7 @@ end
 
 function scene.mousepressed(x,y)
     scrollVelocity = 0
-    if x >= 64 and x < 64+64*Settings.video.ui_scale and y >= 64 and y < 64+64*Settings.video.ui_scale then
+    if x >= 64 and x < 64+64*Settings.video.ui_scale and y >= 64 and y < 64+64*Settings.video.ui_scale and ShowMobileUI then
         SceneManager.LoadScene("scenes/menu")
     end
 end
