@@ -89,10 +89,19 @@ end
 -- smfont = love.graphics.getFont()
 
 smfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12)
-mdfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*FontScale)
-lgfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*FontScale)
-lrfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32*FontScale)
-xlfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48*FontScale)
+
+function ResetFonts()
+    mdfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*FontScale*Settings.video.ui_scale/1.5)
+    lgfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*FontScale*Settings.video.ui_scale/1.5)
+    lrfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32*FontScale*Settings.video.ui_scale/1.5)
+    xlfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48*FontScale*Settings.video.ui_scale/1.5)
+end
+
+smfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12)
+mdfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16)
+lgfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24)
+lrfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32)
+xlfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48)
 
 smfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12*2)
 mdfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*2)
@@ -327,6 +336,8 @@ if love.filesystem.getInfo("settings.json") then
     local itms = json.decode(love.filesystem.read("settings.json"))
     Settings = table.merge(Settings, itms)
 end
+
+ResetFonts()
 
 require "default.menus"
 

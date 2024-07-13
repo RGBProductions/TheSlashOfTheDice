@@ -941,11 +941,11 @@ function scene.draw()
     end
     love.graphics.setLineWidth(lw)
     
-    love.graphics.setFont(lgfont)
+    love.graphics.setFont(lgfont_1x)
     for _,indicator in pairs(DamageIndicators) do
         love.graphics.setColor(indicator.color)
         local x = indicator.x - Camera.x + love.graphics.getWidth()/2
-        local w = lgfont:getWidth(tostring(indicator.amt))
+        local w = lgfont_1x:getWidth(tostring(indicator.amt))
         local y = indicator.y - Camera.y + love.graphics.getHeight()/2
         
         local ny = 1-(1-math.max(0, math.min(1, 2*(love.timer.getTime() - indicator.time))))^5
@@ -1014,7 +1014,7 @@ function scene.draw()
         local fill = 1-(SpawnTimer/SpawnDelay)
         love.graphics.setColor(0.25,0.25,0.25)
         local barWidth = IsMobile and 1024 or 512
-        local barHeight = IsMobile and 32 or 16
+        local barHeight = (IsMobile and 32 or 16)*Settings.video.ui_scale/1.5
         love.graphics.rectangle("fill", (love.graphics.getWidth()-barWidth)/2, lgfont:getHeight(), barWidth, barHeight*ViewScale)
         love.graphics.setColor(1,1,1)
         love.graphics.rectangle("fill", (love.graphics.getWidth()-barWidth)/2, lgfont:getHeight(), barWidth*fill, barHeight*ViewScale)
@@ -1173,7 +1173,7 @@ function scene.touchpressed(id,x,y)
     if not (IsDead and not Spectating) then
         if ShowMobileUI then
             local barWidth = 1024
-            local barHeight = 32
+            local barHeight = 32*Settings.video.ui_scale/1.5
             local skipX, skipY = (love.graphics.getWidth()+barWidth)/2 + barHeight, lgfont:getHeight()-barHeight/2
             if x >= skipX-16 and x < skipX + barHeight*2 + 16 and y >= skipY-16 and y < skipY + barHeight*2 + 16 then
                 if (runTimer and Spawned < 5) then

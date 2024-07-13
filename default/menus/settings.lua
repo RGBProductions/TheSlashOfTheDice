@@ -496,6 +496,7 @@ local sVideoMenu = UI.Element:new({
             },
             onclick = function()
                 table.merge(Settings, tempSettings)
+                ResetFonts()
                 WriteSettings() SetMenu("settings")
             end
         }),
