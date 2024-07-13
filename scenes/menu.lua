@@ -102,12 +102,14 @@ local function scroll(mx,my,x,y)
     local leftMargin = 160
     local rightMargin = 160
     local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local baseScale = 1.5
+    local topMarginUnscaled = (LogoPos+Logo:getHeight()*baseScale+32)
     local bottomMargin = 64-(LogoPos-16)
     local centerpoint = {
         (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
-    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMarginUnscaled-bottomMargin))
     local m_x = (mx-centerpoint[1])/scale
     local m_y = (my-centerpoint[2])/scale
     local hasDialog = #Dialogs > 0
@@ -156,13 +158,14 @@ function scene.draw()
     local leftMargin = 160
     local rightMargin = 160
     local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local baseScale = 1.5
+    local topMarginUnscaled = (LogoPos+Logo:getHeight()*baseScale+32)
     local bottomMargin = 64-(LogoPos-16)
     local centerpoint = {
         (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
-    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
-    local w,h = screenWidth-leftMargin-rightMargin, screenHeight-topMargin-bottomMargin
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMarginUnscaled-bottomMargin))
     love.graphics.push()
     love.graphics.translate(centerpoint[1], centerpoint[2])
     love.graphics.scale(scale,scale)
@@ -307,12 +310,14 @@ function scene.mousemoved(x, y, dx, dy)
     local leftMargin = 160
     local rightMargin = 160
     local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local baseScale = 1.5
+    local topMarginUnscaled = (LogoPos+Logo:getHeight()*baseScale+32)
     local bottomMargin = 64-(LogoPos-16)
     local centerpoint = {
         (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
-    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMarginUnscaled-bottomMargin))
     local m_x = (x-centerpoint[1])/scale
     local m_y = (y-centerpoint[2])/scale
     local hasDialog = #Dialogs > 0
@@ -337,12 +342,14 @@ function scene.mousepressed(x, y, b, t)
     local leftMargin = 160
     local rightMargin = 160
     local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local baseScale = 1.5
+    local topMarginUnscaled = (LogoPos+Logo:getHeight()*baseScale+32)
     local bottomMargin = 64-(LogoPos-16)
     local centerpoint = {
         (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
-    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMarginUnscaled-bottomMargin))
     local m_x = (x-centerpoint[1])/scale
     local m_y = (y-centerpoint[2])/scale
     local hasDialog = #Dialogs > 0
@@ -366,12 +373,14 @@ function scene.mousereleased(x, y, b)
     local leftMargin = 160
     local rightMargin = 160
     local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local baseScale = 1.5
+    local topMarginUnscaled = (LogoPos+Logo:getHeight()*baseScale+32)
     local bottomMargin = 64-(LogoPos-16)
     local centerpoint = {
         (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
-    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMarginUnscaled-bottomMargin))
     local m_x = (x-centerpoint[1])/scale
     local m_y = (y-centerpoint[2])/scale
     local hasDialog = #Dialogs > 0
@@ -397,12 +406,14 @@ function scene.touchpressed(id,x,y)
     local leftMargin = 160
     local rightMargin = 160
     local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local baseScale = 1.5
+    local topMarginUnscaled = (LogoPos+Logo:getHeight()*baseScale+32)
     local bottomMargin = 64-(LogoPos-16)
     local centerpoint = {
         (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
-    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMarginUnscaled-bottomMargin))
     local m_x = (x-centerpoint[1])/scale
     local m_y = (y-centerpoint[2])/scale
     local hasDialog = #Dialogs > 0
@@ -439,12 +450,14 @@ function scene.touchmoved(id,x,y,dx,dy)
     local leftMargin = 160
     local rightMargin = 160
     local topMargin = (LogoPos+Logo:getHeight()*Settings.video.ui_scale+32)
+    local baseScale = 1.5
+    local topMarginUnscaled = (LogoPos+Logo:getHeight()*baseScale+32)
     local bottomMargin = 64-(LogoPos-16)
     local centerpoint = {
         (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
         (topMargin+(love.graphics.getHeight()-bottomMargin))/2
     }
-    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMargin-bottomMargin))
+    local scale = math.min((love.graphics.getWidth()-leftMargin-rightMargin)/(screenWidth-leftMargin-rightMargin), (love.graphics.getHeight()-topMargin-bottomMargin)/(screenHeight-topMarginUnscaled-bottomMargin))
     local m_x = scrollTarget[1]
     local m_y = scrollTarget[2]
     local m_x2 = (x-centerpoint[1])/scale
