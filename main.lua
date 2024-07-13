@@ -442,10 +442,10 @@ local presenceTimer = 15
 
 function love.update(dt,step)
     if FrameStep and not step then
-        for _,particle in ipairs(Particles) do
+        for _,particle in ipairs(Particles or {}) do
             particle.time = particle.time + dt
         end
-        for _,indicator in ipairs(DamageIndicators) do
+        for _,indicator in ipairs(DamageIndicators or {}) do
             indicator.time = indicator.time + dt
         end
         return
