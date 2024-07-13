@@ -53,6 +53,14 @@ end
 
 UI.Toggle = UI.Element:new({})
 
+function UI.Toggle:initInstance()
+    if type(self.initWith) == "function" then
+        self.value = self.initWith(self)
+    else
+        self.value = self.initWith
+    end
+end
+
 function UI.Toggle:drawInstance()
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
     local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)

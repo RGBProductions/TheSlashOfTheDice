@@ -310,6 +310,7 @@ Settings = {
         ui_scale = 1.5,
         color_by_operator = true,
         background_brightness = 1,
+        smooth_timer = false,
         menu_theme = "aura"
     },
 

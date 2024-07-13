@@ -75,6 +75,7 @@
         "button.settings.gameplay": "Gameplay",
 
         "settings.color_by_operator": "Color por operador",
+        "settings.smooth_timer": "Temporizador suave",
         "settings.ui_scale": "Escala de interfaz de usuario",
         "settings.background_brightness": "Brillo de fondo",
         "settings.language": "Idioma",

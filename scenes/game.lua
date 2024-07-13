@@ -217,6 +217,7 @@ function scene.load(args)
     timerType = GameSetups[Gamemode].timerType
 
     SpawnTimer = (GameSetups[Gamemode].spawnImmediate and GameSetups[Gamemode].timer) or 0
+    VisualSpawnTimer = SpawnTimer
     Difficulty = 1
     SpawnDelay = GameSetups[Gamemode].timer
     Spawned = 0
@@ -703,9 +704,17 @@ function scene.update(dt)
             end
         end
 
-        local blend = math.pow(1/(16^4), dt)
-        Camera.x = blend*(Camera.x-Camera.tx)+Camera.tx
-        Camera.y = blend*(Camera.y-Camera.ty)+Camera.ty
+        do
+            local blend = math.pow(1/(16^4), dt)
+            Camera.x = blend*(Camera.x-Camera.tx)+Camera.tx
+            Camera.y = blend*(Camera.y-Camera.ty)+Camera.ty
+        end
+
+        do
+            local tBlendAmt = 1/((5/4)^60)
+            local blend = math.pow(tBlendAmt, dt)
+            VisualSpawnTimer = blend*(VisualSpawnTimer-SpawnTimer)+SpawnTimer
+        end
 
         if Spectating then
             local mx = (love.keyboard.isDown("d") and 1 or 0) - (love.keyboard.isDown("a") and 1 or 0)
@@ -1011,7 +1020,7 @@ function scene.draw()
     local pos = 0
     if showTimer then
         love.graphics.printf(Localize(TimerDisplay[timerType] or ""):format(timerString(math.ceil((SpawnDelay - SpawnTimer)))), 0, 0, love.graphics.getWidth(), "center")
-        local fill = 1-(SpawnTimer/SpawnDelay)
+        local fill = 1-((Settings.video.smooth_timer and VisualSpawnTimer or SpawnTimer)/SpawnDelay)
         love.graphics.setColor(0.25,0.25,0.25)
         local barWidth = IsMobile and 1024 or 512
         local barHeight = (IsMobile and 32 or 16)*Settings.video.ui_scale/1.5

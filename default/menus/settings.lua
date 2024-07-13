@@ -162,7 +162,7 @@ local sVideoMenu = UI.Element:new({
                     y = -104,
                     width = 32,
                     height = 32,
-                    value = function() return Settings.video.color_by_operator end,
+                    initWith = function() return Settings.video.color_by_operator end,
                     ontoggle = function(self,value) tempSettings.video.color_by_operator = value end,
                     children = {
                         UI.Text:new({
@@ -183,10 +183,38 @@ local sVideoMenu = UI.Element:new({
                         })
                     }
                 }),
+                UI.Toggle:new({
+                    id = "smooth_timer",
+                    cursor = "hand",
+                    x = 112,
+                    y = -56,
+                    width = 32,
+                    height = 32,
+                    initWith = function() return Settings.video.smooth_timer end,
+                    ontoggle = function(self,value) tempSettings.video.smooth_timer = value end,
+                    children = {
+                        UI.Text:new({
+                            text = function() return Localize("settings.smooth_timer") end,
+                            font = lgfont_2x,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
+                            y = 0,
+                            width = 288,
+                            height = 32,
+                            alignHoriz = "left",
+                            alignVert = "center"
+                        })
+                    }
+                }),
                 UI.Slider:new({
                     id = "ui_scale",
                     x = 112,
-                    y = -56,
+                    y = -8,
                     width = 256,
                     height = 24,
                     min = 0.5, max = 2,
@@ -247,7 +275,7 @@ local sVideoMenu = UI.Element:new({
                 UI.Slider:new({
                     id = "background_brightness",
                     x = 112,
-                    y = -8,
+                    y = 40,
                     width = 256,
                     height = 24,
                     min = 0, max = 100,
@@ -309,7 +337,7 @@ local sVideoMenu = UI.Element:new({
                     id = "language",
                     cursor = "hand",
                     x = 112,
-                    y = 40,
+                    y = 88,
                     width = 256,
                     height = 32,
                     background = function() return GetTheme().button_secondary.background end,
@@ -918,7 +946,7 @@ local sGameplayMenu = UI.Element:new({
                     y = -56,
                     width = 32,
                     height = 32,
-                    value = function() return Settings.gameplay.auto_aim_on end,
+                    initWith = function() return Settings.gameplay.auto_aim_on end,
                     ontoggle = function(self,value) tempSettings.gameplay.auto_aim_on = value end,
                     children = {
                         UI.Text:new({
