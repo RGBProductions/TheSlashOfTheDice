@@ -3,12 +3,24 @@ SceneManager = {
 }
 
 function SceneManager.LoadScene(fn, args)
-    StopMusic()
-    if love.filesystem.getInfo(fn .. ".lua") ~= nil then
-        SceneManager.ActiveScene = require(fn)
-        if SceneManager.ActiveScene.load ~= nil then
-            SceneManager.ActiveScene.load(args)
+    local sceneLoadEvent = {
+        path = fn,
+        args = args,
+        cancelled = false
+    }
+    Events.fire("loadscene", sceneLoadEvent)
+    if not sceneLoadEvent.cancelled then
+        StopMusic()
+        if love.filesystem.getInfo(fn .. ".lua") ~= nil then
+            SceneManager.ActiveScene = require(fn)
+            if SceneManager.ActiveScene.load ~= nil then
+                SceneManager.ActiveScene.load(args or {})
+            end
         end
+    end
+    local s,r = pcall(love.mouse.getSystemCursor,"arrow")
+    if s then
+        love.mouse.setCursor(r)
     end
 end
 
@@ -24,9 +36,15 @@ function SceneManager.Draw()
     end
 end
 
-function SceneManager.MousePressed(x, y, b)
+function SceneManager.MousePressed(x, y, b, t, p)
     if SceneManager.ActiveScene.mousepressed ~= nil then
-        SceneManager.ActiveScene.mousepressed(x, y, b)
+        SceneManager.ActiveScene.mousepressed(x, y, b, t, p)
+    end
+end
+
+function SceneManager.MouseReleased(x, y, b)
+    if SceneManager.ActiveScene.mousereleased ~= nil then
+        SceneManager.ActiveScene.mousereleased(x, y, b)
     end
 end
 
@@ -57,5 +75,29 @@ end
 function SceneManager.Focus(f)
     if SceneManager.ActiveScene.focus ~= nil then
         SceneManager.ActiveScene.focus(f)
+    end
+end
+
+function SceneManager.TouchPressed(...)
+    if SceneManager.ActiveScene.touchpressed ~= nil then
+        SceneManager.ActiveScene.touchpressed(...)
+    end
+end
+
+function SceneManager.TouchMoved(...)
+    if SceneManager.ActiveScene.touchmoved ~= nil then
+        SceneManager.ActiveScene.touchmoved(...)
+    end
+end
+
+function SceneManager.TouchReleased(...)
+    if SceneManager.ActiveScene.touchreleased ~= nil then
+        SceneManager.ActiveScene.touchreleased(...)
+    end
+end
+
+function SceneManager.GamepadPressed(stick,button)
+    if SceneManager.ActiveScene.gamepadpressed ~= nil then
+        SceneManager.ActiveScene.gamepadpressed(stick,button)
     end
 end

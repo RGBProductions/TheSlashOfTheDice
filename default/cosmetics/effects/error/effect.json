@@ -1,0 +1,17 @@
+{
+    "events": {
+        "player_death": {
+            "actions": [
+                {
+                    "type": "particle_burst",
+                    "spawnRadius": 0,
+                    "velocity": [4,8],
+                    "size": [0.25,0.5],
+                    "amount": 4,
+                    "life": 1,
+                    "image": "error"
+                }
+            ]
+        }
+    }
+}

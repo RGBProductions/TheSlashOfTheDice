@@ -1,12 +1,129 @@
--- https module didn't upload
---[[love.filesystem.write("https.so", love.filesystem.read("https.so"))
-love.filesystem.write("https.dll", love.filesystem.read("https.dll"))
-local https = require "https"]]
-require "scenemanager"
-require "pools"
-
+utf8 = require "utf8"
+hsx = require "lib.hsx"
+typingutil = require "lib.typingutil"
 json = require "json"
-love.graphics.setDefaultFilter("nearest", "nearest")
+
+love.keyboard.setKeyRepeat(true)
+
+function utf8.sub(txt, i, j)
+    local o1 = (utf8.offset(txt,i) or (#txt))-1
+    local o2 = (utf8.offset(txt,j+1) or (#txt+1))-1
+    return txt:sub(o1,o2)
+end
+
+do
+    local s,r = pcall(require, "websocket")
+    if s then
+        websocket = r
+    end
+end
+
+love.filesystem.getInfo = love.filesystem.getInfo or function() return nil end
+
+ShowMobileUI = IsMobile
+
+ShowDebugInfo = false
+FrameStep = false
+DrawTime = 0
+UpdateTime = 0
+
+ViewScale = 1
+ViewMargin = 0
+FontScale = IsMobile and 1.5 or 1
+-- ViewMargin = 0
+
+SlashIcon = love.graphics.newImage("assets/images/ui/slash.png")
+PauseIcon = love.graphics.newImage("assets/images/ui/pause.png")
+BackIcon = love.graphics.newImage("assets/images/ui/back.png")
+ForwardIcon = love.graphics.newImage("assets/images/ui/forward.png")
+FastBackIcon = love.graphics.newImage("assets/images/ui/fastback.png")
+FastForwardIcon = love.graphics.newImage("assets/images/ui/fastforward.png")
+
+Trophy = love.graphics.newImage("assets/images/ui/cubetrophy.png")
+
+function IsHosting()
+    return InGame and ((not IsMultiplayer) or Net.Hosting)
+end
+
+local _gh = love.graphics.getHeight
+
+---@diagnostic disable-next-line: duplicate-set-field
+function love.graphics.getHeight()
+    return _gh()-ViewMargin
+end
+
+do
+    local s,r = pcall(require, "lib.discordRPC")
+    if s then
+        DiscordRPC = r
+    else
+        print("Couldn't load Discord RPC: " .. tostring(r))
+        DiscordRPC = nil
+    end
+end
+
+if DiscordRPC then
+    DiscordRPC.joinGame = function(secret)
+        print("Discord join game: " .. secret)
+    end
+
+    DiscordRPC.joinRequest = function(user)
+        print("Discord join request: " .. user)
+    end
+
+    DiscordRPC.ready = function(userId, username, discriminator, avatar)
+        print("Discord connected to user " .. username)
+    end
+
+    DiscordRPC.errored = function(errorCode, message)
+        print("Discord error: " .. message .. " (Code " .. errorCode .. ")")
+    end
+    
+    DiscordRPC.disconnected = function(errorCode, message)
+        print("Discord disconnected: " .. message .. " (Code " .. errorCode .. ")")
+    end
+else
+    print("Discord RPC was not initialized.")
+end
+
+-- smfont = love.graphics.getFont()
+
+smfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12)
+
+function ResetFonts()
+    mdfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*FontScale*Settings.video.ui_scale/1.5)
+    lgfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*FontScale*Settings.video.ui_scale/1.5)
+    lrfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32*FontScale*Settings.video.ui_scale/1.5)
+    xlfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48*FontScale*Settings.video.ui_scale/1.5)
+end
+
+smfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12)
+mdfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16)
+lgfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24)
+lrfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32)
+xlfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48)
+
+smfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12*2)
+mdfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*2)
+lgfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*2)
+lrfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32*2)
+xlfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48*2)
+
+SusMode = false
+
+function timerString(time)
+    local hr = tostring(math.floor(time/3600))
+    local min = tostring(math.floor(time/60)%60)
+    local sec = tostring(math.floor(time)%60)
+    local t = sec
+    if min ~= "0" then
+        t = min .. ":" .. ("0"):rep(2-#t) .. t
+    end
+    if hr ~= "0" then
+        t = hr .. ":" .. ("0"):rep(5-#t) .. t
+    end
+    return t
+end
 
 function string.split(text, delimiter)
     local result = {}
@@ -43,6 +160,48 @@ function table.join(t, s)
     return res
 end
 
+function rand(min, max)
+    max = max + 1
+    return math.floor(love.math.random()*(max-min)+min)
+end
+
+function randFloat(min,max)
+    return love.math.random()*(max-min)+min
+end
+
+AchievementUnlocks = {}
+
+function UnlockAchievement(id, titleText)
+    table.insert(AchievementUnlocks, {achievement = id, time = 0, titleText = titleText})
+end
+
+require "events"
+require "pools"
+require "game"
+require "lang"
+require "entitytypes"
+require "sounds"
+require "scenemanager"
+require "network"
+require "achievements"
+require "ui"
+require "menus"
+require "cosmetics"
+
+Logos = {}
+
+function GetLogo(name)
+    if Logos[name] then return Logos[name] end
+    Logos[name] = love.graphics.newImage("assets/images/ui/" .. name .. ".png")
+    return Logos[name]
+end
+
+if not love.filesystem.getInfo("achievements.txt") then
+    Achievements.Save("achievements.txt")
+end
+Achievements.Load("achievements.txt")
+love.graphics.setDefaultFilter("nearest", "nearest")
+
 function RecursiveDelete( item )
     if love.filesystem.getInfo( item , "directory" ) then
         for _, child in pairs( love.filesystem.getDirectoryItems( item )) do
@@ -60,62 +219,10 @@ version = curver[1]
 version_number = curver[2]
 update = {false, version}
 beta = false
---how do you feel rn--
--- local vals = string.split_plain("1.0-JAM", ".")
--- local t = string.split_plain(vals[#vals], "-")
--- for i,v in ipairs(vals) do
---     vals[i] = string.split_plain(v, "-")[1]
--- end
--- print("Major: " .. vals[1])
--- print("Minor: " .. vals[2])
--- print("Revision: " .. (vals[3] or 0))
--- print("Type: " .. (t[2] or "RELEASE"))
--- print("Full version: " .. vals[1] .. "." .. vals[2] .. "." .. (vals[3] or 0) .. "-" .. (t[2] or "RELEASE"))
--- print("Actual version: " .. table.join(vals, "."))
+checkingUpdate = true
 
-function CompareVersions(a,b)
-    local t1 = string.split_plain(a, ".")
-    local t2 = string.split_plain(b, ".")
-    for i,v in ipairs(t1) do
-        t1[i] = string.split_plain(v, "-")[1]
-    end     
-    for i,v in ipairs(t2) do
-        t2[i] = string.split_plain(v, "-")[1]
-    end
-
-    for i = 1, math.max(#t1,#t2) do
-        if tonumber(t1[i] or 0) > tonumber(t2[i] or 0) then
-            return 1
-        end
-        if tonumber(t1[i] or 0) < tonumber(t2[i] or 0) then
-            return -1
-        end
-    end
-    return 0
-end
-
-UpdateCheckFailed = 0
-
--- MichaelEpicA's Method
-function CheckForUpdates()
-    -- local code,data,headers,unknown = https.request("https://github.com/TheFuryBumblebee/TheSlashOfTheDice/releases/latest")
-    local code,data,headers = https.request("https://github.com/TheFuryBumblebee/TheSlashOfTheDice/releases/latest", {method = "get"})
-    local location = headers.location
-    if not headers.location then
-        location = headers.Location -- Windows
-    end
-    local real_url = location:sub(2,-1)
-    local spl = real_url:split("/")
-    local tag = spl[#spl]
-    local cmp = CompareVersions(version, tag:sub(2,-1))
-    if cmp == 1 then
-        beta = true
-    elseif cmp == -1 then
-        update = {true, tag}
-    end
-end
-
-local s,r = pcall(CheckForUpdates)
+local updateThread = love.thread.newThread("checkupdate.lua")
+local updateChannel = love.thread.getChannel("update")
 
 function table.index(t,v)
     for n,i in pairs(t) do
@@ -140,8 +247,9 @@ function LoadMusic(fn)
         return print("WARNING: Music " .. fn .. " not found; skipping")
     end
     Music = r
+    CurrentMusic = fn
     Music:setLooping(true)
-    Music:setVolume(Settings["Audio"]["Music Volume"]/100)
+    Music:setVolume(Settings.audio.music_volume/100)
     Music:play()
 end
 
@@ -151,69 +259,241 @@ function StopMusic()
     end
 end
 
-function deepcopy(orig, copies)
-    copies = copies or {}
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        if copies[orig] then
-            copy = copies[orig]
-        else
-            copy = {}
-            copies[orig] = copy
-            for orig_key, orig_value in next, orig, nil do
-                copy[deepcopy(orig_key, copies)] = deepcopy(orig_value, copies)
-            end
-            setmetatable(copy, deepcopy(getmetatable(orig), copies))
-        end
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
-
-function RecursiveOverwrite(t1, t2)
-    for k,v in pairs(t2) do
-        if type(v) == "table" then
-            t1[k] = {}
-            t1[k] = RecursiveOverwrite(t1[k], v)
-        else
-            t1[k] = v
-        end
-    end
-    return t1
-end
-
 function table.merge(t, m)
-    local res = deepcopy(t)
-    return RecursiveOverwrite(res, m)
+    t = t or {}
+    for k,v in pairs(m) do
+        if type(v) == "table" then
+            if type(t[k]) == "table" then
+                t[k] = table.merge(t[k],v)
+            else
+                t[k] = table.merge({},v)
+            end
+        else
+            t[k] = v
+        end
+    end
+    return t
+end
+
+function math.dot(a,b)
+    local sum = 0
+    for i = 1, math.max(#a,#b) do
+        sum = sum + (a[i] or 0)*(b[i] or 0)
+    end
+    return sum
+end
+
+function math.norm(v)
+    local m = 0
+    for i = 1, #v do
+        m = m + v[i]^2
+    end
+    m = math.sqrt(m)
+    if m == 0 then return v end
+    local r = {}
+    for i = 1, #v do
+        table.insert(r, v[i]/m)
+    end
+    return r
+end
+
+DiscordPresence = {
+    details = "Launching",
+    startTimestamp = os.time(),
+    largeImageKey = "main_icon"
+}
+
+Settings = {
+    language = "en_US",
+
+    video = {
+        ui_scale = 1.5,
+        color_by_operator = true,
+        background_brightness = 1,
+        smooth_timer = false,
+        menu_theme = "aura"
+    },
+
+    audio = {
+        sound_volume = 75,
+        music_volume = 75
+    },
+
+    gameplay = {
+        dice_mode = 2,
+        auto_aim_on = IsMobile,
+        auto_aim_limit = 45
+    },
+
+    customization = {
+        color = {0,1,1},
+        hat = nil,
+        trail = nil,
+        death_effect = nil
+    }
+}
+
+if love.filesystem.getInfo("settings.json") then
+    local itms = json.decode(love.filesystem.read("settings.json"))
+    Settings = table.merge(Settings, itms)
+end
+
+ResetFonts()
+
+require "default.menus"
+
+function DeathHandler(event)
+    if Settings.customization.death_effect then
+        local trail = Cosmetics.Effects[Settings.customization.death_effect]
+        if trail.events.player_death then
+        local actions = trail.events.player_death.actions
+        for _,v in ipairs(actions) do
+            if v.type == "particle_burst" then
+                for _=1,v.amount do
+                    local dir = randFloat(0,2*math.pi)
+                    local vx,vy = math.sin(dir), math.cos(dir)
+                    local velocity = v.velocity
+                    if type(velocity) == "table" then velocity = randFloat(velocity[1],velocity[2]) end
+                    local particle = Game.Particle:new(event.x, event.y, v.life, vx*velocity, vy*velocity, 20, randFloat(v.size[1],v.size[2]))
+                    particle.image = v.image
+                    table.insert(Particles, particle)
+                end
+            end
+        end
+    end
+end
+end
+function StepHandler(event) 
+    if Settings.customization.trail then
+        local trail = Cosmetics.Trails[Settings.customization.trail]
+        if trail.events.step then
+        local actions = trail.events.step.actions
+        for _,v in ipairs(actions) do
+            if v.type == "particle" then
+                local sx,sy = randFloat(-v.spawnRadius,v.spawnRadius),randFloat(-v.spawnRadius,v.spawnRadius)
+                local a = randFloat(v.angle[1],v.angle[2])
+                local particle = Game.Particle:new(event.x+sx, event.y+sy, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]), a)
+                particle.image = v.image
+                table.insert(Particles, particle)
+            end
+        end
+    end
+    end
+end
+Events.on("step",StepHandler)
+Events.on("player_death", DeathHandler)
+function WriteSettings()
+    local s,r = pcall(json.encode,Settings)
+    if not s then
+        print("Failed to save settings: " .. r)
+        return
+    end
+    local s2,r2 = pcall(love.filesystem.write, "settings.json", r)
+    if not s2 then
+        print("Failed to save settings: " .. r2)
+        return
+    end
+end
+
+Cosmetics.Search("default/cosmetics")
+
+ThemePresets = {}
+for _,itm in ipairs(love.filesystem.getDirectoryItems("default/themes")) do
+    local name = itm:sub(1,-6)
+    local ext = itm:sub(-5,-1)
+    if ext == ".json" then
+        local s,r = pcall(json.decode, love.filesystem.read("default/themes/" .. itm))
+        if s then
+            ThemePresets[name] = r
+        end
+    end
+end
+
+function GetTheme()
+    if type(Settings.video.menu_theme) == "string" then
+        return (ThemePresets[Settings.video.menu_theme] or {}).theme or ((ThemePresets.aura or {}).theme or {})
+    end
+    return (Settings.video.menu_theme or {})
 end
 
 function love.load()
-    Settings = {
-        ["Video"] = {
-            ["UI Scale"] = 1.5,
-            ["Color by Operator"] = true
-        },
+    if DiscordRPC then DiscordRPC.initialize("1124036737413435502", true) end
 
-        ["Audio"] = {
-            ["Sound Volume"] = 75,
-            ["Music Volume"] = 75
-        },
+    MenuBG = love.graphics.newImage("assets/images/ui/background.png")
+    MenuBG:setWrap("repeat", "repeat", "repeat")
+    BGShader = love.graphics.newShader("assets/shaders/menu.glsl")
+    BGShader:send("tex", MenuBG)
+    BGShader:send("texSize", {MenuBG:getDimensions()})
+    BGShader:send("time", (GlobalTime-600)*48)
+    MenuBGMobile = love.graphics.newImage("assets/images/ui/background-mobile.png")
+    MenuBGMobile:setWrap("repeat", "repeat", "repeat")
+    
+    updateThread:start()
 
-        ["Gameplay"] = {
-            ["Dice Weighing Mode"] = 2
-        }
-    }
-    if love.filesystem.getInfo("settings.json") then
-        local itms = json.decode(love.filesystem.read("settings.json"))
-        Settings = table.merge(Settings, itms)
-    end
+    Events.fire("modPreInit")
+    Events.fire("modPostInit")
+    
     SceneManager.LoadScene("scenes/menu", {})
 end
 
-function love.update(dt)
+local saveTime = 0
+
+GlobalTime = 0
+local presenceTimer = 15
+
+function love.update(dt,step)
+    if FrameStep and not step then
+        for _,particle in ipairs(Particles or {}) do
+            particle.time = particle.time + dt
+        end
+        for _,indicator in ipairs(DamageIndicators or {}) do
+            indicator.time = indicator.time + dt
+        end
+        return
+    end
+    local t = love.timer.getTime()
+
+    if updateChannel:getCount() > 0 then
+        checkingUpdate = false
+        local updateMessage = updateChannel:pop()
+        if updateMessage[1] then -- Update checking passed
+            beta = updateMessage[2]
+            update = updateMessage[3]
+        end
+    end
+
+    if DiscordRPC then
+        DiscordRPC.runCallbacks()
+    end
+
+    Net.Update()
+    saveTime = saveTime + dt
+    if saveTime >= 30 then
+        Achievements.Save("achievements.txt")
+        saveTime = 0
+    end
+    presenceTimer = presenceTimer + dt
+    if presenceTimer >= 15 then
+        if DiscordRPC then DiscordRPC.updatePresence(DiscordPresence) end
+        presenceTimer = 0
+    end
+    if Music then
+        if Paused then
+            Music:setVolume((Settings.audio.music_volume/100)*0.5)
+        else
+            Music:setVolume(Settings.audio.music_volume/100)
+        end
+    end
     SceneManager.Update(dt)
+    GlobalTime = GlobalTime + dt
+    if #AchievementUnlocks >= 1 then
+        AchievementUnlocks[1].time = AchievementUnlocks[1].time + dt
+        if AchievementUnlocks[1].time >= 3 then
+            table.remove(AchievementUnlocks, 1)
+        end
+    end
+
+    UpdateTime = love.timer.getTime() - t
 end
 
 function love.mousemoved(x, y, dx, dy)
@@ -226,9 +506,25 @@ end
 
 function love.focus(f)
     SceneManager.Focus(f)
+    if not f then
+        Achievements.Save("achievements.txt")
+    end
 end
 
 function love.keypressed(k)
+    if k == "f11" then
+        love.window.setFullscreen(not love.window.getFullscreen())
+    end
+    if k == "f3" then
+        ShowDebugInfo = not ShowDebugInfo
+    end
+    if k == "f4" then
+        FrameStep = not FrameStep
+    end
+    if k == "f5" and FrameStep then
+        love.update(1/60,true)
+    end
+    ShowMobileUI = false
     SceneManager.KeyPressed(k)
 end
 
@@ -236,10 +532,85 @@ function love.textinput(t)
     SceneManager.TextInput(t)
 end
 
-function love.mousepressed(x,y,b)
-    SceneManager.MousePressed(x,y,b)
+function love.mousepressed(x,y,b,t,p)
+    ShowMobileUI = t
+    SceneManager.MousePressed(x,y,b,t,p)
+end
+
+function love.mousereleased(x,y,b)
+    SceneManager.MouseReleased(x,y,b)
+end
+
+function love.gamepadpressed(stick,b)
+    SceneManager.GamepadPressed(stick,b)
+end
+
+function love.touchpressed(...)
+    SceneManager.TouchPressed(...)
+end
+
+function love.touchmoved(...)
+    SceneManager.TouchMoved(...)
+end
+
+function love.touchreleased(...)
+    SceneManager.TouchReleased(...)
 end
 
 function love.draw()
+    local t = love.timer.getTime()
+
     SceneManager.Draw()
+    if #AchievementUnlocks >= 1 then
+        local txt = Localize("achievement."..AchievementUnlocks[1].achievement..".name")
+        local w = math.max(lrfont:getWidth(Localize(AchievementUnlocks[1].titleText or "achievement_unlocked")), lgfont:getWidth(txt))
+        local h = lrfont:getHeight()+lgfont:getHeight()
+        local icon = Achievements.Achievements[AchievementUnlocks[1].achievement].icon
+        love.graphics.setColor(0.1,0.1,0.1,math.min(1,(3-AchievementUnlocks[1].time)*2))
+        love.graphics.rectangle("fill", love.graphics.getWidth()-h-w-4, love.graphics.getHeight()-h-4, w+h+4, h+4)
+        love.graphics.setColor(1,1,1,math.min(1,(3-AchievementUnlocks[1].time)*2))
+        love.graphics.setFont(lrfont)
+        love.graphics.draw(icon, love.graphics.getWidth()-w-h-8-2, love.graphics.getHeight()-h-2, 0, h/icon:getWidth(), h/icon:getHeight())
+        love.graphics.print(Localize(AchievementUnlocks[1].titleText or "achievement_unlocked"), love.graphics.getWidth()-w-2, love.graphics.getHeight()-h-2)
+        love.graphics.setFont(lgfont)
+        love.graphics.print(txt, love.graphics.getWidth()-w-2, love.graphics.getHeight()-h-2+lrfont:getHeight())
+        love.graphics.setColor(0,0,0,math.min(1,(3-AchievementUnlocks[1].time)*2))
+        love.graphics.setLineWidth(2)
+        love.graphics.rectangle("line", love.graphics.getWidth()-h-8-w-3, love.graphics.getHeight()-h-3, w+h+8, h)
+    end
+
+    love.graphics.setFont(smfont)
+    love.graphics.setColor(1,1,1)
+    local txt = love.timer.getFPS() .. " FPS"
+    local w = smfont:getWidth(txt)
+    love.graphics.print(txt, love.graphics.getWidth()-w, 0)
+    
+    DrawTime = love.timer.getTime()-t
+
+    if ShowDebugInfo then
+        love.graphics.setColor(0,0,0,0.5)
+        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), smfont:getHeight()*16)
+        love.graphics.setColor(1,1,1)
+        love.graphics.setFont(smfont)
+        love.graphics.print("The Slash of the Dice v" .. version, 0, smfont:getHeight()*0)
+        local major,minor,rev,name = love.getVersion()
+        love.graphics.print("LÖVE v" .. major .. "." .. minor .. " (" .. name .. ")", 0, smfont:getHeight()*1)
+        love.graphics.print("Render Time: " .. math.ceil(DrawTime*1000) .. " ms (" .. math.floor(1/DrawTime) .. " FPS)", 0, smfont:getHeight()*3)
+        love.graphics.print("Update Time: " .. math.ceil(UpdateTime*1000) .. " ms (" .. math.floor(1/UpdateTime) .. " FPS)", 0, smfont:getHeight()*4)
+        love.graphics.print("Total Frame Time: " .. math.ceil((UpdateTime+DrawTime)*1000) .. " ms (" .. math.floor(1/(UpdateTime+DrawTime)) .. " FPS)", 0, smfont:getHeight()*5)
+        
+        love.graphics.print("Is Game Host: " .. tostring(IsHosting()), 0, smfont:getHeight()*7)
+        love.graphics.print("Entities: " .. #(Entities or {}), 0, smfont:getHeight()*8)
+        love.graphics.print("Particles: " .. #(Particles or {}), 0, smfont:getHeight()*9)
+    end
+end
+
+function love.quit()
+    Achievements.Save("achievements.txt")
+    if DiscordRPC then DiscordRPC.shutdown() end
+end
+
+function love.lowmemory()
+    print("LOW MEMORY, ATTEMPTING TO CLEAR")
+    collectgarbage()
 end

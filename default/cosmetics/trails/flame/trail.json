@@ -1,0 +1,15 @@
+{
+    "events": {
+        "step": {
+            "actions": [
+                {
+                    "type": "particle",
+                    "spawnRadius": 16,
+                    "size": [0.15,0.3],
+                    "life": 0.5,
+                    "image": "flame"
+                }
+            ]
+        }
+    }
+}

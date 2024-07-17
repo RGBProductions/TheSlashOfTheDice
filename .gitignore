@@ -38,4 +38,10 @@ luac.out
 *.i*86
 *.x86_64
 *.hex
+*.love
 
+# Remove settings
+.vscode
+
+# Ignored folder
+.ignore

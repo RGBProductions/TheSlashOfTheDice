@@ -1,0 +1,39 @@
+{
+    "name": "Aura",
+    "theme": {
+        "button_back": {
+            "background": [0.23529411764706,0.10588235294118,0.10588235294118],
+            "border": {"color": [1,1,1], "width": 0},
+            "text": [1,1,1],
+            "icon_color": [1,1,1]
+        },
+        "button_other": {
+            "background": [0.24313725490196,0.1843137254902,0.098039215686275],
+            "border": {"color": [1,1,1], "width": 0},
+            "text": [1,1,1],
+            "icon_color": [1,1,1]
+        },
+        "button_secondary": {
+            "background": [0.15686274509804,0.11764705882353,0.38039215686275],
+            "border": {"color": [1,1,1], "width": 0},
+            "text": [1,1,1],
+            "icon_color": [1,1,1]
+        },
+        "button_primary": {
+            "background": [0.25098039215686,0.23529411764706,0.10588235294118],
+            "border": {"color": [1,1,1], "width": 0},
+            "text": [1,1,1],
+            "icon_color": [1,1,1]
+        },
+        "popup_error": {
+            "background": [0.11764705882353,0.054901960784314,0.054901960784314],
+            "border": {"color": [1,1,1], "width": 0},
+            "text": [1,1,1]
+        },
+        "popup_info": {
+            "background": [0.07843137254902,0.058823529411765,0.18823529411765],
+            "border": {"color": [1,1,1], "width": 0},
+            "text": [1,1,1]
+        }
+    }
+}

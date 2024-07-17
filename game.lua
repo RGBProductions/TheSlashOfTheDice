@@ -1,14 +1,16 @@
 Game = {
     Die = {},
     Entity = {},
-    SlashOrb = {}
+    Particle = {}
 }
 
-function Game.Die:new()
+function Game.Die:new(delay,number)
+    local pool = GetPoolByID(Settings["gameplay"]["dice_mode"])
     local d = {}
-    d.rollIter = 0
+    d.rollIter = -(delay or 0)
     d.time = 0
-    d.number = 1
+    d.number = pool.Die[love.math.random(1,#pool.Die)]
+    d.finalNumber = number or pool.Die[love.math.random(1,#pool.Die)]
     d.doneRolling = false
     d.timeSinceCompletion = 0
 
@@ -24,32 +26,7 @@ function Game.Die:newRoll()
 end
 
 function Game.Die:update(dt)
-    local die = GetPoolByID(Settings["Gameplay"]["Dice Weighing Mode"]).Die
-    if Settings["Gameplay"]["Dice Weighing Mode"] == 2 then
-        local Stats = player:get("stats")
-        die = {}
-        -- Calculate Total Statistic Score
-        local statscore = (Stats["Attack"]/150)*0.4 + (Stats["Defense"]/150)*0.4 + (Stats["Luck"]/90)*0.2
-        local istatscore = 1-statscore
-        for n = 1, istatscore*8 do
-            table.insert(die, 6)
-        end
-        for n = 1, istatscore*6 do
-            table.insert(die, 5)
-        end
-        for n = 1, istatscore*4 do
-            table.insert(die, 4)
-        end
-        for n = 1, statscore*8 do
-            table.insert(die, 1)
-        end
-        for n = 1, statscore*6 do
-            table.insert(die, 2)
-        end
-        for n = 1, statscore*4 do
-            table.insert(die, 3)
-        end
-    end
+    local die = GetPoolByID(Settings["gameplay"]["dice_mode"]).Die
     if not self.doneRolling then
         self.time = self.time + dt
         if self.time >= 0.125 then
@@ -59,6 +36,7 @@ function Game.Die:update(dt)
         end
         if self.rollIter > 8 then
             self.doneRolling = true
+            self.number = self.finalNumber
         end
     else
         self.timeSinceCompletion = self.timeSinceCompletion + dt
@@ -88,6 +66,13 @@ function Game.Entity:new(id, x, y, vx, vy, maxhp, callbacks, data)
     return e
 end
 
+function Game.Entity:destroy()
+    local i = table.index(Entities, self)
+    if i then
+        table.remove(Entities, i)
+    end
+end
+
 function Game.Entity:get(value)
     return self.data[value]
 end
@@ -99,13 +84,18 @@ end
 function Game.Entity:update(dt)
     if self.callbacks["update"] ~= nil then
         self.callbacks["update"](self, dt)
+    elseif (EntityTypes[self.id] or {}).update ~= nil then
+        (EntityTypes[self.id] or {}).update(self, dt)
     end
     self.invincibility = self.invincibility - dt
 end
 
 function Game.Entity:keypressed(k)
-    if not self.callbacks["keypressed"] then return end
-    self.callbacks["keypressed"](self, k)
+    if self.callbacks["keypressed"] ~= nil then
+        self.callbacks["keypressed"](self, k)
+    elseif (EntityTypes[self.id] or {}).keypressed ~= nil then
+        (EntityTypes[self.id] or {}).keypressed(self, k)
+    end
 end
 
 function Game.Entity:mousepressed(x, y, b)
@@ -114,13 +104,28 @@ function Game.Entity:mousepressed(x, y, b)
 end
 
 
-function Game.SlashOrb:new(x, y)
+function Game.Particle:new(x, y, lifespan, vx, vy, damp, size, angle)
     local o = {}
     o.x = x
     o.y = y
+    o.vx = vx or 0
+    o.vy = vy or 0
+    o.size = size or 1
+    o.damp = damp or 5
+    o.angle = angle or 0
+    o.lifespan = lifespan or 0.5
     o.time = love.timer.getTime()
 
     setmetatable(o, self)
     self.__index = self
     return o
+end
+
+function Game.Particle:update(dt)
+    local blendAmt = 1/((self.damp/(self.damp-1))^60)
+    local blend = math.pow(blendAmt,dt)
+    self.vx = self.vx*blend
+    self.vy = self.vy*blend
+    self.x = self.x + self.vx*dt*60
+    self.y = self.y + self.vy*dt*60
 end

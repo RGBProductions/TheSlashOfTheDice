@@ -1,11 +1,25 @@
 [
-    {"type": "header", "label": "Programming"},
-    {"type": "name", "label": "Lead Programmer - RGB Productions"},
-    {"type": "name", "label": "Update Checker - MichaelEpicA"},
+    {"type": "header", "label": "credits.programming"},
+    {"type": "name", "label": "RGB Productions"},
+    {"type": "name", "label": "MichaelEpicA"},
 
-    {"type": "header", "label": "Graphics"},
+    {"type": "header", "label": "credits.graphics"},
     {"type": "name", "label": "RGB Productions"},
 
-    {"type": "header", "label": "Music"},
-    {"type": "name", "label": "Henderythmix"}
+    {"type": "header", "label": "credits.music"},
+    {"type": "name", "label": "Henderythmix"},
+
+    {"type": "header", "label": "credits.ui"},
+    {"type": "name", "label": "TotallyNotFrisk"},
+
+    {"type": "header", "label": "credits.translation"},
+    {"type": "name", "label": "Just J - Español (Latinoamérica)"},
+
+    {"type": "header", "label": "credits.testing"},
+    {"type": "name", "label": "EastCoastBraiden"},
+    {"type": "name", "label": "nicholas"},
+    {"type": "name", "label": "MichaelEpicA"},
+    
+    {"type": "header", "label": "credits.you_header"},
+    {"type": "name", "label": "credits.you_text"}
 ]

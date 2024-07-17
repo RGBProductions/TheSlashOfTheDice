@@ -1,0 +1,53 @@
+{
+    "events": {
+        "player_death": {
+            "actions": [
+                {
+                    "type": "particle_burst",
+                    "spawnRadius": 0,
+                    "velocity": [32,48],
+                    "size": [0.5,1],
+                    "amount": 48,
+                    "life": 0.25,
+                    "image": "smoke"
+                },
+                {
+                    "type": "particle_burst",
+                    "spawnRadius": 0,
+                    "velocity": [16,24],
+                    "size": [0.5,1],
+                    "amount": 32,
+                    "life": 1,
+                    "image": "flame"
+                },
+                {
+                    "type": "particle_burst",
+                    "spawnRadius": 0,
+                    "velocity": [4,12],
+                    "size": [0.5,1],
+                    "amount": 24,
+                    "life": 1,
+                    "image": "flame"
+                },
+                {
+                    "type": "particle_burst",
+                    "spawnRadius": 0,
+                    "velocity": [4,8],
+                    "size": [0.5,1],
+                    "amount": 16,
+                    "life": 3,
+                    "image": "flame"
+                },
+                {
+                    "type": "particle_burst",
+                    "spawnRadius": 0,
+                    "velocity": [2,8],
+                    "size": [0.25,0.5],
+                    "amount": 32,
+                    "life": 4,
+                    "image": "smoke"
+                }
+            ]
+        }
+    }
+}
