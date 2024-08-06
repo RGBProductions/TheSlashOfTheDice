@@ -101,3 +101,9 @@ function SceneManager.GamepadPressed(stick,button)
         SceneManager.ActiveScene.gamepadpressed(stick,button)
     end
 end
+
+function SceneManager.GamepadAxis(stick,axis,value)
+    if SceneManager.ActiveScene.gamepadaxis ~= nil then
+        SceneManager.ActiveScene.gamepadaxis(stick,axis,value)
+    end
+end

@@ -170,9 +170,14 @@ function randFloat(min,max)
 end
 
 AchievementUnlocks = {}
+Popups = {}
 
 function UnlockAchievement(id, titleText)
     table.insert(AchievementUnlocks, {achievement = id, time = 0, titleText = titleText})
+end
+
+function Popup(titleText, text)
+    table.insert(Popups, {text = text, time = 0, titleText = titleText})
 end
 
 require "events"
@@ -303,6 +308,8 @@ DiscordPresence = {
     largeImageKey = "main_icon"
 }
 
+UsingGamepad = false
+
 Settings = {
     language = "en_US",
 
@@ -323,6 +330,17 @@ Settings = {
         dice_mode = 2,
         auto_aim_on = IsMobile,
         auto_aim_limit = 45
+    },
+
+    controls = {
+        move_up = {{type = "key", button = "w"}, {type = "gpaxis", axis = "lefty", direction = -1}},
+        move_down = {{type = "key", button = "s"}, {type = "gpaxis", axis = "lefty", direction = 1}},
+        move_left = {{type = "key", button = "a"}, {type = "gpaxis", axis = "leftx", direction = -1}},
+        move_right = {{type = "key", button = "d"}, {type = "gpaxis", axis = "leftx", direction = 1}},
+        slash = {{type = "mouse", button = 1}, {type = "gptrigger", axis = "triggerright", threshold = 0.5}},
+        skip_wave = {{type = "mouse", button = 2}, {type = "gpbutton", button = "x"}},
+        pause = {{type = "key", button = "escape"}, {type = "gpbutton", button = "start"}},
+        advance_text = {{type = "key", button = "space"}, {type = "gpbutton", button = "a"}}
     },
 
     customization = {
@@ -492,6 +510,12 @@ function love.update(dt,step)
             table.remove(AchievementUnlocks, 1)
         end
     end
+    if #Popups >= 1 then
+        Popups[1].time = Popups[1].time + dt
+        if Popups[1].time >= 3 then
+            table.remove(Popups, 1)
+        end
+    end
 
     UpdateTime = love.timer.getTime() - t
 end
@@ -541,8 +565,24 @@ function love.mousereleased(x,y,b)
     SceneManager.MouseReleased(x,y,b)
 end
 
+---@param stick love.Joystick
+function love.joystickadded(stick)
+    Popup("gamepad_connected", stick:getName())
+    UsingGamepad = true
+end
+
+---@param stick love.Joystick
+function love.joystickremoved(stick)
+    Popup("gamepad_disconnected", stick:getName())
+    UsingGamepad = false
+end
+
 function love.gamepadpressed(stick,b)
     SceneManager.GamepadPressed(stick,b)
+end
+
+function love.gamepadaxis(stick,axis,value)
+    SceneManager.GamepadAxis(stick,axis,value)
 end
 
 function love.touchpressed(...)
@@ -576,7 +616,22 @@ function love.draw()
         love.graphics.print(txt, love.graphics.getWidth()-w-2, love.graphics.getHeight()-h-2+lrfont:getHeight())
         love.graphics.setColor(0,0,0,math.min(1,(3-AchievementUnlocks[1].time)*2))
         love.graphics.setLineWidth(2)
-        love.graphics.rectangle("line", love.graphics.getWidth()-h-8-w-3, love.graphics.getHeight()-h-3, w+h+8, h)
+        love.graphics.rectangle("line", love.graphics.getWidth()-w-h-3-8, love.graphics.getHeight()-h-3, w+h+3+8, h+3)
+    end
+    if #Popups >= 1 then
+        local txt = Localize(Popups[1].text)
+        local w = math.max(lrfont:getWidth(Localize(Popups[1].titleText)), lgfont:getWidth(txt))+16
+        local h = lrfont:getHeight()+lgfont:getHeight()
+        love.graphics.setColor(0.1,0.1,0.1,math.min(1,(3-Popups[1].time)*2))
+        love.graphics.rectangle("fill", love.graphics.getWidth()-w-4, love.graphics.getHeight()-h-4, w+4, h+4)
+        love.graphics.setColor(1,1,1,math.min(1,(3-Popups[1].time)*2))
+        love.graphics.setFont(lrfont)
+        love.graphics.print(Localize(Popups[1].titleText), love.graphics.getWidth()-w-2+8, love.graphics.getHeight()-h-2)
+        love.graphics.setFont(lgfont)
+        love.graphics.print(txt, love.graphics.getWidth()-w-2+8, love.graphics.getHeight()-h-2+lrfont:getHeight())
+        love.graphics.setColor(0,0,0,math.min(1,(3-Popups[1].time)*2))
+        love.graphics.setLineWidth(2)
+        love.graphics.rectangle("line", love.graphics.getWidth()-w-3, love.graphics.getHeight()-h-3, w+3, h+3)
     end
 
     love.graphics.setFont(smfont)

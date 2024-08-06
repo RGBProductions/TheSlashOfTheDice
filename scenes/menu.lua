@@ -93,6 +93,11 @@ function scene.load(args)
     if DebugMode then
     end
 
+    ControlRemap = {
+        control = nil,
+        entry = 1
+    }
+
     table.insert(MenuVersions, {name = "LÖVE", version = major .. "." .. minor .. " (" .. name .. ")"})
 end
 
@@ -253,6 +258,13 @@ function ParseLabel(v)
 end
 
 function scene.keypressed(k)
+    if ControlRemap.control then
+        -- Override
+        Settings.controls[ControlRemap.control][ControlRemap.entry].type = "key"
+        Settings.controls[ControlRemap.control][ControlRemap.entry].button = k
+        ControlRemap.control = nil
+        return
+    end
     if k == "f8" then
         SceneManager.LoadScene("scenes/oldmenu")
     end
@@ -337,6 +349,13 @@ end
 
 function scene.mousepressed(x, y, b, t)
     if t then return end
+    if ControlRemap.control then
+        -- Override
+        Settings.controls[ControlRemap.control][ControlRemap.entry].type = "mouse"
+        Settings.controls[ControlRemap.control][ControlRemap.entry].button = b
+        ControlRemap.control = nil
+        return
+    end
     local screenWidth = 1280
     local screenHeight = 720
     local leftMargin = 160
@@ -487,6 +506,16 @@ end
 
 function scene.wheelmoved(x, y)
     scroll(love.mouse.getX(),love.mouse.getY(),x,y)
+end
+
+function scene.gamepadpressed(stick,button)
+    if ControlRemap.control then
+        -- Override
+        Settings.controls[ControlRemap.control][ControlRemap.entry].type = "gpbutton"
+        Settings.controls[ControlRemap.control][ControlRemap.entry].button = button
+        ControlRemap.control = nil
+        return
+    end
 end
 
 return scene

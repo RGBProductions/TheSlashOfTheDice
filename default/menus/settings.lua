@@ -12,15 +12,19 @@ local settingsMenu = UI.Element:new({
             alignHoriz = "center",
             text = function() return Localize("title.menu.settings") end
         }),
-        UI.Element:new({
+        UI.ScrollablePanel:new({
             id = "tabs",
             x = 0,
-            y = -80,
+            y = 0,
+            background = {0,0,0,0},
+            border = {0,0,0,0},
+            width = 256,
+            height = 224,
             children = {
                 UI.Button:new({
                     id = "video",
                     x = 0,
-                    y = 0,
+                    y = -80,
                     width = 256,
                     height = 64,
                     background = function() return GetTheme().button_secondary.background end,
@@ -49,7 +53,7 @@ local settingsMenu = UI.Element:new({
                 UI.Button:new({
                     id = "audio",
                     x = 0,
-                    y = 80,
+                    y = 0,
                     width = 256,
                     height = 64,
                     background = function() return GetTheme().button_secondary.background end,
@@ -78,7 +82,7 @@ local settingsMenu = UI.Element:new({
                 UI.Button:new({
                     id = "gameplay",
                     x = 0,
-                    y = 160,
+                    y = 80,
                     width = 256,
                     height = 64,
                     background = function() return GetTheme().button_secondary.background end,
@@ -1025,6 +1029,118 @@ local sGameplayMenu = UI.Element:new({
                                 local num = tonumber(value) or 0
                                 self.input.content = tostring(math.max(self.parent.min,math.min(self.parent.max,num)))
                             end
+                        })
+                    }
+                }),
+                UI.Button:new({
+                    id = "controls",
+                    cursor = "hand",
+                    x = 112,
+                    y = 40,
+                    width = 256,
+                    height = 32,
+                    background = function() return GetTheme().button_secondary.background end,
+                    border = function() return GetTheme().button_secondary.border end,
+                    onclick = function()
+                        local options = UI.ScrollablePanel:new({
+                            width = 432,
+                            height = 288,
+                            x = 0,
+                            y = 0,
+                            id = "options",
+                            children = {},
+                            scrollX = 0,
+                            scrollY = 0,
+                            background = {0,0,0,0}
+                        })
+                        local popup = UI.Panel:new({
+                            width = 464,
+                            height = 480,
+                            background = function() return GetTheme().popup_info.background end,
+                            border = function() return GetTheme().popup_info.border end,
+                            children = {
+                                UI.Text:new({
+                                    clickThrough = true,
+                                    x = 0,
+                                    y = -192,
+                                    width = 464,
+                                    height = 64,
+                                    text = function() return Localize("title.controls") end,
+                                    font = xlfont_2x,
+                                    fontScale = function(me)
+                                        local text = (type(me.text) == "function" and me:text()) or (me.text or "")
+                                        local font = (type(me.font) == "function" and me:font()) or (me.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,(464-32)/width)
+                                    end,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }),
+                                options,
+                                UI.Button:new({
+                                    id = "close",
+                                    width = 256,
+                                    height = 64,
+                                    y = 192,
+                                    background = function() return GetTheme().button_secondary.background end,
+                                    border = function() return GetTheme().button_secondary.border end,
+                                    onclick = function(me)
+                                        table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                    end,
+                                    cursor = "hand",
+                                    children = {
+                                        UI.Text:new({
+                                            clickThrough = true,
+                                            x = 0,
+                                            y = 0,
+                                            width = 256,
+                                            height = 64,
+                                            text = function() return Localize("button.ok") end,
+                                            color = function() return GetTheme().button_secondary.text end,
+                                            font = lgfont_2x,
+                                            fontScale = 0.5,
+                                            alignHoriz = "center",
+                                            alignVert = "center"
+                                        })
+                                    },
+                                })
+                            }
+                        })
+                        table.insert(Dialogs, popup)
+                    end,
+                    children = {
+                        UI.Text:new({
+                            text = function() return Localize("settings.controls") end,
+                            font = lgfont_2x,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
+                            y = 0,
+                            width = 288,
+                            height = 32,
+                            alignHoriz = "left",
+                            alignVert = "center"
+                        }),
+                        UI.Text:new({
+                            text = function() return Localize("edit_controls") end,
+                            font = lgfont_2x,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,(256-32)/width)
+                            end,
+                            x = 0,
+                            y = 0,
+                            width = 256,
+                            height = 32,
+                            clickThrough = true,
+                            alignHoriz = "center",
+                            alignVert = "center"
                         })
                     }
                 }),

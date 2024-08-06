@@ -272,7 +272,7 @@ function scene.load(args)
                 {text = "tutorial.intro1", pause = true},
                 {text = "tutorial.intro2", pause = true},
                 {text = "tutorial.intro3", pause = true},
-                {text = (IsMobile and "tutorial.intro4.mobile" or "tutorial.intro4.desktop"), format = {"Escape"}, pause = true},
+                {text = (IsMobile and "tutorial.intro4.mobile" or (UsingGamepad and "tutorial.intro4.gamepad" or "tutorial.intro4.desktop")), format = {"Escape"}, pause = true},
                 {text = "tutorial.intro5", pause = true}
             }
         }, {
@@ -283,7 +283,7 @@ function scene.load(args)
                 }
             },
             messages = {
-                {text = (IsMobile and "tutorial.movement.mobile" or "tutorial.movement.desktop"), format = {"W","A","S","D"}}
+                {text = (IsMobile and "tutorial.movement.mobile" or (UsingGamepad and "tutorial.movement.gamepad" or "tutorial.movement.desktop")), format = {"W","A","S","D"}}
             }
         }, {
             criteria = {
@@ -295,7 +295,7 @@ function scene.load(args)
             messages = {
                 {text = "tutorial.slash1", pause = true},
                 {text = "tutorial.slash2", pause = true},
-                {text = (IsMobile and "tutorial.slash3.mobile" or "tutorial.slash3.desktop")}
+                {text = (IsMobile and "tutorial.slash3.mobile" or (UsingGamepad and "tutorial.slash3.gamepad" or "tutorial.slash3.desktop"))}
             }
         }, {
             messages = {
@@ -1064,7 +1064,7 @@ function scene.draw()
         if MessageProgress >= utf8.len(txt) and TutorialStages[Stage].messages[Message].pause then
             local w,l = lgfont:getWrap(txt, love.graphics.getWidth()-300)
             local h = #l*lgfont:getHeight()
-            local advance = Localize("tutorial.advance." .. (IsMobile and "mobile" or "desktop"))
+            local advance = Localize("tutorial.advance." .. (IsMobile and "mobile" or (UsingGamepad and "gamepad" or "desktop")))
             love.graphics.setFont(mdfont)
 
             love.graphics.setColor(0,0,0)
@@ -1120,9 +1120,20 @@ function scene.draw()
     love.graphics.setColor(1,1,1)
 end
 
+local lastTriggerValue = 0
+
+function scene.gamepadaxis(stick,axis,value)
+    if axis == "triggerright" then
+        if value >= 0.5 and lastTriggerValue < 0.5 then
+            player:mousepressed(stick:getGamepadAxis("leftx")*96+love.graphics.getWidth()/2,stick:getGamepadAxis("lefty")*96+love.graphics.getHeight()/2,1)
+        end
+        lastTriggerValue = value
+    end
+end
+
 function scene.gamepadpressed(stick,b)
-    if b == "b" then
-        player:mousepressed(stick:getGamepadAxis("leftx")*96+love.graphics.getWidth()/2,stick:getGamepadAxis("lefty")*96+love.graphics.getHeight()/2,1)
+    if b == "x" and (runTimer and Spawned < 5) then
+        SpawnTimer = SpawnDelay
     end
     if b == "start" then
         if Gamemode == "playtest" then
