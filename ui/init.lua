@@ -95,10 +95,6 @@ function UI.Element:draw(stencilValue)
                 child:draw(stencilValue)
             end
         end
-
-        if self == MenuSelection.element and type(self.drawSelectedInstance) == "function" then
-            self:drawSelectedInstance()
-        end
     end
 
     love.graphics.pop()
