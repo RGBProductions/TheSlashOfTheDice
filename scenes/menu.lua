@@ -4,7 +4,14 @@ love.keyboard.setKeyRepeat(true)
 
 function SetMenu(m)
     CurrentMenu = m
-    MenuSelection = 1
+    if (Menus[CurrentMenu] or {}).unpackChildren then
+        for _,child in ipairs((Menus[CurrentMenu] or {}):unpackChildren()) do
+            if child.element.defaultSelected then
+                MenuSelection = child
+                break
+            end
+        end
+    end
 end
 
 local scrollVelocity = 0
@@ -40,8 +47,7 @@ function scene.load(args)
     Logo = GetLogo(logoName)
     LogoPos = love.graphics.getHeight()
 
-    CurrentMenu = args.menu or "main"
-    MenuSelection = 1
+    SetMenu(args.menu or "main")
 
     Dialogs = {}
 
@@ -132,6 +138,39 @@ local function scroll(mx,my,x,y)
     end
 end
 
+---@param dir {[1]: number, [2]: number}
+function GetSelectionTarget(dir)
+    if not MenuSelection then return end -- nothing to select?
+
+    if (Menus[CurrentMenu] or {}).unpackChildren then
+        local elements = (Menus[CurrentMenu] or {}):unpackChildren() or {}
+        local sort = {}
+        for _,elem in ipairs(elements) do
+            if elem.element ~= MenuSelection.element and elem.element.canSelect then
+                local ox,oy = elem.x-MenuSelection.x, elem.y-MenuSelection.y
+                local distance = math.sqrt(ox*ox+oy*oy)
+                local m = (distance == 0 and 1 or distance)
+                local nx,ny = ox/m,oy/m
+                local parallel = math.dot(dir, {nx,ny})
+                local weight = (parallel^8*math.sign(parallel)) * 1/(distance/16)
+                table.insert(sort, {element = elem, weight = weight})
+            end
+        end
+        table.sort(sort, function (a, b)
+            if b.weight == a.weight then
+                if b.element.y == a.element.y then
+                    return b.element.x > a.element.x
+                end
+                return b.element.y > a.element.y
+            end
+            return b.weight < a.weight
+        end)
+        return sort[1].element
+    end
+
+    return nil
+end
+
 function scene.update(dt)
     MenuTime = MenuTime + dt
     local blend = math.pow(1/(16^3), dt)
@@ -178,6 +217,9 @@ function scene.draw()
     -- love.graphics.rectangle("line", -w/2, -h/2, w, h)
     if (Menus[CurrentMenu] or {}).draw then
         Menus[CurrentMenu]:draw()
+    end
+    if Gamepads[1] and (Menus[CurrentMenu] or {}).drawSelected then
+        Menus[CurrentMenu]:drawSelected()
     end
     love.graphics.pop()
     love.graphics.push()
@@ -508,6 +550,8 @@ function scene.wheelmoved(x, y)
     scroll(love.mouse.getX(),love.mouse.getY(),x,y)
 end
 
+---@param stick love.Joystick
+---@param button love.GamepadButton
 function scene.gamepadpressed(stick,button)
     if ControlRemap.control then
         -- Override
@@ -515,6 +559,25 @@ function scene.gamepadpressed(stick,button)
         Settings.controls[ControlRemap.control][ControlRemap.entry].button = button
         ControlRemap.control = nil
         return
+    end
+
+    if button == "a" then
+        if ((MenuSelection or {}).element or {}).clickInstance then
+            ((MenuSelection or {}).element or {}):clickInstance()
+        end
+    end
+
+    if button == "dpright" then
+        MenuSelection = GetSelectionTarget({1,0}) or MenuSelection
+    end
+    if button == "dpleft" then
+        MenuSelection = GetSelectionTarget({-1,0}) or MenuSelection
+    end
+    if button == "dpdown" then
+        MenuSelection = GetSelectionTarget({0,1}) or MenuSelection
+    end
+    if button == "dpup" then
+        MenuSelection = GetSelectionTarget({0,-1}) or MenuSelection
     end
 end
 

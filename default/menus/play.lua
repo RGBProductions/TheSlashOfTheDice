@@ -19,6 +19,7 @@ local playMenu = UI.Element:new({
             background = {0,0,0,0},
             children = {
                 UI.Button:new({
+                    defaultSelected = true,
                     scrollThrough = true,
                     id = "tutorial",
                     x = 0,

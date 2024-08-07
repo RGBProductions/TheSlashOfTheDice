@@ -22,6 +22,7 @@ local settingsMenu = UI.Element:new({
             height = 224,
             children = {
                 UI.Button:new({
+                    defaultSelected = true,
                     id = "video",
                     x = 0,
                     y = -80,
@@ -160,6 +161,7 @@ local sVideoMenu = UI.Element:new({
             background = {0,0,0,0},
             children = {
                 UI.Toggle:new({
+                    defaultSelected = true,
                     id = "color_by_operator",
                     cursor = "hand",
                     x = 112,
@@ -584,6 +586,7 @@ local sAudioMenu = UI.Element:new({
             background = {0,0,0,0},
             children = {
                 UI.Slider:new({
+                    defaultSelected = true,
                     id = "music_volume",
                     x = 112,
                     y = -104,
@@ -788,6 +791,7 @@ local sGameplayMenu = UI.Element:new({
             background = {0,0,0,0},
             children = {
                 UI.Button:new({
+                    defaultSelected = true,
                     id = "dice_mode",
                     cursor = "hand",
                     x = 112,

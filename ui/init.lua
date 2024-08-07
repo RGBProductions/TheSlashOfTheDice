@@ -95,6 +95,10 @@ function UI.Element:draw(stencilValue)
                 child:draw(stencilValue)
             end
         end
+
+        if self == MenuSelection.element and type(self.drawSelectedInstance) == "function" then
+            self:drawSelectedInstance()
+        end
     end
 
     love.graphics.pop()
@@ -113,6 +117,33 @@ function UI.Element:drawInstance()
         love.graphics.setColor(r,g,b,a)
     end
 end
+
+function UI.Element:drawSelected()
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    love.graphics.push()
+    love.graphics.translate(x, y)
+
+    if not self.hidden then
+        if type(self.drawSelectedInstance) == "function" and self == MenuSelection.element then
+            self:drawSelectedInstance()
+        end
+
+        for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+            if type(child) == "table" and type(child.draw) == "function" then
+                child:drawSelected()
+            end
+        end
+    end
+
+    love.graphics.pop()
+end
+
+function UI.Element:drawSelectedInstance() end
 
 function UI.Element:click(mx,my,b)
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
@@ -550,6 +581,23 @@ function UI.Element:getRightmostPoint(dontRecurse,ox)
         end
     end
     return rightmost,pos
+end
+
+function UI.Element:unpackChildren(ox,oy)
+    ox = ox or ((type(self.x) == "function" and self.x(self)) or (self.x or 0))
+    oy = oy or ((type(self.y) == "function" and self.y(self)) or (self.y or 0))
+    
+    local children = {}
+    for _,child in ipairs(self.children or {}) do
+        local cx = ((type(child.x) == "function" and child.x(child)) or (child.x or 0))
+        local cy = ((type(child.y) == "function" and child.y(child)) or (child.y or 0))
+        table.insert(children, {element = child, x = cx+ox, y = cy+oy})
+        local subchildren = child:unpackChildren(ox+cx,oy+cy)
+        for _,sub in ipairs(subchildren) do
+            table.insert(children, sub)
+        end
+    end
+    return children
 end
 
 --#endregion

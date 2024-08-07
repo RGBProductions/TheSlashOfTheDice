@@ -2,7 +2,7 @@
 
 --#region Button
 
-UI.Button = UI.Element:new({})
+UI.Button = UI.Element:new({canSelect = true})
 
 function UI.Button:drawInstance()
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
@@ -43,6 +43,18 @@ function UI.Button:drawInstance()
     love.graphics.setLineWidth(lw)
 end
 
+function UI.Button:drawSelectedInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    love.graphics.setLineWidth(8)
+    love.graphics.setColor(0,0,0)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    love.graphics.setLineWidth(4)
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
+end
+
 function UI.Button:clickInstance(mx,my,b)
     if type(self.onclick) == "function" then self:onclick(mx,my,b) end
 end
@@ -51,7 +63,7 @@ end
 
 --#region Toggle
 
-UI.Toggle = UI.Element:new({})
+UI.Toggle = UI.Element:new({canSelect = true})
 
 function UI.Toggle:initInstance()
     if type(self.initWith) == "function" then
@@ -110,6 +122,18 @@ function UI.Toggle:drawInstance()
 
     love.graphics.setColor(r,g,b,a)
     love.graphics.setLineWidth(lw)
+end
+
+function UI.Toggle:drawSelectedInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    love.graphics.setLineWidth(8)
+    love.graphics.setColor(0,0,0)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    love.graphics.setLineWidth(4)
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
 end
 
 function UI.Toggle:clickInstance(mx,my,b)
@@ -245,7 +269,7 @@ end
 
 --#region Text Input
 
-UI.TextInput = UI.Element:new({})
+UI.TextInput = UI.Element:new({canSelect = true})
 
 function UI.TextInput:initInstance()
     if not self.input then
@@ -356,6 +380,18 @@ function UI.TextInput:drawInstance()
 
     love.graphics.setColor(r,g,b,a)
     love.graphics.setLineWidth(lw)
+end
+
+function UI.TextInput:drawSelectedInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    love.graphics.setLineWidth(8)
+    love.graphics.setColor(0,0,0)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    love.graphics.setLineWidth(4)
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
 end
 
 function UI.TextInput:click(mx,my,b)
@@ -471,7 +507,7 @@ end
 
 --#region Slider
 
-UI.Slider = UI.Element:new({})
+UI.Slider = UI.Element:new({canSelect = true})
 
 function UI.Slider:initInstance()
     local initWith = (type(self.initWith) == "function" and self.initWith(self)) or (self.initWith or self.fill)
@@ -541,6 +577,22 @@ function UI.Slider:drawInstance()
     love.graphics.setLineWidth(lw)
 end
 
+function UI.Slider:drawSelectedInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    local thumbSize = self.thumbSize or 1
+
+    if type(thumbSize) == "function" then thumbSize = thumbSize(self) end
+    
+    love.graphics.setLineWidth(8)
+    love.graphics.setColor(0,0,0)
+    love.graphics.circle("line", -w/2 + w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0))), 0, thumbSize/2*h)
+    love.graphics.setLineWidth(4)
+    love.graphics.setColor(1,1,1)
+    love.graphics.circle("line", -w/2 + w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0))), 0, thumbSize/2*h)
+end
+
 function UI.Slider:touchInstance(mx,my)
     self:clickInstance(mx,my,1)
     return true -- dont allow scroll
@@ -591,7 +643,7 @@ end
 
 --#region ColorPicker
 
-UI.ColorPicker = UI.Element:new({})
+UI.ColorPicker = UI.Element:new({canSelect = true})
 
 local colorPick = love.graphics.newShader("assets/shaders/color.glsl")
 local blank = love.graphics.newImage("assets/images/ui/blank.png")

@@ -308,7 +308,7 @@ DiscordPresence = {
     largeImageKey = "main_icon"
 }
 
-UsingGamepad = false
+Gamepads = {}
 
 Settings = {
     language = "en_US",
@@ -333,10 +333,10 @@ Settings = {
     },
 
     controls = {
-        move_up = {{type = "key", button = "w"}, {type = "gpaxis", axis = "lefty", direction = -1}},
-        move_down = {{type = "key", button = "s"}, {type = "gpaxis", axis = "lefty", direction = 1}},
-        move_left = {{type = "key", button = "a"}, {type = "gpaxis", axis = "leftx", direction = -1}},
-        move_right = {{type = "key", button = "d"}, {type = "gpaxis", axis = "leftx", direction = 1}},
+        move_up = {{type = "key", button = "w"}, {type = "gpaxis", axis = "lefty-"}},
+        move_down = {{type = "key", button = "s"}, {type = "gpaxis", axis = "lefty+"}},
+        move_left = {{type = "key", button = "a"}, {type = "gpaxis", axis = "leftx-"}},
+        move_right = {{type = "key", button = "d"}, {type = "gpaxis", axis = "leftx+"}},
         slash = {{type = "mouse", button = 1}, {type = "gptrigger", axis = "triggerright", threshold = 0.5}},
         skip_wave = {{type = "mouse", button = 2}, {type = "gpbutton", button = "x"}},
         pause = {{type = "key", button = "escape"}, {type = "gpbutton", button = "start"}},
@@ -356,6 +356,24 @@ if love.filesystem.getInfo("settings.json") then
     Settings = table.merge(Settings, itms)
 end
 
+function IsControlPressed(name)
+
+end
+
+function MatchControl(control)
+    local matches = {}
+    for name,c in pairs(Settings.controls) do
+        for k,v in pairs(control) do
+            if c[k] ~= v then
+                goto continue
+            end
+        end
+        table.insert(matches, name)
+        ::continue::
+    end
+    return matches
+end
+
 ResetFonts()
 
 require "default.menus"
@@ -364,15 +382,34 @@ function DeathHandler(event)
     if Settings.customization.death_effect then
         local trail = Cosmetics.Effects[Settings.customization.death_effect]
         if trail.events.player_death then
-        local actions = trail.events.player_death.actions
-        for _,v in ipairs(actions) do
-            if v.type == "particle_burst" then
-                for _=1,v.amount do
-                    local dir = randFloat(0,2*math.pi)
-                    local vx,vy = math.sin(dir), math.cos(dir)
-                    local velocity = v.velocity
-                    if type(velocity) == "table" then velocity = randFloat(velocity[1],velocity[2]) end
-                    local particle = Game.Particle:new(event.x, event.y, v.life, vx*velocity, vy*velocity, 20, randFloat(v.size[1],v.size[2]))
+            local actions = trail.events.player_death.actions
+            for _,v in ipairs(actions) do
+                if v.type == "particle_burst" then
+                    for _=1,v.amount do
+                        local dir = randFloat(0,2*math.pi)
+                        local vx,vy = math.sin(dir), math.cos(dir)
+                        local velocity = v.velocity
+                        if type(velocity) == "table" then velocity = randFloat(velocity[1],velocity[2]) end
+                        local particle = Game.Particle:new(event.x, event.y, v.life, vx*velocity, vy*velocity, 20, randFloat(v.size[1],v.size[2]))
+                        particle.image = v.image
+                        table.insert(Particles, particle)
+                    end
+                end
+            end
+        end
+    end
+end
+
+function StepHandler(event)
+    if Settings.customization.trail then
+        local trail = Cosmetics.Trails[Settings.customization.trail]
+        if trail.events.step then
+            local actions = trail.events.step.actions
+            for _,v in ipairs(actions) do
+                if v.type == "particle" then
+                    local sx,sy = randFloat(-v.spawnRadius,v.spawnRadius),randFloat(-v.spawnRadius,v.spawnRadius)
+                    local a = randFloat(v.angle[1],v.angle[2])
+                    local particle = Game.Particle:new(event.x+sx, event.y+sy, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]), a)
                     particle.image = v.image
                     table.insert(Particles, particle)
                 end
@@ -380,26 +417,10 @@ function DeathHandler(event)
         end
     end
 end
-end
-function StepHandler(event) 
-    if Settings.customization.trail then
-        local trail = Cosmetics.Trails[Settings.customization.trail]
-        if trail.events.step then
-        local actions = trail.events.step.actions
-        for _,v in ipairs(actions) do
-            if v.type == "particle" then
-                local sx,sy = randFloat(-v.spawnRadius,v.spawnRadius),randFloat(-v.spawnRadius,v.spawnRadius)
-                local a = randFloat(v.angle[1],v.angle[2])
-                local particle = Game.Particle:new(event.x+sx, event.y+sy, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]), a)
-                particle.image = v.image
-                table.insert(Particles, particle)
-            end
-        end
-    end
-    end
-end
+
 Events.on("step",StepHandler)
 Events.on("player_death", DeathHandler)
+
 function WriteSettings()
     local s,r = pcall(json.encode,Settings)
     if not s then
@@ -568,13 +589,16 @@ end
 ---@param stick love.Joystick
 function love.joystickadded(stick)
     Popup("gamepad_connected", stick:getName())
-    UsingGamepad = true
+    table.insert(Gamepads, stick)
 end
 
 ---@param stick love.Joystick
 function love.joystickremoved(stick)
     Popup("gamepad_disconnected", stick:getName())
-    UsingGamepad = false
+    local i = table.index(Gamepads, stick)
+    if i then
+        table.remove(Gamepads, i)
+    end
 end
 
 function love.gamepadpressed(stick,b)

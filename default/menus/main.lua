@@ -1,6 +1,8 @@
 local mainMenu = UI.Element:new({
     children = {
         UI.Button:new({
+            defaultSelected = true,
+            id = "play",
             x = 0,
             y = -40,
             width = 256,
@@ -36,6 +38,7 @@ local mainMenu = UI.Element:new({
         }),
 
         UI.Button:new({
+            id = "achievements",
             x = -272,
             y = -108,
             width = 256,
@@ -73,6 +76,7 @@ local mainMenu = UI.Element:new({
         }),
 
         UI.Button:new({
+            id = "credits",
             x = 272,
             y = -108,
             width = 256,
@@ -110,6 +114,7 @@ local mainMenu = UI.Element:new({
         }),
 
         UI.Button:new({
+            id = "settings",
             x = -272,
             y = 28,
             width = 256,
@@ -145,6 +150,7 @@ local mainMenu = UI.Element:new({
         }),
 
         UI.Button:new({
+            id = "customization",
             x = 272,
             y = 28,
             width = 256,

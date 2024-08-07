@@ -272,7 +272,7 @@ function scene.load(args)
                 {text = "tutorial.intro1", pause = true},
                 {text = "tutorial.intro2", pause = true},
                 {text = "tutorial.intro3", pause = true},
-                {text = (IsMobile and "tutorial.intro4.mobile" or (UsingGamepad and "tutorial.intro4.gamepad" or "tutorial.intro4.desktop")), format = {"Escape"}, pause = true},
+                {text = (IsMobile and "tutorial.intro4.mobile" or ((Gamepads[1] ~= nil) and "tutorial.intro4.gamepad" or "tutorial.intro4.desktop")), format = {"Escape"}, pause = true},
                 {text = "tutorial.intro5", pause = true}
             }
         }, {
@@ -283,7 +283,7 @@ function scene.load(args)
                 }
             },
             messages = {
-                {text = (IsMobile and "tutorial.movement.mobile" or (UsingGamepad and "tutorial.movement.gamepad" or "tutorial.movement.desktop")), format = {"W","A","S","D"}}
+                {text = (IsMobile and "tutorial.movement.mobile" or ((Gamepads[1] ~= nil) and "tutorial.movement.gamepad" or "tutorial.movement.desktop")), format = {"W","A","S","D"}}
             }
         }, {
             criteria = {
@@ -295,7 +295,7 @@ function scene.load(args)
             messages = {
                 {text = "tutorial.slash1", pause = true},
                 {text = "tutorial.slash2", pause = true},
-                {text = (IsMobile and "tutorial.slash3.mobile" or (UsingGamepad and "tutorial.slash3.gamepad" or "tutorial.slash3.desktop"))}
+                {text = (IsMobile and "tutorial.slash3.mobile" or ((Gamepads[1] ~= nil) and "tutorial.slash3.gamepad" or "tutorial.slash3.desktop"))}
             }
         }, {
             messages = {
@@ -1064,7 +1064,7 @@ function scene.draw()
         if MessageProgress >= utf8.len(txt) and TutorialStages[Stage].messages[Message].pause then
             local w,l = lgfont:getWrap(txt, love.graphics.getWidth()-300)
             local h = #l*lgfont:getHeight()
-            local advance = Localize("tutorial.advance." .. (IsMobile and "mobile" or (UsingGamepad and "gamepad" or "desktop")))
+            local advance = Localize("tutorial.advance." .. (IsMobile and "mobile" or ((Gamepads[1] ~= nil) and "gamepad" or "desktop")))
             love.graphics.setFont(mdfont)
 
             love.graphics.setColor(0,0,0)

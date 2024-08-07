@@ -46,6 +46,7 @@ local customizeMenu = UI.Element:new({
             y = -40,
             children = {
                 UI.Button:new({
+                    defaultSelected = true,
                     id = "color",
                     x = 0,
                     y = -120,
