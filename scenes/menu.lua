@@ -581,4 +581,19 @@ function scene.gamepadpressed(stick,button)
     end
 end
 
+function scene.gamepadaxis()
+    if WasControlTriggered("menu_right") then
+        MenuSelection = GetSelectionTarget({1,0}) or MenuSelection
+    end
+    if WasControlTriggered("menu_left") then
+        MenuSelection = GetSelectionTarget({-1,0}) or MenuSelection
+    end
+    if WasControlTriggered("menu_down") then
+        MenuSelection = GetSelectionTarget({0,1}) or MenuSelection
+    end
+    if WasControlTriggered("menu_up") then
+        MenuSelection = GetSelectionTarget({0,-1}) or MenuSelection
+    end
+end
+
 return scene

@@ -333,6 +333,10 @@ Settings = {
     },
 
     controls = {
+        menu_up = {{type = "key", button = "w"}, {type = "gptrigger", axis = "lefty-", threshold = 0.5}},
+        menu_down = {{type = "key", button = "s"}, {type = "gptrigger", axis = "lefty+", threshold = 0.5}},
+        menu_left = {{type = "key", button = "a"}, {type = "gptrigger", axis = "leftx-", threshold = 0.5}},
+        menu_right = {{type = "key", button = "d"}, {type = "gptrigger", axis = "leftx+", threshold = 0.5}},
         move_up = {{type = "key", button = "w"}, {type = "gpaxis", axis = "lefty-"}},
         move_down = {{type = "key", button = "s"}, {type = "gpaxis", axis = "lefty+"}},
         move_left = {{type = "key", button = "a"}, {type = "gpaxis", axis = "leftx-"}},
@@ -356,20 +360,80 @@ if love.filesystem.getInfo("settings.json") then
     Settings = table.merge(Settings, itms)
 end
 
-function IsControlPressed(name)
+Axes = {}
+LastAxes = {}
 
+function IsControlPressed(name)
+    if not Settings.controls[name] then return false end
+    local pressed = false
+    for _,c in ipairs(Settings.controls[name]) do
+        if c.type == "key" then
+            pressed = pressed or love.keyboard.isDown(c.button)
+        end
+        if c.type == "mouse" then
+            pressed = pressed or love.mouse.isDown(c.button)
+        end
+        if c.type == "gptrigger" then
+            pressed = pressed or (Axes[c.axis] or 0) >= c.threshold
+        end
+        if c.type == "gpaxis" then
+            pressed = pressed or math.abs((Axes[c.axis] or 0)) >= 0.5
+        end
+    end
+    return pressed
+end
+
+function WasControlTriggered(name)
+    if not Settings.controls[name] then return false end
+    local pressed = false
+    for _,c in ipairs(Settings.controls[name]) do
+        if c.type == "gptrigger" then
+            pressed = pressed or ((Axes[c.axis] or 0) >= c.threshold and (LastAxes[c.axis] or 0) < c.threshold)
+        end
+    end
+    return pressed
+end
+
+function GetControlValue(name)
+    if not Settings.controls[name] then return 0 end
+    local value = 0
+    for _,c in ipairs(Settings.controls[name]) do
+        if c.type == "key" then
+            value = math.max(value, love.keyboard.isDown(c.button) and 1 or 0)
+        end
+        if c.type == "mouse" then
+            value = math.max(value, love.mouse.isDown(c.button) and 1 or 0)
+        end
+        if c.type == "gptrigger" then
+            value = math.max(value, ((Axes[c.axis] or 0) >= c.threshold) and 1 or 0)
+        end
+        if c.type == "gpaxis" then
+            if math.abs((Axes[c.axis] or 0)) > value then
+                value = (Axes[c.axis] or 0)
+            end
+        end
+    end
+    return value
 end
 
 function MatchControl(control)
     local matches = {}
     for name,c in pairs(Settings.controls) do
-        for k,v in pairs(control) do
-            if c[k] ~= v then
-                goto continue
+        local match = false
+        for _,alt in ipairs(c) do
+            local matchA = true
+            for k,v in pairs(control) do
+                if alt[k] ~= v then
+                    matchA = false
+                end
+            end
+            if matchA then
+                match = true
             end
         end
-        table.insert(matches, name)
-        ::continue::
+        if match then
+            table.insert(matches, name)
+        end
     end
     return matches
 end
@@ -606,7 +670,15 @@ function love.gamepadpressed(stick,b)
 end
 
 function love.gamepadaxis(stick,axis,value)
+    if stick == Gamepads[1] then
+        Axes[axis] = value
+        Axes[axis.."+"] = math.max(0,value)
+        Axes[axis.."-"] = -math.min(0,value)
+    end
     SceneManager.GamepadAxis(stick,axis,value)
+    for name,v in pairs(Axes) do
+        LastAxes[name] = v
+    end
 end
 
 function love.touchpressed(...)

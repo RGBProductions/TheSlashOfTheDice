@@ -8,7 +8,7 @@ local blendAmt = 1/((5/4)^60)
 local tutorialBounds = 1024
 
 function AddNewPlayer(customization,keepStats,netinfo,isOwn)
-    player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["update"] = EntityTypes.player.update, ["keypressed"] = function(self, k) end, ["mousepressed"] = EntityTypes.player.mousepressed, ["draw"] = EntityTypes.player.draw}, {
+    player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["update"] = EntityTypes.player.update, ["keypressed"] = function(self, k) end, ["mousepressed"] = EntityTypes.player.mousepressed, ["gamepadaxis"] = EntityTypes.player.gamepadaxis, ["draw"] = EntityTypes.player.draw}, {
         slashTime = 0,
         lastPos = {0,0},
         stats = keepStats and (Stats or {
@@ -1120,22 +1120,22 @@ function scene.draw()
     love.graphics.setColor(1,1,1)
 end
 
-local lastTriggerValue = 0
-
 function scene.gamepadaxis(stick,axis,value)
-    if axis == "triggerright" then
-        if value >= 0.5 and lastTriggerValue < 0.5 then
-            player:mousepressed(stick:getGamepadAxis("leftx")*96+love.graphics.getWidth()/2,stick:getGamepadAxis("lefty")*96+love.graphics.getHeight()/2,1)
-        end
-        lastTriggerValue = value
-    end
+    player:gamepadaxis(stick,axis,value)
+    -- if axis == "triggerright" then
+    --     if value >= 0.5 and lastTriggerValue < 0.5 then
+    --         player:mousepressed(stick:getGamepadAxis("leftx")*96+love.graphics.getWidth()/2,stick:getGamepadAxis("lefty")*96+love.graphics.getHeight()/2,1)
+    --     end
+    --     lastTriggerValue = value
+    -- end
 end
 
 function scene.gamepadpressed(stick,b)
-    if b == "x" and (runTimer and Spawned < 5) then
+    local controlMatches = MatchControl({type = "gpbutton", button = b})
+    if table.index(controlMatches, "skip_wave") and (runTimer and Spawned < 5) then
         SpawnTimer = SpawnDelay
     end
-    if b == "start" then
+    if table.index(controlMatches, "pause") then
         if Gamemode == "playtest" then
             SceneManager.LoadScene("scenes/menu", {menu = "customize"})
         end
@@ -1163,7 +1163,7 @@ function scene.gamepadpressed(stick,b)
             SceneManager.LoadScene("scenes/menu")
         end
     end
-    if b == "a" and not Paused and Gamemode == "tutorial" then
+    if table.index(controlMatches, "advance_text") and not Paused and Gamemode == "tutorial" then
         AttemptTutorialAdvance(true)
     end
 end

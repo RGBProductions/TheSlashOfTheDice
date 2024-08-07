@@ -60,49 +60,60 @@ EntityTypes = {
             self:set("bufferTime", (self:get("bufferTime") or 0)-dt)
             local speed = 2
             local usedWASD = false
-            if love.keyboard.isDown("a") then
-                self.vx = self.vx - speed * dt * 60
-                Moved = true
-                usedWASD = true
-            end
-            if love.keyboard.isDown("d") then
-                self.vx = self.vx + speed * dt * 60
-                Moved = true
-                usedWASD = true
-            end
-            if love.keyboard.isDown("w") then
-                self.vy = self.vy - speed * dt * 60
-                Moved = true
-                usedWASD = true
-            end
-            if love.keyboard.isDown("s") then
-                self.vy = self.vy + speed * dt * 60
+            -- if love.keyboard.isDown("a") then
+            --     self.vx = self.vx - speed * dt * 60
+            --     Moved = true
+            --     usedWASD = true
+            -- end
+            -- if love.keyboard.isDown("d") then
+            --     self.vx = self.vx + speed * dt * 60
+            --     Moved = true
+            --     usedWASD = true
+            -- end
+            -- if love.keyboard.isDown("w") then
+            --     self.vy = self.vy - speed * dt * 60
+            --     Moved = true
+            --     usedWASD = true
+            -- end
+            -- if love.keyboard.isDown("s") then
+            --     self.vy = self.vy + speed * dt * 60
+            --     Moved = true
+            --     usedWASD = true
+            -- end
+
+            local deadzone = 0.2
+            local mx = GetControlValue("move_right")-GetControlValue("move_left")
+            local my = GetControlValue("move_down")-GetControlValue("move_up")
+            
+            if math.sqrt(mx*mx+my*my) >= deadzone then
+                self.vx = self.vx + mx * speed * dt * 60
+                self.vy = self.vy + my * speed * dt * 60
                 Moved = true
                 usedWASD = true
             end
     
-            ---@type love.Joystick
-            local joystick = nil
-            for _,stick in ipairs(love.joystick.getJoysticks()) do
-                if stick:isGamepad() then
-                    joystick = stick
-                end
-            end
+            -- ---@type love.Joystick
+            -- local joystick = nil
+            -- for _,stick in ipairs(love.joystick.getJoysticks()) do
+            --     if stick:isGamepad() then
+            --         joystick = stick
+            --     end
+            -- end
     
             if not usedWASD then
                 local x = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])*speed
                 local y = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])*speed
-                if joystick then
-                    x = joystick:getGamepadAxis("leftx")
-                    y = joystick:getGamepadAxis("lefty")
-                    local m = math.sqrt(x*x+y*y)
-                    if m <= 0.2 then
-                        x = 0
-                        y = 0
-                    end
-                    x = x*speed
-                    y = y*speed
-                end
+                -- if joystick then
+                --     x = joystick:getGamepadAxis("leftx")
+                --     y = joystick:getGamepadAxis("lefty")
+                --     local m = math.sqrt(x*x+y*y)
+                --     if m <= 0.2 then
+                --         x = 0
+                --         y = 0
+                --     end
+                --     x = x*speed
+                --     y = y*speed
+                -- end
                 self.vx = self.vx + x * dt * 60
                 self.vy = self.vy + y * dt * 60
                 if Thumbstick.x ~= 0 or Thumbstick.y ~= 0 then
@@ -199,7 +210,7 @@ EntityTypes = {
                 end
             else
                 if (self:get("bufferTime") or 0) > 0 then
-                    slash(self, love.mouse.getX(), love.mouse.getY())
+                    slash(self, self:get("bufferDirection")[1], self:get("bufferDirection")[2])
                     self:set("bufferTime", 0)
                 end
             end
@@ -209,11 +220,25 @@ EntityTypes = {
             end
         end,
         mousepressed = function(self, x, y, b)
-            if b == 1 then
+            if table.index(MatchControl({type = "mouse", button = b}), "slash") then
                 if self:get("slashTime") <= 0 then
                     slash(self, x, y)
                 else
                     self:set("bufferTime", 0.05)
+                    self:set("bufferDirection", {x,y})
+                end
+            end
+        end,
+        gamepadaxis = function(self, stick, axis, value)
+            if WasControlTriggered("slash") then
+                local mx = GetControlValue("move_right")-GetControlValue("move_left")
+                local my = GetControlValue("move_down")-GetControlValue("move_up")
+                local x,y = mx*96+love.graphics.getWidth()/2,my*96+love.graphics.getHeight()/2
+                if self:get("slashTime") <= 0 then
+                    slash(self, x, y)
+                else
+                    self:set("bufferTime", 0.05)
+                    self:set("bufferDirection", {x,y})
                 end
             end
         end,
