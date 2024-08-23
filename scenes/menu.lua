@@ -307,9 +307,6 @@ function scene.keypressed(k)
         ControlRemap.control = nil
         return
     end
-    if k == "f8" then
-        SceneManager.LoadScene("scenes/oldmenu")
-    end
     if k == Sus:sub(SusCombo+1,SusCombo+1) then
         SusCombo = SusCombo + 1
         if SusCombo == #Sus then
