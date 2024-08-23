@@ -272,7 +272,10 @@ function scene.load(args)
                 {text = "tutorial.intro1", pause = true},
                 {text = "tutorial.intro2", pause = true},
                 {text = "tutorial.intro3", pause = true},
-                {text = (IsMobile and "tutorial.intro4.mobile" or ((Gamepads[1] ~= nil) and "tutorial.intro4.gamepad" or "tutorial.intro4.desktop")), format = {"Escape"}, pause = true},
+                {text = function() return (IsMobile and "tutorial.intro4.mobile" or ((Gamepads[1] ~= nil) and "tutorial.intro4.gamepad" or "tutorial.intro4.desktop")) end, format = {function()
+                    local strings = GetControlStrings("pause")
+                    return strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"]
+                end}, pause = true},
                 {text = "tutorial.intro5", pause = true}
             }
         }, {
@@ -283,7 +286,101 @@ function scene.load(args)
                 }
             },
             messages = {
-                {text = (IsMobile and "tutorial.movement.mobile" or ((Gamepads[1] ~= nil) and "tutorial.movement.gamepad" or "tutorial.movement.desktop")), format = {"W","A","S","D"}}
+                {text = function()
+                    if IsMobile then return "tutorial.movement.mobile" end
+                    if Gamepads[1] == nil then return "tutorial.movement.desktop" end
+
+                    local strings = {
+                        up = GetControlStrings("move_up"),
+                        down = GetControlStrings("move_down"),
+                        left = GetControlStrings("move_left"),
+                        right = GetControlStrings("move_right")
+                    }
+                    local axes = {
+                        up = GetControlAxis("move_up") or "",
+                        down = GetControlAxis("move_down") or "",
+                        left = GetControlAxis("move_left") or "",
+                        right = GetControlAxis("move_right") or ""
+                    }
+                    if Gamepads[1] ~= nil then
+                        local up,down,left,right = axes.up,axes.down,axes.left,axes.right
+                        if up:sub(1,-2) == down:sub(1,-2) then
+                            up = up:sub(1,-2)
+                            down = down:sub(1,-2)
+                        end
+                        if right:sub(1,-2) == left:sub(1,-2) then
+                            right = right:sub(1,-2)
+                            left = left:sub(1,-2)
+                        end
+                        if up:sub(1,-2) == down:sub(1,-2) and up:sub(1,-2) == left:sub(1,-2) and up:sub(1,-2) == right:sub(1,-2) then
+                            up = up:sub(1,-2)
+                            down = down:sub(1,-2)
+                            right = right:sub(1,-2)
+                            left = left:sub(1,-2)
+                        end
+                        if up == down and up == left and up == right then
+                            return "tutorial.movement.gamepad_single"
+                        end
+                        if (up == down and left ~= right) or (up ~= down and left == right) then
+                            return "tutorial.movement.gamepad_triple"
+                        end
+                        if (up == down and left == right) then
+                            return "tutorial.movement.gamepad_double"
+                        end
+                        return "tutorial.movement.gamepad"
+                    end
+                    return "tutorial.movement.desktop"
+                end, format = function()
+                    local strings = {
+                        up = GetControlStrings("move_up"),
+                        down = GetControlStrings("move_down"),
+                        left = GetControlStrings("move_left"),
+                        right = GetControlStrings("move_right")
+                    }
+                    local axes = {
+                        up = GetControlAxis("move_up") or "",
+                        down = GetControlAxis("move_down") or "",
+                        left = GetControlAxis("move_left") or "",
+                        right = GetControlAxis("move_right") or ""
+                    }
+                    if Gamepads[1] ~= nil then
+                        local up,down,left,right = axes.up,axes.down,axes.left,axes.right
+                        if up:sub(1,-2) == down:sub(1,-2) then
+                            up = up:sub(1,-2)
+                            down = down:sub(1,-2)
+                        end
+                        if right:sub(1,-2) == left:sub(1,-2) then
+                            right = right:sub(1,-2)
+                            left = left:sub(1,-2)
+                        end
+                        if up:sub(1,-2) == down:sub(1,-2) and up:sub(1,-2) == left:sub(1,-2) and up:sub(1,-2) == right:sub(1,-2) then
+                            up = up:sub(1,-2)
+                            down = down:sub(1,-2)
+                            right = right:sub(1,-2)
+                            left = left:sub(1,-2)
+                        end
+                        local gstrings = {
+                            up = GetAxisString(up),
+                            down = GetAxisString(down),
+                            left = GetAxisString(left),
+                            right = GetAxisString(right)
+                        }
+                        if up == down and up == left and up == right then
+                            return {gstrings.up}
+                        end
+                        if (up == down and left ~= right) then
+                            return {gstrings.up,gstrings.left,gstrings.right}
+                        end
+                        if (up ~= down and left == right) then
+                            return {gstrings.up,gstrings.down,gstrings.left}
+                        end
+                        if (up == down and left == right) then
+                            return {gstrings.up,gstrings.left}
+                        end
+                        return {gstrings.up,gstrings.down,gstrings.left,gstrings.right}
+                    end
+                    return {strings.up.desktop, strings.left.desktop, strings.down.desktop, strings.right.desktop}
+                end}
             }
         }, {
             criteria = {
@@ -295,7 +392,10 @@ function scene.load(args)
             messages = {
                 {text = "tutorial.slash1", pause = true},
                 {text = "tutorial.slash2", pause = true},
-                {text = (IsMobile and "tutorial.slash3.mobile" or ((Gamepads[1] ~= nil) and "tutorial.slash3.gamepad" or "tutorial.slash3.desktop"))}
+                {text = function() return (IsMobile and "tutorial.slash3.mobile" or ((Gamepads[1] ~= nil) and "tutorial.slash3.gamepad" or "tutorial.slash3.desktop")) end, format = {function()
+                    local strings = GetControlStrings("slash")
+                    return strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"]
+                end}}
             }
         }, {
             messages = {
@@ -352,7 +452,11 @@ function scene.load(args)
                 {text = "tutorial.end3", pause = true, onShow = function()
                     showTimer = true
                 end},
-                {text = "tutorial.end4", onShow = function()
+                {text = function() return (IsMobile and "tutorial.end4.mobile" or ((Gamepads[1] ~= nil) and "tutorial.end4.gamepad" or "tutorial.end4.desktop")) end, format = {function()
+                    local strings = GetControlStrings("skip_wave")
+                    return strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"]
+                end}, pause = true},
+                {text = "tutorial.end5", onShow = function()
                     runTimer = true
                 end}
             }
@@ -468,10 +572,13 @@ end
 
 function AttemptTutorialAdvance(fromKey)
     local format = TutorialStages[Stage].messages[Message].format or {}
+    if type(format) == "function" then format = format() end
     for i,v in ipairs(format) do
         if type(v) == "function" then format[i] = v() end
     end
-    local txt = Localize(TutorialStages[Stage].messages[Message].text):format(unpack(format))
+    local stageText = TutorialStages[Stage].messages[Message].text
+    if type(stageText) == "function" then stageText = stageText() end
+    local txt = Localize(stageText):format(unpack(format))
     if MessageProgress < utf8.len(txt) and fromKey then
         MessageProgress = utf8.len(txt)
         return
@@ -497,10 +604,13 @@ function scene.update(dt)
         if Gamemode == "tutorial" then
             CharTime = CharTime + dt
             local format = TutorialStages[Stage].messages[Message].format or {}
+            if type(format) == "function" then format = format() end
             for i,v in ipairs(format) do
                 if type(v) == "function" then format[i] = v() end
             end
-            local txt = Localize(TutorialStages[Stage].messages[Message].text):format(unpack(format))
+            local stageText = TutorialStages[Stage].messages[Message].text
+            if type(stageText) == "function" then stageText = stageText() end
+            local txt = Localize(stageText):format(unpack(format))
             local beeped = false
             while CharTime >= GetTextDelay() do
                 if MessageProgress < utf8.len(txt) then
@@ -1057,14 +1167,21 @@ function scene.draw()
         pcall(love.graphics.printf, TutorialText, 150, pos, love.graphics.getWidth()-300, "center")
 
         local format = TutorialStages[Stage].messages[Message].format or {}
+        if type(format) == "function" then format = format() end
         for i,v in ipairs(format) do
             if type(v) == "function" then format[i] = v() end
         end
-        local txt = Localize(TutorialStages[Stage].messages[Message].text):format(unpack(format))
+        local stageText = TutorialStages[Stage].messages[Message].text
+        if type(stageText) == "function" then stageText = stageText() end
+        local txt = Localize(stageText):format(unpack(format))
         if MessageProgress >= utf8.len(txt) and TutorialStages[Stage].messages[Message].pause then
             local w,l = lgfont:getWrap(txt, love.graphics.getWidth()-300)
             local h = #l*lgfont:getHeight()
             local advance = Localize("tutorial.advance." .. (IsMobile and "mobile" or ((Gamepads[1] ~= nil) and "gamepad" or "desktop")))
+            if not IsMobile then
+                local strings = GetControlStrings("advance_text")
+                advance = advance:format(strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"])
+            end
             love.graphics.setFont(mdfont)
 
             love.graphics.setColor(0,0,0)
@@ -1081,6 +1198,7 @@ function scene.draw()
     end
 
     if ShowMobileUI then
+        love.graphics.setColor(1,1,1)
         love.graphics.setLineWidth(8)
         love.graphics.circle("line", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+96, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-96, Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
         love.graphics.circle("fill", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+96+Thumbstick.x, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-96+Thumbstick.y, Thumbstick.innerRad*ViewScale*Settings.video.ui_scale)

@@ -363,14 +363,74 @@ end
 Axes = {}
 LastAxes = {}
 
+function GetAxisString(name)
+    local axes = {
+        ["left"] = "Left Stick",
+        ["right"] = "Right Stick",
+        ["leftx"] = "Left Stick",
+        ["leftx-"] = "Left Stick ← ",
+        ["leftx+"] = "Left Stick → ",
+        ["lefty"] = "Left Stick",
+        ["lefty-"] = "Left Stick ↑ ",
+        ["lefty+"] = "Left Stick ↓ ",
+        ["rightx"] = "Right Stick",
+        ["rightx-"] = "Right Stick ← ",
+        ["rightx+"] = "Right Stick → ",
+        ["righty"] = "Right Stick",
+        ["righty-"] = "Right Stick ↑ ",
+        ["righty+"] = "Right Stick ↓ ",
+        ["triggerleft"] = "Left Trigger",
+        ["triggerright"] = "Right Trigger",
+        ["leftshoulder"] = "Left Bumper",
+        ["rightshoulder"] = "Right Bumper",
+        ["leftstick"] = "Left Stick ⭗",
+        ["rightstick"] = "Right Stick ⭗"
+    }
+    return axes[name] or name
+end
+
+function GetControlStrings(name)
+    local strings = {
+        desktop = name,
+        gamepad = name
+    }
+    if not Settings.controls[name] then return strings end
+    local mousebuttons = {
+        "Left",
+        "Right",
+        "Middle"
+    }
+    for _,c in ipairs(Settings.controls[name]) do
+        if c.type == "key" then
+            strings.desktop = c.button:sub(1,1):upper() .. c.button:sub(2,-1):lower()
+        end
+        if c.type == "mouse" then
+            if mousebuttons[c.button] then
+                strings.desktop = mousebuttons[c.button] .. " Mouse Button"
+            else
+                strings.desktop = "Mouse Button " .. c.button
+            end
+        end
+        if c.type == "gpbutton" then
+            strings.gamepad = c.button:sub(1,1):upper() .. c.button:sub(2,-1):lower()
+        end
+        if c.type == "gptrigger" or c.type == "gpaxis" then
+            strings.gamepad = GetAxisString(c.axis)
+        end
+    end
+    return strings
+end
+
 function IsControlPressed(name)
     if not Settings.controls[name] then return false end
     local pressed = false
     for _,c in ipairs(Settings.controls[name]) do
         if c.type == "key" then
+            ---@diagnostic disable-next-line: param-type-mismatch
             pressed = pressed or love.keyboard.isDown(c.button)
         end
         if c.type == "mouse" then
+            ---@diagnostic disable-next-line: param-type-mismatch
             pressed = pressed or love.mouse.isDown(c.button)
         end
         if c.type == "gptrigger" then
@@ -399,9 +459,11 @@ function GetControlValue(name)
     local value = 0
     for _,c in ipairs(Settings.controls[name]) do
         if c.type == "key" then
+            ---@diagnostic disable-next-line: param-type-mismatch
             value = math.max(value, love.keyboard.isDown(c.button) and 1 or 0)
         end
         if c.type == "mouse" then
+            ---@diagnostic disable-next-line: param-type-mismatch
             value = math.max(value, love.mouse.isDown(c.button) and 1 or 0)
         end
         if c.type == "gptrigger" then
@@ -414,6 +476,16 @@ function GetControlValue(name)
         end
     end
     return value
+end
+
+function GetControlAxis(name)
+    if not Settings.controls[name] then return nil end
+    for _,c in ipairs(Settings.controls[name]) do
+        if c.type == "gptrigger" or c.type == "gpaxis" then
+            return c.axis
+        end
+    end
+    return nil
 end
 
 function MatchControl(control)
