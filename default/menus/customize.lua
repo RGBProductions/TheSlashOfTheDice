@@ -161,6 +161,7 @@ local customizeMenu = UI.Element:new({
                                     }
                                 }),
                                 UI.Button:new({
+                                    defaultSelected = true,
                                     id = "apply",
                                     width = 256,
                                     height = 64,
@@ -169,7 +170,7 @@ local customizeMenu = UI.Element:new({
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
                                         Settings.customization.color = me.parent:getChildById("colorpicker"):getRGB()
-                                        table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                        table.remove(Dialogs, 1)
                                     end,
                                     cursor = "hand",
                                     children = {
@@ -190,7 +191,7 @@ local customizeMenu = UI.Element:new({
                                 })
                             }
                         })
-                        table.insert(Dialogs, popup)
+                        OpenDialog(popup)
                     end
                 }),
                 UI.Button:new({
@@ -335,6 +336,7 @@ local customizeMenu = UI.Element:new({
                                 }),
                                 options,
                                 UI.Button:new({
+                                    defaultSelected = true,
                                     id = "close",
                                     width = 256,
                                     height = 64,
@@ -342,7 +344,7 @@ local customizeMenu = UI.Element:new({
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
-                                        table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                        table.remove(Dialogs, 1)
                                     end,
                                     cursor = "hand",
                                     children = {
@@ -363,7 +365,7 @@ local customizeMenu = UI.Element:new({
                                 })
                             }
                         })
-                        table.insert(Dialogs, popup)
+                        OpenDialog(popup)
                     end
                 }),
                 UI.Button:new({
@@ -508,6 +510,7 @@ local customizeMenu = UI.Element:new({
                                 }),
                                 options,
                                 UI.Button:new({
+                                    defaultSelected = true,
                                     id = "close",
                                     width = 256,
                                     height = 64,
@@ -515,7 +518,7 @@ local customizeMenu = UI.Element:new({
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
-                                        table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                        table.remove(Dialogs, 1)
                                     end,
                                     cursor = "hand",
                                     children = {
@@ -536,7 +539,7 @@ local customizeMenu = UI.Element:new({
                                 })
                             }
                         })
-                        table.insert(Dialogs, popup)
+                        OpenDialog(popup)
                     end
                 }),
                 UI.Button:new({
@@ -669,6 +672,7 @@ local customizeMenu = UI.Element:new({
                                 }),
                                 options,
                                 UI.Button:new({
+                                    defaultSelected = true,
                                     id = "close",
                                     width = 256,
                                     height = 64,
@@ -676,7 +680,7 @@ local customizeMenu = UI.Element:new({
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
-                                        table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                        table.remove(Dialogs, 1)
                                     end,
                                     cursor = "hand",
                                     children = {
@@ -697,7 +701,7 @@ local customizeMenu = UI.Element:new({
                                 })
                             }
                         })
-                        table.insert(Dialogs, popup)
+                        OpenDialog(popup)
                     end
                 })
             }
@@ -835,6 +839,7 @@ local customizeMenu = UI.Element:new({
                             text = function() return Localize("customization.help.hat") end
                         }),
                         UI.Button:new({
+                            defaultSelected = true,
                             id = "close",
                             width = 256,
                             height = 64,
@@ -842,7 +847,7 @@ local customizeMenu = UI.Element:new({
                             background = function() return GetTheme().button_secondary.background end,
                             border = function() return GetTheme().button_secondary.border end,
                             onclick = function(me)
-                                table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                table.remove(Dialogs, 1)
                             end,
                             cursor = "hand",
                             children = {
@@ -863,7 +868,7 @@ local customizeMenu = UI.Element:new({
                         })
                     }
                 })
-                table.insert(Dialogs, popup)
+                OpenDialog(popup)
             end
         })
     }

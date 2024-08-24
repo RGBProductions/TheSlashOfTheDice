@@ -443,7 +443,7 @@ local sVideoMenu = UI.Element:new({
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
-                                        table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                        table.remove(Dialogs, 1)
                                     end,
                                     cursor = "hand",
                                     children = {
@@ -464,7 +464,7 @@ local sVideoMenu = UI.Element:new({
                                 })
                             }
                         })
-                        table.insert(Dialogs, popup)
+                        OpenDialog(popup)
                     end,
                     children = {
                         UI.Text:new({
@@ -888,7 +888,7 @@ local sGameplayMenu = UI.Element:new({
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
-                                        table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                        table.remove(Dialogs, 1)
                                     end,
                                     cursor = "hand",
                                     children = {
@@ -909,7 +909,7 @@ local sGameplayMenu = UI.Element:new({
                                 })
                             }
                         })
-                        table.insert(Dialogs, popup)
+                        OpenDialog(popup)
                     end,
                     children = {
                         UI.Text:new({
@@ -1089,7 +1089,7 @@ local sGameplayMenu = UI.Element:new({
                                     background = function() return GetTheme().button_secondary.background end,
                                     border = function() return GetTheme().button_secondary.border end,
                                     onclick = function(me)
-                                        table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                        table.remove(Dialogs, 1)
                                     end,
                                     cursor = "hand",
                                     children = {
@@ -1110,7 +1110,7 @@ local sGameplayMenu = UI.Element:new({
                                 })
                             }
                         })
-                        table.insert(Dialogs, popup)
+                        OpenDialog(popup)
                     end,
                     children = {
                         UI.Text:new({

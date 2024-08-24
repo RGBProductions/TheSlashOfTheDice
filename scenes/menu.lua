@@ -14,6 +14,19 @@ function SetMenu(m)
     end
 end
 
+function OpenDialog(element)
+    local selection = nil
+    if (element or {}).unpackChildren then
+        for _,child in ipairs((element or {}):unpackChildren()) do
+            if child.element.defaultSelected then
+                selection = child
+                break
+            end
+        end
+    end
+    table.insert(Dialogs, {element = element, selection = selection})
+end
+
 local scrollVelocity = 0
 local scrollTarget = {0,0}
 local allowScroll = false
@@ -126,8 +139,8 @@ local function scroll(mx,my,x,y)
     local hasDialog = #Dialogs > 0
     for d = #Dialogs, 1, -1 do
         local dialog = Dialogs[d]
-        if dialog.scroll then
-            local hit,elem = dialog:scroll((mx-love.graphics.getWidth()/2)/scale,(my-love.graphics.getHeight()/2)/scale, x, y)
+        if (dialog.element or {}).scroll then
+            local hit,elem = (dialog.element or {}):scroll((mx-love.graphics.getWidth()/2)/scale,(my-love.graphics.getHeight()/2)/scale, x, y)
             if hit then
                 break
             end
@@ -140,14 +153,21 @@ end
 
 ---@param dir {[1]: number, [2]: number}
 function GetSelectionTarget(dir)
-    if not MenuSelection then return end -- nothing to select?
+    local menu = Menus[CurrentMenu]
+    local selection = MenuSelection
+    if Dialogs[1] then
+        menu = Dialogs[1].element
+        selection = Dialogs[1].selection
+    end
 
-    if (Menus[CurrentMenu] or {}).unpackChildren then
-        local elements = (Menus[CurrentMenu] or {}):unpackChildren() or {}
+    if not selection then return end -- nothing to select?
+
+    if (menu or {}).unpackChildren then
+        local elements = (menu or {}):unpackChildren() or {}
         local sort = {}
         for _,elem in ipairs(elements) do
-            if elem.element ~= MenuSelection.element and elem.element.canSelect then
-                local ox,oy = elem.x-MenuSelection.x, elem.y-MenuSelection.y
+            if elem.element ~= selection.element and elem.element.canSelect then
+                local ox,oy = elem.x-selection.x, elem.y-selection.y
                 local distance = math.sqrt(ox*ox+oy*oy)
                 local m = (distance == 0 and 1 or distance)
                 local nx,ny = ox/m,oy/m
@@ -228,8 +248,11 @@ function scene.draw()
     for _,dialog in ipairs(Dialogs) do
         love.graphics.setColor(0,0,0,0.5)
         love.graphics.rectangle("fill", -love.graphics.getWidth()/2/scale, -love.graphics.getHeight()/2/scale, love.graphics.getWidth()/scale, love.graphics.getHeight()/scale)
-        if dialog.draw then
-            dialog:draw()
+        if (dialog.element or {}).draw then
+            (dialog.element or {}):draw()
+        end
+        if Gamepads[1] and (dialog.element or {}).drawSelected then
+            (dialog.element or {}):drawSelected()
         end
     end
     love.graphics.pop()
@@ -237,8 +260,8 @@ function scene.draw()
         c = Menus[CurrentMenu]:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or c
     end
     for _,dialog in ipairs(Dialogs) do
-        if dialog.getCursor then
-            c = dialog:getCursor((love.mouse.getX()-love.graphics.getWidth()/2)/scale, (love.mouse.getY()-love.graphics.getHeight()/2)/scale) or c
+        if (dialog.element or {}).getCursor then
+            c = (dialog.element or {}):getCursor((love.mouse.getX()-love.graphics.getWidth()/2)/scale, (love.mouse.getY()-love.graphics.getHeight()/2)/scale) or c
         end
     end
     -- c = Menus[CurrentMenu]:getCursor(love.mouse.getPosition()) or c
@@ -327,8 +350,8 @@ function scene.keypressed(k)
     local hasDialog = #Dialogs > 0
     for d = #Dialogs, 1, -1 do
         local dialog = Dialogs[d]
-        if dialog.keypress then
-            local hit,elem = dialog:keypress(k)
+        if (dialog.element or {}).keypress then
+            local hit,elem = (dialog.element or {}):keypress(k)
             if hit then
                 break
             end
@@ -343,8 +366,8 @@ function scene.textinput(t)
     local hasDialog = #Dialogs > 0
     for d = #Dialogs, 1, -1 do
         local dialog = Dialogs[d]
-        if dialog.textinput then
-            local hit,elem = dialog:textinput(t)
+        if (dialog.element or {}).textinput then
+            local hit,elem = (dialog.element or {}):textinput(t)
             if hit then
                 break
             end
@@ -374,8 +397,8 @@ function scene.mousemoved(x, y, dx, dy)
     local hasDialog = #Dialogs > 0
     for d = #Dialogs, 1, -1 do
         local dialog = Dialogs[d]
-        if dialog.mousemove then
-            local hit,elem = dialog:mousemove((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale,dx,dy)
+        if (dialog.element or {}).mousemove then
+            local hit,elem = (dialog.element or {}):mousemove((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale,dx,dy)
             if hit then
                 break
             end
@@ -413,8 +436,8 @@ function scene.mousepressed(x, y, b, t)
     local hasDialog = #Dialogs > 0
     for d = #Dialogs, 1, -1 do
         local dialog = Dialogs[d]
-        if dialog.click then
-            local hit,elem = dialog:click((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale,b)
+        if (dialog.element or {}).click then
+            local hit,elem = (dialog.element or {}):click((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale,b)
             if hit then
                 break
             end
@@ -444,8 +467,8 @@ function scene.mousereleased(x, y, b)
     local hasDialog = #Dialogs > 0
     for d = #Dialogs, 1, -1 do
         local dialog = Dialogs[d]
-        if dialog.release then
-            local hit,elem = dialog:release((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale,b)
+        if (dialog.element or {}).release then
+            local hit,elem = (dialog.element or {}):release((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale,b)
             if hit then
                 break
             end
@@ -477,8 +500,8 @@ function scene.touchpressed(id,x,y)
     local hasDialog = #Dialogs > 0
     for d = #Dialogs, 1, -1 do
         local dialog = Dialogs[d]
-        if dialog.touch then
-            local hit,elem,preventScroll = dialog:touch((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale)
+        if (dialog.element or {}).touch then
+            local hit,elem,preventScroll = (dialog.element or {}):touch((x-love.graphics.getWidth()/2)/scale,(y-love.graphics.getHeight()/2)/scale)
             if hit then
                 if preventScroll then
                     allowScroll = false
@@ -559,37 +582,63 @@ function scene.gamepadpressed(stick,button)
     end
 
     if button == "a" then
-        if ((MenuSelection or {}).element or {}).clickInstance then
-            ((MenuSelection or {}).element or {}):clickInstance()
+        local selection
+        if Dialogs[1] then
+            selection = Dialogs[1].selection
+        else
+            selection = MenuSelection
+        end
+        if ((selection or {}).element or {}).clickInstance then
+            ((selection or {}).element or {}):clickInstance()
         end
     end
 
+    local selection
+
     if button == "dpright" then
-        MenuSelection = GetSelectionTarget({1,0}) or MenuSelection
+        selection = GetSelectionTarget({1,0}) or selection
     end
     if button == "dpleft" then
-        MenuSelection = GetSelectionTarget({-1,0}) or MenuSelection
+        selection = GetSelectionTarget({-1,0}) or selection
     end
     if button == "dpdown" then
-        MenuSelection = GetSelectionTarget({0,1}) or MenuSelection
+        selection = GetSelectionTarget({0,1}) or selection
     end
     if button == "dpup" then
-        MenuSelection = GetSelectionTarget({0,-1}) or MenuSelection
+        selection = GetSelectionTarget({0,-1}) or selection
+    end
+
+    if selection then
+        if Dialogs[1] then
+            Dialogs[1].selection = selection
+        else
+            MenuSelection = selection
+        end
     end
 end
 
 function scene.gamepadaxis()
+    local selection
+
     if WasControlTriggered("menu_right") then
-        MenuSelection = GetSelectionTarget({1,0}) or MenuSelection
+        selection = GetSelectionTarget({1,0}) or selection
     end
     if WasControlTriggered("menu_left") then
-        MenuSelection = GetSelectionTarget({-1,0}) or MenuSelection
+        selection = GetSelectionTarget({-1,0}) or selection
     end
     if WasControlTriggered("menu_down") then
-        MenuSelection = GetSelectionTarget({0,1}) or MenuSelection
+        selection = GetSelectionTarget({0,1}) or selection
     end
     if WasControlTriggered("menu_up") then
-        MenuSelection = GetSelectionTarget({0,-1}) or MenuSelection
+        selection = GetSelectionTarget({0,-1}) or selection
+    end
+    
+    if selection then
+        if Dialogs[1] then
+            Dialogs[1].selection = selection
+        else
+            MenuSelection = selection
+        end
     end
 end
 
