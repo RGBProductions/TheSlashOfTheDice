@@ -1047,7 +1047,7 @@ local sGameplayMenu = UI.Element:new({
                     border = function() return GetTheme().button_secondary.border end,
                     onclick = function()
                         local options = UI.ScrollablePanel:new({
-                            width = 432,
+                            width = 456,
                             height = 288,
                             x = 0,
                             y = 0,
@@ -1057,8 +1057,137 @@ local sGameplayMenu = UI.Element:new({
                             scrollY = 0,
                             background = {0,0,0,0}
                         })
+                        do
+                            local y = 0
+                            local function addOption(id)
+                                local button1 = UI.Button:new({
+                                    scrollThrough = true,
+                                    id = id..":1",
+                                    x = -24,
+                                    y = y-128,
+                                    width = 128,
+                                    height = 32,
+                                    background = function(me) return GetTheme()[tostring(ControlRemap.control)..":"..tostring(ControlRemap.entry) == me.id and "button_primary" or "button_secondary"].background end,
+                                    border = function(me) return GetTheme()[tostring(ControlRemap.control)..":"..tostring(ControlRemap.entry) == me.id and "button_primary" or "button_secondary"].border end,
+                                    onclick = function(me)
+                                        ControlRemap.control = id
+                                        ControlRemap.entry = 1
+                                    end,
+                                    cursor = "hand",
+                                    children = {}
+                                })
+                                button1:addChild(UI.Text:new({
+                                    clickThrough = true,
+                                    y = 0,
+                                    width = 128,
+                                    height = 24,
+                                    text = function(me) return GetControlEntryName(id, 1) end,
+                                    color = function() return GetTheme().button_secondary.text end,
+                                    font = lgfont_2x,
+                                    fontScale = function(self)
+                                        local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                        local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,(128-32)/width)
+                                    end,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }))
+                                local button2 = UI.Button:new({
+                                    scrollThrough = true,
+                                    id = id..":2",
+                                    x = -24+128+8,
+                                    y = y-128,
+                                    width = 128,
+                                    height = 32,
+                                    background = function(me) return GetTheme()[tostring(ControlRemap.control)..":"..tostring(ControlRemap.entry) == me.id and "button_primary" or "button_secondary"].background end,
+                                    border = function(me) return GetTheme()[tostring(ControlRemap.control)..":"..tostring(ControlRemap.entry) == me.id and "button_primary" or "button_secondary"].border end,
+                                    onclick = function(me)
+                                        ControlRemap.control = id
+                                        ControlRemap.entry = 2
+                                    end,
+                                    cursor = "hand",
+                                    children = {}
+                                })
+                                button2:addChild(UI.Text:new({
+                                    clickThrough = true,
+                                    y = 0,
+                                    width = 128,
+                                    height = 24,
+                                    text = function(me) return GetControlEntryName(id, 2) end,
+                                    color = function() return GetTheme().button_secondary.text end,
+                                    font = lgfont_2x,
+                                    fontScale = function(self)
+                                        local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                        local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,(128-32)/width)
+                                    end,
+                                    alignHoriz = "center",
+                                    alignVert = "center"
+                                }))
+                                local reset = UI.Button:new({
+                                    scrollThrough = true,
+                                    id = id..":reset",
+                                    x = -24+128+8+80+8,
+                                    y = y-128,
+                                    width = 32,
+                                    height = 32,
+                                    background = function(me) return GetTheme()[tostring(ControlRemap.control)..":"..tostring(ControlRemap.entry) == me.id and "button_primary" or "button_secondary"].background end,
+                                    border = function(me) return GetTheme()[tostring(ControlRemap.control)..":"..tostring(ControlRemap.entry) == me.id and "button_primary" or "button_secondary"].border end,
+                                    onclick = function(me)
+                                        table.merge(Settings.controls[id], ControlDefaults[id])
+                                    end,
+                                    cursor = "hand",
+                                    children = {}
+                                })
+                                reset:addChild(UI.Image:new({
+                                    clickThrough = true,
+                                    y = 0,
+                                    width = 32,
+                                    height = 32,
+                                    image = ButtonIcons.materialsymbols_refresh,
+                                    color = function() return GetTheme().button_secondary.text end
+                                }))
+                                options:addChild(UI.Text:new({
+                                    clickThrough = true,
+                                    scrollThrough = true,
+                                    x = -24-128-8,
+                                    y = y-128,
+                                    width = 128,
+                                    height = 24,
+                                    text = function(me) return Localize("control."..id) end,
+                                    color = function() return GetTheme().button_secondary.text end,
+                                    font = lgfont_2x,
+                                    fontScale = function(self)
+                                        local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                        local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                        local width = font:getWidth(text)
+                                        return math.min(0.5,128/width)
+                                    end,
+                                    alignHoriz = "left",
+                                    alignVert = "center"
+                                }))
+                                options:addChild(button1)
+                                options:addChild(button2)
+                                options:addChild(reset)
+                                y = y + 48
+                            end
+                            addOption("menu_up")
+                            addOption("menu_down")
+                            addOption("menu_left")
+                            addOption("menu_right")
+                            addOption("move_up")
+                            addOption("move_down")
+                            addOption("move_left")
+                            addOption("move_right")
+                            addOption("slash")
+                            addOption("skip_wave")
+                            addOption("pause")
+                            addOption("advance_text")
+                        end
                         local popup = UI.Panel:new({
-                            width = 464,
+                            width = 488,
                             height = 480,
                             background = function() return GetTheme().popup_info.background end,
                             border = function() return GetTheme().popup_info.border end,
@@ -1083,6 +1212,7 @@ local sGameplayMenu = UI.Element:new({
                                 options,
                                 UI.Button:new({
                                     id = "close",
+                                    defaultSelected = true,
                                     width = 256,
                                     height = 64,
                                     y = 192,
@@ -1175,6 +1305,7 @@ local sGameplayMenu = UI.Element:new({
                 })
             },
             onclick = function()
+                table.merge(tempSettings.controls, Settings.controls)
                 table.merge(Settings, tempSettings)
                 WriteSettings() SetMenu("settings")
             end

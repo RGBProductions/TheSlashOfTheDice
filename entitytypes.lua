@@ -219,14 +219,12 @@ EntityTypes = {
                 Net.Send({type = "player_update", x = self.x, y = self.y, vx = self.vx, vy = self.vy, stats = self:get("stats")})
             end
         end,
-        mousepressed = function(self, x, y, b)
-            if table.index(MatchControl({type = "mouse", button = b}), "slash") then
-                if self:get("slashTime") <= 0 then
-                    slash(self, x, y)
-                else
-                    self:set("bufferTime", 0.05)
-                    self:set("bufferDirection", {x,y})
-                end
+        slash = function(self, x, y)
+            if self:get("slashTime") <= 0 then
+                slash(self, x, y)
+            else
+                self:set("bufferTime", 0.05)
+                self:set("bufferDirection", {x,y})
             end
         end,
         gamepadaxis = function(self, stick, axis, value)
@@ -234,12 +232,7 @@ EntityTypes = {
                 local mx = GetControlValue("move_right")-GetControlValue("move_left")
                 local my = GetControlValue("move_down")-GetControlValue("move_up")
                 local x,y = mx*96+love.graphics.getWidth()/2,my*96+love.graphics.getHeight()/2
-                if self:get("slashTime") <= 0 then
-                    slash(self, x, y)
-                else
-                    self:set("bufferTime", 0.05)
-                    self:set("bufferDirection", {x,y})
-                end
+                self.callbacks.slash(self,x,y)
             end
         end,
         draw = function(self)

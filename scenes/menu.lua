@@ -327,6 +327,7 @@ function scene.keypressed(k)
         -- Override
         Settings.controls[ControlRemap.control][ControlRemap.entry].type = "key"
         Settings.controls[ControlRemap.control][ControlRemap.entry].button = k
+        print("New control for " .. ControlRemap.control .. ":" .. ControlRemap.entry .. " is " .. GetControlEntryName(ControlRemap.control, ControlRemap.entry))
         ControlRemap.control = nil
         return
     end
@@ -617,7 +618,17 @@ function scene.gamepadpressed(stick,button)
     end
 end
 
-function scene.gamepadaxis()
+function scene.gamepadaxis(stick,axis,value)
+    if ControlRemap.control then
+        if math.abs(value) >= 0.5 then
+            -- Override
+            Settings.controls[ControlRemap.control][ControlRemap.entry].type = AxisRebindMethods[ControlRemap.control] or "gpaxis"
+            Settings.controls[ControlRemap.control][ControlRemap.entry].axis = axis .. (value < 0 and "-" or "+")
+            ControlRemap.control = nil
+        end
+        return
+    end
+
     local selection
 
     if WasControlTriggered("menu_right") then

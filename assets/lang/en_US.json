@@ -220,6 +220,19 @@
         "playtesting": "Playtest mode - Press Escape to return to customization",
         "playtesting_mobile": "Playtest mode - Press the pause button to return to customization",
 
+        "control.menu_up": "Navigate Menu Up",
+        "control.menu_down": "Navigate Menu Down",
+        "control.menu_left": "Navigate Menu Left",
+        "control.menu_right": "Navigate Menu Right",
+        "control.move_up": "Move Up",
+        "control.move_down": "Move Down",
+        "control.move_left": "Move Left",
+        "control.move_right": "Move Right",
+        "control.slash": "Slash",
+        "control.skip_wave": "Skip Wave",
+        "control.pause": "Pause",
+        "control.advance_text": "Advance Text",
+
         "customization.none": "None",
 
         "customization.help.color": "Changes the color of the player.",

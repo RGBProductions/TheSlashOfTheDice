@@ -310,6 +310,21 @@ DiscordPresence = {
 
 Gamepads = {}
 
+ControlDefaults = {
+    menu_up = {{type = "key", button = "up"}, {type = "gptrigger", axis = "lefty-", threshold = 0.5}},
+    menu_down = {{type = "key", button = "down"}, {type = "gptrigger", axis = "lefty+", threshold = 0.5}},
+    menu_left = {{type = "key", button = "left"}, {type = "gptrigger", axis = "leftx-", threshold = 0.5}},
+    menu_right = {{type = "key", button = "right"}, {type = "gptrigger", axis = "leftx+", threshold = 0.5}},
+    move_up = {{type = "key", button = "w"}, {type = "gpaxis", axis = "lefty-"}},
+    move_down = {{type = "key", button = "s"}, {type = "gpaxis", axis = "lefty+"}},
+    move_left = {{type = "key", button = "a"}, {type = "gpaxis", axis = "leftx-"}},
+    move_right = {{type = "key", button = "d"}, {type = "gpaxis", axis = "leftx+"}},
+    slash = {{type = "mouse", button = 1}, {type = "gptrigger", axis = "triggerright", threshold = 0.5}},
+    skip_wave = {{type = "mouse", button = 2}, {type = "gpbutton", button = "x"}},
+    pause = {{type = "key", button = "escape"}, {type = "gpbutton", button = "start"}},
+    advance_text = {{type = "key", button = "space"}, {type = "gpbutton", button = "a"}}
+}
+
 Settings = {
     language = "en_US",
 
@@ -332,20 +347,7 @@ Settings = {
         auto_aim_limit = 45
     },
 
-    controls = {
-        menu_up = {{type = "key", button = "w"}, {type = "gptrigger", axis = "lefty-", threshold = 0.5}},
-        menu_down = {{type = "key", button = "s"}, {type = "gptrigger", axis = "lefty+", threshold = 0.5}},
-        menu_left = {{type = "key", button = "a"}, {type = "gptrigger", axis = "leftx-", threshold = 0.5}},
-        menu_right = {{type = "key", button = "d"}, {type = "gptrigger", axis = "leftx+", threshold = 0.5}},
-        move_up = {{type = "key", button = "w"}, {type = "gpaxis", axis = "lefty-"}},
-        move_down = {{type = "key", button = "s"}, {type = "gpaxis", axis = "lefty+"}},
-        move_left = {{type = "key", button = "a"}, {type = "gpaxis", axis = "leftx-"}},
-        move_right = {{type = "key", button = "d"}, {type = "gpaxis", axis = "leftx+"}},
-        slash = {{type = "mouse", button = 1}, {type = "gptrigger", axis = "triggerright", threshold = 0.5}},
-        skip_wave = {{type = "mouse", button = 2}, {type = "gpbutton", button = "x"}},
-        pause = {{type = "key", button = "escape"}, {type = "gpbutton", button = "start"}},
-        advance_text = {{type = "key", button = "space"}, {type = "gpbutton", button = "a"}}
-    },
+    controls = {},
 
     customization = {
         color = {0,1,1},
@@ -353,6 +355,23 @@ Settings = {
         trail = nil,
         death_effect = nil
     }
+}
+
+table.merge(Settings.controls, ControlDefaults)
+
+AxisRebindMethods = {
+    menu_up = "gpaxis",
+    menu_down = "gpaxis",
+    menu_left = "gpaxis",
+    menu_right = "gpaxis",
+    move_up = "gpaxis",
+    move_down = "gpaxis",
+    move_left = "gpaxis",
+    move_right = "gpaxis",
+    slash = "gptrigger",
+    skip_wave = "gptrigger",
+    pause = "gptrigger",
+    advance_text = "gptrigger"
 }
 
 if love.filesystem.getInfo("settings.json") then
@@ -387,6 +406,33 @@ function GetAxisString(name)
         ["rightstick"] = "Right Stick ⭗"
     }
     return axes[name] or name
+end
+
+function GetControlEntryName(name,entry)
+    if not Settings.controls[name] then return name end
+    local mousebuttons = {
+        "Left",
+        "Right",
+        "Middle"
+    }
+    local c = Settings.controls[name][entry] or {}
+    if c.type == "key" then
+        return c.button:sub(1,1):upper() .. c.button:sub(2,-1):lower()
+    end
+    if c.type == "mouse" then
+        if mousebuttons[c.button] then
+            return mousebuttons[c.button] .. " Mouse Button"
+        else
+            return "Mouse Button " .. c.button
+        end
+    end
+    if c.type == "gpbutton" then
+        return c.button:sub(1,1):upper() .. c.button:sub(2,-1):lower()
+    end
+    if c.type == "gptrigger" or c.type == "gpaxis" then
+        return GetAxisString(c.axis)
+    end
+    return name
 end
 
 function GetControlStrings(name)

@@ -8,7 +8,7 @@ local blendAmt = 1/((5/4)^60)
 local tutorialBounds = 1024
 
 function AddNewPlayer(customization,keepStats,netinfo,isOwn)
-    player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["update"] = EntityTypes.player.update, ["keypressed"] = function(self, k) end, ["mousepressed"] = EntityTypes.player.mousepressed, ["gamepadaxis"] = EntityTypes.player.gamepadaxis, ["draw"] = EntityTypes.player.draw}, {
+    player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["slash"] = EntityTypes.player.slash, ["update"] = EntityTypes.player.update, ["keypressed"] = function(self, k) end, ["mousepressed"] = EntityTypes.player.mousepressed, ["gamepadaxis"] = EntityTypes.player.gamepadaxis, ["draw"] = EntityTypes.player.draw}, {
         slashTime = 0,
         lastPos = {0,0},
         stats = keepStats and (Stats or {
@@ -865,12 +865,12 @@ function scene.update(dt)
 end
 
 function scene.keypressed(k)
-    if k == "k" then
-        if #GetEntitiesWithID("player") > 0 then
-            player.hp = -1
-            -- boom("kill_player", 2, 0.005, 4, 0.5*Settings.Audio.Sound Volume/100)
-        end
-    end
+    -- if k == "k" then
+    --     if #GetEntitiesWithID("player") > 0 then
+    --         player.hp = -1
+    --         -- boom("kill_player", 2, 0.005, 4, 0.5*Settings.Audio.Sound Volume/100)
+    --     end
+    -- end
     if k == "escape" then
         if Gamemode == "playtest" then
             SceneManager.LoadScene("scenes/menu", {menu = "customize"})
@@ -894,6 +894,17 @@ function scene.keypressed(k)
             Spectating = true
         else
             SceneManager.LoadScene("scenes/game", {mode=Gamemode})
+        end
+    end
+    if not Paused then
+        if table.index(MatchControl({type = "key", button = k}), "skip_wave") and (runTimer and Spawned < 5) then
+            SpawnTimer = SpawnDelay
+        end
+        if table.index(MatchControl({type = "key", button = k}), "slash") and player then
+            local mx = GetControlValue("move_right")-GetControlValue("move_left")
+            local my = GetControlValue("move_down")-GetControlValue("move_up")
+            local x,y = mx*96+love.graphics.getWidth()/2,my*96+love.graphics.getHeight()/2
+            player.callbacks.slash(player,x,y)
         end
     end
     -- if k == "b" then
@@ -925,8 +936,11 @@ function scene.mousepressed(x, y, b, t, p)
                 SceneManager.LoadScene("scenes/menu")
             end
         else
-            if b == 2 and (runTimer and Spawned < 5) then
+            if table.index(MatchControl({type = "mouse", button = b}), "skip_wave") and (runTimer and Spawned < 5) then
                 SpawnTimer = SpawnDelay
+            end
+            if table.index(MatchControl({type = "mouse", button = b}), "slash") and player then
+                player.callbacks.slash(player,x,y)
             end
             if not t then
                 for _,ent in pairs(Entities) do
@@ -1283,6 +1297,17 @@ function scene.gamepadpressed(stick,b)
     end
     if table.index(controlMatches, "advance_text") and not Paused and Gamemode == "tutorial" then
         AttemptTutorialAdvance(true)
+    end
+    if not Paused then
+        if table.index(MatchControl({type = "gpbutton", button = b}), "skip_wave") and (runTimer and Spawned < 5) then
+            SpawnTimer = SpawnDelay
+        end
+        if table.index(MatchControl({type = "gpbutton", button = b}), "slash") and player then
+            local mx = GetControlValue("move_right")-GetControlValue("move_left")
+            local my = GetControlValue("move_down")-GetControlValue("move_up")
+            local x,y = mx*96+love.graphics.getWidth()/2,my*96+love.graphics.getHeight()/2
+            player.callbacks.slash(player,x,y)
+        end
     end
 end
 

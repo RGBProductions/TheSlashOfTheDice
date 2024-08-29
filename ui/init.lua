@@ -581,7 +581,7 @@ function UI.Element:getRightmostPoint(dontRecurse,ox)
     return rightmost,pos
 end
 
-function UI.Element:unpackChildren(ox,oy)
+function UI.Element:unpackChildren(ox,oy,isChild)
     ox = ox or ((type(self.x) == "function" and self.x(self)) or (self.x or 0))
     oy = oy or ((type(self.y) == "function" and self.y(self)) or (self.y or 0))
     
@@ -589,12 +589,27 @@ function UI.Element:unpackChildren(ox,oy)
     for _,child in ipairs(self.children or {}) do
         local cx = ((type(child.x) == "function" and child.x(child)) or (child.x or 0))
         local cy = ((type(child.y) == "function" and child.y(child)) or (child.y or 0))
-        table.insert(children, {element = child, x = cx+ox, y = cy+oy})
-        local subchildren = child:unpackChildren(ox+cx,oy+cy)
+        table.insert(children, {element = child, x = cx+ox, y = cy+oy, isHighest = false, isLowest = false, isLeftmost = false, isRightmost = false})
+        local subchildren = child:unpackChildren(ox+cx,oy+cy,true)
         for _,sub in ipairs(subchildren) do
             table.insert(children, sub)
         end
     end
+
+    if not isChild then
+        local leftmost = self:getLeftmostChild(false,ox)
+        local rightmost = self:getRightmostChild(false,ox)
+        local highest = self:getHighestChild(false,oy)
+        local lowest = self:getLowestChild(false,oy)
+
+        for _,child in ipairs(children) do
+            child.isLeftmost = child.element == leftmost
+            child.isRightmost = child.element == rightmost
+            child.isHighest = child.element == highest
+            child.isLowest = child.element == lowest
+        end
+    end
+
     return children
 end
 
