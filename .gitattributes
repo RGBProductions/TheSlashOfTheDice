@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Prevent devel from merging README into main
+README.md merge=ours
