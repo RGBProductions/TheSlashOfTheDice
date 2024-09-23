@@ -1,10 +1,6 @@
-Fixed movements being inconsistent between framerates
-Tutorial is now limited in bounds to prevent softlocks
-Added Discord Rich Presence
-Added localization
-Added achievements
-Added player customization
-Android and iOS support
-Overhauled menu
-Updated dice sprites
-A few secrets have been added
+Controllers are now automatically detected
+The menu now supports controllers
+Controls can now be modified
+Tutorial now includes wave skipping
+Improved pause and game over screens
+Minor backend fixes
