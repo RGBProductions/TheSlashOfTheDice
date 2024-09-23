@@ -881,7 +881,7 @@ function UI.ScrollablePanel:draw(stencilValue)
     if Gamepads[1] then
         local scrollValue = Gamepads[1]:getGamepadAxis("righty")
         if math.abs(scrollValue) >= 0.2 then
-            local children = self:unpackChildren(0,0)
+            local children = self:unpackChildrenDefault(0,0)
             local hasSelectedChild = false
             local selection = MenuSelection
             if Dialogs[1] then
@@ -898,8 +898,8 @@ function UI.ScrollablePanel:draw(stencilValue)
                 local minScrollY = math.min(0,u_pos+h/2)
                 local maxScrollY = math.max(0,d_pos-h/2)
                 local lastScrollY = self.scrollY
-                self.scrollY = math.max(minScrollY, math.min(maxScrollY, (self.scrollY or 0) + scrollValue*192*love.timer.getDelta()))
-                -- selection.y = selection.y+(self.scrollY-lastScrollY)
+                self.scrollY = math.max(minScrollY, math.min(maxScrollY, (self.scrollY or 0) + scrollValue*512*love.timer.getDelta()))
+                selection.y = selection.y-(self.scrollY-lastScrollY)
             end
         end
     end
@@ -1136,6 +1136,8 @@ function UI.ScrollablePanel:getCursor(mx,my)
     return nil
 end
 
+UI.ScrollablePanel.unpackChildrenDefault = UI.Element.unpackChildren
+
 function UI.ScrollablePanel:unpackChildren(ox,oy,isChild)
     ox = (ox or ((type(self.x) == "function" and self.x(self)) or (self.x or 0)) or 0) - (self.scrollX or 0)
     oy = (oy or ((type(self.y) == "function" and self.y(self)) or (self.y or 0)) or 0) - (self.scrollY or 0)
@@ -1149,7 +1151,7 @@ function UI.ScrollablePanel:unpackChildren(ox,oy,isChild)
         local cy = ((type(child.y) == "function" and child.y(child)) or (child.y or 0))
         local cw = ((type(child.width) == "function" and child.width(child)) or (child.width or 0))
         local ch = ((type(child.height) == "function" and child.height(child)) or (child.height or 0))
-        if BoxCollision(ox+cx-cw/2, oy+cy-ch/2, cw, ch, ox-w/2, oy-h/2, w, h) then
+        if BoxCollision(ox+cx-cw/2, oy+cy-ch/2, cw, ch, ox+(self.scrollX or 0)-w/2, oy+(self.scrollY or 0)-h/2, w, h) then
             table.insert(children, {element = child, x = cx+ox, y = cy+oy, isHighest = false, isLowest = false, isLeftmost = false, isRightmost = false})
         end
         local subchildren = child:unpackChildren(ox+cx,oy+cy,true)
