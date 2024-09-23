@@ -1636,7 +1636,10 @@ function scene.touchpressed(id,x,y)
     end
     local sx,sy = x-(love.graphics.getWidth()-Slashstick.radius*ViewScale*ViewScale*Settings.video.ui_scale-64),y-(love.graphics.getHeight()-Slashstick.radius*ViewScale*ViewScale*Settings.video.ui_scale-64)
     if math.sqrt(sx*sx+sy*sy) <= Slashstick.radius*ViewScale*Settings.video.ui_scale and player then
-        player:mousepressed(Thumbstick.x+love.graphics.getWidth()/2,Thumbstick.y+love.graphics.getHeight()/2,1)
+        local mx = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
+        local my = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
+        local X,Y = mx*96+love.graphics.getWidth()/2,my*96+love.graphics.getHeight()/2
+        player.callbacks.slash(player, X, Y)
         return
     end
     if x >= love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64 and x < love.graphics.getWidth()-64 and y >= 64 and y < Pausebutton.size*ViewScale*Settings.video.ui_scale+64 then
