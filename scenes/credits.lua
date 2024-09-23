@@ -19,7 +19,7 @@ function scene.draw()
     love.graphics.printf(Localize("title.credits"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight() - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)
     if not ShowMobileUI then
-        love.graphics.printf(Localize("key.goback"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*2+ViewMargin - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize(Gamepads[1] ~= nil and "gamepad.goback" or "key.goback"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*2+ViewMargin - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     else
         love.graphics.draw(BackIcon, 64, 64, 0, 64/BackIcon:getWidth()*Settings.video.ui_scale, 64/BackIcon:getHeight()*Settings.video.ui_scale)
     end
@@ -48,16 +48,16 @@ end
 
 local scrollVelocity = 0
 function scene.update(dt)
-    if love.keyboard.isDown("up") then
-        CreditScroll = CreditScroll - 8
-    end
-    if love.keyboard.isDown("down") then
-        CreditScroll = CreditScroll + 8
-    end
+    local lefty = Gamepads[1]:getGamepadAxis("lefty")
+    lefty = ((math.max(0.2, math.abs(lefty))-0.2)/0.8) * math.sign(lefty)
+    local scrollUp = math.max(0, math.min(1, (love.keyboard.isDown("up") and 1 or 0) - lefty))
+    local scrollDown = math.max(0, math.min(1, (love.keyboard.isDown("down") and 1 or 0) + lefty))
+    local scroll = math.max(-1, math.min(1, scrollUp-scrollDown))
+    CreditScroll = CreditScroll - 16*60*dt*scroll
 
     scrollVelocity = math.max(0,math.abs(scrollVelocity)-dt*16)*math.sign(scrollVelocity)
     if not love.mouse.isDown(1) then
-        CreditScroll = CreditScroll - scrollVelocity
+        CreditScroll = CreditScroll - scrollVelocity*60*dt
     end
 
     local pos = 0
@@ -78,6 +78,12 @@ end
 
 function scene.keypressed(k)
     if k == "escape" then
+        SceneManager.LoadScene("scenes/menu")
+    end
+end
+
+function scene.gamepadpressed(stick,b)
+    if b == "b" then
         SceneManager.LoadScene("scenes/menu")
     end
 end

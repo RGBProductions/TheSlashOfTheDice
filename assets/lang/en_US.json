@@ -65,7 +65,7 @@
         "title.achievements": "Achievements",
         
         "key.goback": "Press escape to go back",
-        "key.goback.gamepad": "Press B to go back",
+        "gamepad.goback": "Press B to go back",
 
         "button.back": "Back",
         "button.cancel": "Cancel",
