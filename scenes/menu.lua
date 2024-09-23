@@ -152,9 +152,9 @@ local function scroll(mx,my,x,y)
 end
 
 ---@param dir {[1]: number, [2]: number}
-function GetSelectionTarget(dir)
-    local menu = Menus[CurrentMenu]
-    local selection = MenuSelection
+function GetSelectionTarget(dir, menu, selection)
+    menu = menu or Menus[CurrentMenu]
+    selection = selection or MenuSelection
     if Dialogs[1] then
         menu = Dialogs[1].element
         selection = Dialogs[1].selection
@@ -596,16 +596,18 @@ function scene.gamepadpressed(stick,button)
 
     local selection
 
-    if button == "dpright" then
+    local matches = MatchControl({type = "gpbutton", button = button})
+
+    if table.index(matches, "menu_right") then
         selection = GetSelectionTarget({1,0}) or selection
     end
-    if button == "dpleft" then
+    if table.index(matches, "menu_left") then
         selection = GetSelectionTarget({-1,0}) or selection
     end
-    if button == "dpdown" then
+    if table.index(matches, "menu_down") then
         selection = GetSelectionTarget({0,1}) or selection
     end
-    if button == "dpup" then
+    if table.index(matches, "menu_up") then
         selection = GetSelectionTarget({0,-1}) or selection
     end
 
