@@ -1146,13 +1146,13 @@ function scene.mousepressed(x, y, b, t, p)
             --     SceneManager.LoadScene("scenes/menu")
             -- end
         else
-            if table.index(MatchControl({type = "mouse", button = b}), "skip_wave") and (runTimer and Spawned < 5) then
-                SpawnTimer = SpawnDelay
-            end
-            if table.index(MatchControl({type = "mouse", button = b}), "slash") and player then
-                player.callbacks.slash(player,x,y)
-            end
             if not t then
+                if table.index(MatchControl({type = "mouse", button = b}), "skip_wave") and (runTimer and Spawned < 5) then
+                    SpawnTimer = SpawnDelay
+                end
+                if table.index(MatchControl({type = "mouse", button = b}), "slash") and player then
+                    player.callbacks.slash(player,x,y)
+                end
                 for _,ent in pairs(Entities) do
                     ent:mousepressed(x,y,b)
                 end
