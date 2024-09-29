@@ -878,20 +878,21 @@ function UI.ScrollablePanel:draw(stencilValue)
 
     -- * hacky fix * --
 
+    local children = self:unpackChildrenDefault(0,0)
+    local hasSelectedChild = false
+    local selection = MenuSelection
+    if Dialogs[1] then
+        selection = Dialogs[1].selection
+    end
+    for _,child in ipairs(children) do
+        if child.element == (selection or {}).element then
+            hasSelectedChild = true
+        end
+    end
+
     if Gamepads[1] then
         local scrollValue = Gamepads[1]:getGamepadAxis("righty")
         if math.abs(scrollValue) >= 0.2 then
-            local children = self:unpackChildrenDefault(0,0)
-            local hasSelectedChild = false
-            local selection = MenuSelection
-            if Dialogs[1] then
-                selection = Dialogs[1].selection
-            end
-            for _,child in ipairs(children) do
-                if child.element == (selection or {}).element then
-                    hasSelectedChild = true
-                end
-            end
             if hasSelectedChild then
                 local _,u_pos = self:getHighestPoint()
                 local _,d_pos = self:getLowestPoint()
