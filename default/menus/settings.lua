@@ -437,6 +437,7 @@ local sVideoMenu = UI.Element:new({
                                 options,
                                 UI.Button:new({
                                     id = "close",
+                                    defaultSelected = true,
                                     width = 256,
                                     height = 64,
                                     y = 192,

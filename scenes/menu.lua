@@ -5,7 +5,7 @@ love.keyboard.setKeyRepeat(true)
 function SetMenu(m)
     CurrentMenu = m
     if (Menus[CurrentMenu] or {}).unpackChildren then
-        for _,child in ipairs((Menus[CurrentMenu] or {}):unpackChildren()) do
+        for _,child in ipairs((Menus[CurrentMenu] or {}):unpackChildren(nil,nil,nil,1)) do
             if child.element.defaultSelected then
                 MenuSelection = child
                 break
@@ -17,7 +17,7 @@ end
 function OpenDialog(element)
     local selection = nil
     if (element or {}).unpackChildren then
-        for _,child in ipairs((element or {}):unpackChildren()) do
+        for _,child in ipairs((element or {}):unpackChildren(nil,nil,nil,1)) do
             if child.element.defaultSelected then
                 selection = child
                 break
@@ -166,6 +166,12 @@ function GetSelectionTarget(dir, menu, selection)
         local elements = (menu or {}):unpackChildren() or {}
         local sort = {}
         for _,elem in ipairs(elements) do
+            if type(elem.element.getSelectionTarget) == "function" then
+                local target = elem.element:getSelectionTarget(dir,selection)
+                if target then
+                    return target
+                end
+            end
             if elem.element ~= selection.element and elem.element.canSelect then
                 local ox,oy = elem.x-selection.x, elem.y-selection.y
                 local distance = math.sqrt(ox*ox+oy*oy)

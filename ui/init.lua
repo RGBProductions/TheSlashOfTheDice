@@ -581,7 +581,7 @@ function UI.Element:getRightmostPoint(dontRecurse,ox)
     return rightmost,pos
 end
 
-function UI.Element:unpackChildren(ox,oy,isChild)
+function UI.Element:unpackChildren(ox,oy,isChild,intent)
     ox = ox or ((type(self.x) == "function" and self.x(self)) or (self.x or 0))
     oy = oy or ((type(self.y) == "function" and self.y(self)) or (self.y or 0))
     
@@ -590,7 +590,7 @@ function UI.Element:unpackChildren(ox,oy,isChild)
         local cx = ((type(child.x) == "function" and child.x(child)) or (child.x or 0))
         local cy = ((type(child.y) == "function" and child.y(child)) or (child.y or 0))
         table.insert(children, {element = child, x = cx+ox, y = cy+oy, isHighest = false, isLowest = false, isLeftmost = false, isRightmost = false})
-        local subchildren = child:unpackChildren(ox+cx,oy+cy,true)
+        local subchildren = child:unpackChildren(ox+cx,oy+cy,true,intent)
         for _,sub in ipairs(subchildren) do
             table.insert(children, sub)
         end

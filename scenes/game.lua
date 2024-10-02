@@ -1070,6 +1070,7 @@ function scene.keypressed(k)
     if k == "escape" then
         if Gamemode == "playtest" then
             SceneManager.LoadScene("scenes/menu", {menu = "customize"})
+            return
         end
         if #GetEntitiesWithID("player") > 0 or Spectating then
             Paused = not Paused
@@ -1379,7 +1380,7 @@ function scene.draw()
 
     if Gamemode == "playtest" then
         love.graphics.setColor(0,0,0)
-        local txt = Localize("playtesting" .. (IsMobile and "_mobile" or ""))
+        local txt = Localize("playtesting" .. (IsMobile and "_mobile" or "")):format(GetControlStrings("pause")[(Gamepads[1] ~= nil) and "gamepad" or "desktop"])
         pcall(love.graphics.printf, txt, 0, pos-2, love.graphics.getWidth(), "center")
         pcall(love.graphics.printf, txt, 0, pos-2, love.graphics.getWidth(), "center")
         pcall(love.graphics.printf, txt, 0, pos+2, love.graphics.getWidth(), "center")
@@ -1510,7 +1511,7 @@ end
 function scene.gamepadaxis(stick,axis,value)
     player:gamepadaxis(stick,axis,value)
 
-    if ShowGameMenu or (IsDead and not Spectating) then
+    if ShowGameMenu or (IsDead and not Spectating) and Gamemode ~= "playtest" then
         local selection
 
         local menu = ShowGameMenu and pauseMenu or gameOverMenu
@@ -1549,6 +1550,7 @@ function scene.gamepadpressed(stick,b)
     if table.index(controlMatches, "pause") then
         if Gamemode == "playtest" then
             SceneManager.LoadScene("scenes/menu", {menu = "customize"})
+            return
         end
         if not (IsDead and not Spectating) then
             Paused = not Paused

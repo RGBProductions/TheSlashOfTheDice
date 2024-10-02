@@ -1139,43 +1139,70 @@ end
 
 UI.ScrollablePanel.unpackChildrenDefault = UI.Element.unpackChildren
 
-function UI.ScrollablePanel:unpackChildren(ox,oy,isChild)
-    ox = (ox or ((type(self.x) == "function" and self.x(self)) or (self.x or 0)) or 0) - (self.scrollX or 0)
-    oy = (oy or ((type(self.y) == "function" and self.y(self)) or (self.y or 0)) or 0) - (self.scrollY or 0)
-
+function UI.ScrollablePanel:getSelectionTarget(dir,selection)
+    local elements = self:unpackChildrenDefault() or {}
+    local sort = {}
+    for _,elem in ipairs(elements) do
+        if elem.element ~= selection.element and elem.element.canSelect then
+            local ox,oy = elem.x-selection.x, elem.y-selection.y
+            local distance = math.sqrt(ox*ox+oy*oy)
+            local m = (distance == 0 and 1 or distance)
+            local nx,ny = ox/m,oy/m
+            local parallel = math.dot(dir, {nx,ny})
+            if parallel > 0 then
+                local weight = (parallel^8*math.sign(parallel)) * 1/(distance/16)
+                table.insert(sort, {element = elem, weight = weight})
+            end
+        end
+    end
+    if #sort == 0 then return nil end
+    table.sort(sort, function (a, b)
+        if b.weight == a.weight then
+            if b.element.y == a.element.y then
+                return b.element.x > a.element.x
+            end
+            return b.element.y > a.element.y
+        end
+        return b.weight < a.weight
+    end)
+    
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
     local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
-    
-    local children = {}
-    for _,child in ipairs(self.children or {}) do
-        local cx = ((type(child.x) == "function" and child.x(child)) or (child.x or 0))
-        local cy = ((type(child.y) == "function" and child.y(child)) or (child.y or 0))
-        local cw = ((type(child.width) == "function" and child.width(child)) or (child.width or 0))
-        local ch = ((type(child.height) == "function" and child.height(child)) or (child.height or 0))
-        if BoxCollision(ox+cx-cw/2, oy+cy-ch/2, cw, ch, ox+(self.scrollX or 0)-w/2, oy+(self.scrollY or 0)-h/2, w, h) then
-            table.insert(children, {element = child, x = cx+ox, y = cy+oy, isHighest = false, isLowest = false, isLeftmost = false, isRightmost = false})
-        end
-        local subchildren = child:unpackChildren(ox+cx,oy+cy,true)
-        for _,sub in ipairs(subchildren) do
-            table.insert(children, sub)
-        end
+
+    local lowest,lowy = sort[1].element.element:getLowestPoint()
+    local highest,highy = sort[1].element.element:getHighestPoint()
+    local sely = (type(sort[1].element.element.y) == "function" and sort[1].element.element.y(sort[1].element.element)) or (sort[1].element.element.y or 0)
+    lowy = lowy + sely - self.scrollY
+    highy = highy + sely - self.scrollY
+    local isBelow = lowy > h/2
+    local isAbove = highy < -h/2
+    local target = self.scrollY
+    if isAbove and isBelow then
+        -- Target = middle
+        target = ((lowy) + ((highy))) / 2 + self.scrollY
+    elseif isAbove then
+        -- Target = top
+        target = lowy + self.scrollY
+    elseif isBelow then
+        -- Target = bottom
+        target = highy + self.scrollY
     end
 
-    if not isChild then
-        local leftmost = self:getLeftmostChild(false,ox)
-        local rightmost = self:getRightmostChild(false,ox)
-        local highest = self:getHighestChild(false,oy)
-        local lowest = self:getLowestChild(false,oy)
-
-        for _,child in ipairs(children) do
-            child.isLeftmost = child.element == leftmost
-            child.isRightmost = child.element == rightmost
-            child.isHighest = child.element == highest
-            child.isLowest = child.element == lowest
-        end
+    if target ~= self.scrollY then
+        self.scrollY = target
     end
 
-    return children
+    return sort[1].element
+end
+
+function UI.ScrollablePanel:unpackChildren(ox,oy,isChild,intent)
+    if intent == 1 then
+        self.scrollX = 0
+        self.scrollY = 0
+        return self:unpackChildrenDefault(ox,oy,isChild)
+    end
+
+    return {}
 end
 
 --#endregion

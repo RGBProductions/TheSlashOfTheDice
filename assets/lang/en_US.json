@@ -217,7 +217,7 @@
         
         "calm_not_unlocked": "Defeat 30 waves in Default to unlock this gamemode!",
 
-        "playtesting": "Playtest mode - Press Escape to return to customization",
+        "playtesting": "Playtest mode - Press %s to return to customization",
         "playtesting_mobile": "Playtest mode - Press the pause button to return to customization",
 
         "control.menu_up": "Navigate Menu Up",

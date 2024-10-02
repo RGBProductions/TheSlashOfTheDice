@@ -68,8 +68,11 @@ function scene.wheelmoved(x, y)
 end
 
 function scene.update(dt)
-    local lefty = Gamepads[1]:getGamepadAxis("lefty")
-    lefty = ((math.max(0.2, math.abs(lefty))-0.2)/0.8) * math.sign(lefty)
+    local lefty = 0
+    if Gamepads[1] ~= nil then
+        lefty = Gamepads[1]:getGamepadAxis("lefty")
+        lefty = ((math.max(0.2, math.abs(lefty))-0.2)/0.8) * math.sign(lefty)
+    end
     local scrollUp = math.max(0, math.min(1, (love.keyboard.isDown("up") and 1 or 0) - lefty))
     local scrollDown = math.max(0, math.min(1, (love.keyboard.isDown("down") and 1 or 0) + lefty))
     local scroll = math.max(-1, math.min(1, scrollUp-scrollDown))
