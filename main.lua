@@ -778,16 +778,20 @@ end
 
 ---@param stick love.Joystick
 function love.joystickadded(stick)
-    Popup("gamepad_connected", stick:getName())
-    table.insert(Gamepads, stick)
+    if stick:isGamepad() then
+        Popup("gamepad_connected", stick:getName())
+        table.insert(Gamepads, stick)
+    end
 end
 
 ---@param stick love.Joystick
 function love.joystickremoved(stick)
-    Popup("gamepad_disconnected", stick:getName())
-    local i = table.index(Gamepads, stick)
-    if i then
-        table.remove(Gamepads, i)
+    if stick:isGamepad() then
+        Popup("gamepad_disconnected", stick:getName())
+        local i = table.index(Gamepads, stick)
+        if i then
+            table.remove(Gamepads, i)
+        end
     end
 end
 

@@ -1509,6 +1509,7 @@ function scene.draw()
 end
 
 function scene.gamepadaxis(stick,axis,value)
+    if stick ~= Gamepads[1] then return end
     player:gamepadaxis(stick,axis,value)
 
     if ShowGameMenu or (IsDead and not Spectating) and Gamemode ~= "playtest" then
@@ -1543,6 +1544,7 @@ end
 
 function scene.gamepadpressed(stick,b)
     if frame < 2 then return end
+    if stick ~= Gamepads[1] then return end
     local controlMatches = MatchControl({type = "gpbutton", button = b})
     if table.index(controlMatches, "skip_wave") and (runTimer and Spawned < 5) then
         SpawnTimer = SpawnDelay
