@@ -1067,7 +1067,7 @@ function scene.keypressed(k)
     --         -- boom("kill_player", 2, 0.005, 4, 0.5*Settings.Audio.Sound Volume/100)
     --     end
     -- end
-    if k == "escape" then
+    if table.index(MatchControl({type = "key", button = k}), "pause") then
         if Gamemode == "playtest" then
             SceneManager.LoadScene("scenes/menu", {menu = "customize"})
             return
@@ -1083,19 +1083,8 @@ function scene.keypressed(k)
             SceneManager.LoadScene("scenes/menu")
         end
     end
-    if k == "space" and not Paused and Gamemode == "tutorial" then
+    if table.index(MatchControl({type = "key", button = k}), "advance_text") and not Paused and Gamemode == "tutorial" then
         AttemptTutorialAdvance(true)
-    end
-    if k == "space" and #GetEntitiesWithID("player") == 0 and not Spectating then
-        if GameSetups[Gamemode].canRespawn then
-            AddNewPlayer(Settings.customization, Gamemode == "calm" or Gamemode == "tutorial")
-            IsDead = false
-        elseif IsMultiplayer then
-            Spectating = true
-        else
-            SceneManager.LoadScene("scenes/game", {mode=Gamemode})
-            frame = 0
-        end
     end
     if not Paused then
         if table.index(MatchControl({type = "key", button = k}), "skip_wave") and (runTimer and Spawned < 5) then

@@ -24,7 +24,7 @@ function OpenDialog(element)
             end
         end
     end
-    table.insert(Dialogs, {element = element, selection = selection})
+    table.insert(Dialogs, 1, {element = element, selection = selection})
 end
 
 local scrollVelocity = 0
@@ -251,7 +251,8 @@ function scene.draw()
     love.graphics.push()
     love.graphics.translate(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
     love.graphics.scale(scale,scale)
-    for _,dialog in ipairs(Dialogs) do
+    for i = #Dialogs, 1, -1 do
+        local dialog = Dialogs[i]
         love.graphics.setColor(0,0,0,0.5)
         love.graphics.rectangle("fill", -love.graphics.getWidth()/2/scale, -love.graphics.getHeight()/2/scale, love.graphics.getWidth()/scale, love.graphics.getHeight()/scale)
         if (dialog.element or {}).draw then
@@ -265,7 +266,8 @@ function scene.draw()
     if (Menus[CurrentMenu] or {}).getCursor and not Dialogs[1] then
         c = Menus[CurrentMenu]:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or c
     end
-    for _,dialog in ipairs(Dialogs) do
+    for i = #Dialogs, 1, -1 do
+        local dialog = Dialogs[i]
         if (dialog.element or {}).getCursor then
             c = (dialog.element or {}):getCursor((love.mouse.getX()-love.graphics.getWidth()/2)/scale, (love.mouse.getY()-love.graphics.getHeight()/2)/scale) or c
         end
@@ -352,6 +354,11 @@ function scene.keypressed(k)
                 ExitTheSus:stop()
                 ExitTheSus:play()
             end
+        end
+    end
+    if k == "escape" then
+        if Dialogs[1] then
+            table.remove(Dialogs, 1)
         end
     end
     local hasDialog = #Dialogs > 0
@@ -586,6 +593,12 @@ function scene.gamepadpressed(stick,button)
         Settings.controls[ControlRemap.control][ControlRemap.entry].button = button
         ControlRemap.control = nil
         return
+    end
+
+    if button == "b" then
+        if Dialogs[1] then
+            table.remove(Dialogs, 1)
+        end
     end
 
     if button == "a" then
