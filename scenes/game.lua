@@ -153,6 +153,15 @@ local gameOverMenu = UI.Element:new({
                     fontScale = 0.5,
                     alignHoriz = "center",
                     alignVert = "center"
+                }),
+                UI.Panel:new({
+                    id = "restart_cover",
+                    x = 0,
+                    y = 0,
+                    width = 256,
+                    height = 64,
+                    cursor = "arrow",
+                    background = {0,0,0,0.75}
                 })
             },
             onclick = function(self)
@@ -188,6 +197,15 @@ local gameOverMenu = UI.Element:new({
                     fontScale = 0.5,
                     alignHoriz = "center",
                     alignVert = "center"
+                }),
+                UI.Panel:new({
+                    id = "exit_cover",
+                    x = 0,
+                    y = 0,
+                    width = 256,
+                    height = 64,
+                    cursor = "arrow",
+                    background = {0,0,0,0.75}
                 })
             },
             onclick = function(self)
@@ -197,6 +215,7 @@ local gameOverMenu = UI.Element:new({
         })
     }
 })
+local gameOverTimer = 0
 
 local function setSelection(menu)
     if (menu or {}).unpackChildren then
@@ -993,6 +1012,9 @@ function scene.update(dt)
                         end
                     elseif Entities[e] == player then
                         IsDead = true
+                        gameOverMenu:getChildById("restart_cover").hidden = false
+                        gameOverMenu:getChildById("exit_cover").hidden = false
+                        gameOverTimer = 1
                         setSelection(gameOverMenu)
                     end
                     table.remove(Entities, e)
@@ -1050,6 +1072,17 @@ function scene.update(dt)
             Achievements.Advance("die_tutorial")
         end
     end
+
+    if gameOverTimer > 0 then
+        gameOverTimer = gameOverTimer - dt
+        gameOverMenu:getChildById("restart_cover").background[4] = math.max(0,math.min(1,gameOverTimer*4))*0.75
+        gameOverMenu:getChildById("exit_cover").background[4] = math.max(0,math.min(1,gameOverTimer*4))*0.75
+        if gameOverTimer <= 0 then
+            gameOverMenu:getChildById("restart_cover").hidden = true
+            gameOverMenu:getChildById("exit_cover").hidden = true
+        end
+    end
+
     hadPlayer = #GetEntitiesWithID("player") > 0
 end
 
