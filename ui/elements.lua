@@ -1182,10 +1182,10 @@ function UI.ScrollablePanel:getSelectionTarget(dir,selection)
         target = ((lowy) + ((highy))) / 2 + self.scrollY
     elseif isAbove then
         -- Target = top
-        target = lowy + self.scrollY
+        target = highy-(-h/2) + self.scrollY
     elseif isBelow then
         -- Target = bottom
-        target = highy + self.scrollY
+        target = lowy-(h/2) + self.scrollY
     end
 
     if target ~= self.scrollY then
