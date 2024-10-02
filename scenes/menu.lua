@@ -199,14 +199,13 @@ end
 
 function scene.update(dt)
     MenuTime = MenuTime + dt
-    local blend = math.pow(1/(16^3), dt)
+    local blend = math.pow(1/((8/7)^60), dt)
     LogoPos = blend*(LogoPos-16)+16
 
     scrollVelocity = math.max(0,math.abs(scrollVelocity)-dt)*math.sign(scrollVelocity)
     if not isTouchHeld then
         scroll(scrollTarget[1],scrollTarget[2],0,scrollVelocity)
     end
-    -- LogoPos = LogoPos - ((LogoPos-16)/8)
 end
 
 function scene.draw()
@@ -239,8 +238,6 @@ function scene.draw()
     love.graphics.push()
     love.graphics.translate(centerpoint[1], centerpoint[2])
     love.graphics.scale(scale,scale)
-    -- love.graphics.circle("fill", 0, 0, 4)
-    -- love.graphics.rectangle("line", -w/2, -h/2, w, h)
     if (Menus[CurrentMenu] or {}).draw then
         Menus[CurrentMenu]:draw()
     end
@@ -287,9 +284,6 @@ function scene.draw()
     for i,v in ipairs(MenuVersions) do
         love.graphics.print(v.name .. " v" .. v.version .. (v.extra and (" - " .. table.concat(v.extra, ", "))or ""), 0, love.graphics.getHeight() - smfont:getHeight()*(#MenuVersions-i+1))
     end
-    -- love.graphics.print("The Slash of the Dice v" .. tostring(version), 0, love.graphics.getHeight() - smfont:getHeight()*2)
-    -- local major,minor,rev,name = love.getVersion()
-    -- love.graphics.print("LÖVE v" .. major .. "." .. minor .. " (" .. name .. ")", 0, love.graphics.getHeight() - smfont:getHeight())
 
     love.graphics.setFont(lgfont)
 

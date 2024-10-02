@@ -7,15 +7,15 @@ Cosmetics = {
 -- Credit to MichaelEpicA for writing the core functionality for cosmetics
 
 function Cosmetics.ReadHat(dir)
-   local hatsettings = json.decode(love.filesystem.read(dir.."/hat.json"))
-   local spl = dir:split("/")
-   local id = spl[#spl]
-   local hat = {
-    image = love.graphics.newImage(dir.."/hat.png"),
-    anchor = hatsettings.anchor,
-    scale = hatsettings.scale
-   }
-   Cosmetics.Hats[id] = hat
+    local hatsettings = json.decode(love.filesystem.read(dir.."/hat.json"))
+    local spl = dir:split("/")
+    local id = spl[#spl]
+    local hat = {
+        image = love.graphics.newImage(dir.."/hat.png"),
+        anchor = hatsettings.anchor,
+        scale = hatsettings.scale
+    }
+    Cosmetics.Hats[id] = hat
 end
 
 function Cosmetics.ReadTrail(dir)
@@ -49,7 +49,6 @@ function Cosmetics.ReadTrail(dir)
 end
 
 function Cosmetics.ReadEffect(dir)
-    --todo: yep
     local effectSettings = json.decode(love.filesystem.read(dir.."/effect.json"))
     local spl = dir:split("/")
     local id = spl[#spl]

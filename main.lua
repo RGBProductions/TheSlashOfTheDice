@@ -30,7 +30,6 @@ UpdateTime = 0
 ViewScale = 1
 ViewMargin = 0
 FontScale = IsMobile and 1.5 or 1
--- ViewMargin = 0
 
 SlashIcon = love.graphics.newImage("assets/images/ui/slash.png")
 PauseIcon = love.graphics.newImage("assets/images/ui/pause.png")
@@ -85,8 +84,6 @@ if DiscordRPC then
 else
     print("Discord RPC was not initialized.")
 end
-
--- smfont = love.graphics.getFont()
 
 smfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12)
 

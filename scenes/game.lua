@@ -276,12 +276,6 @@ function AddNetPlayer(info,stats)
         end
 
         if self:get("slashTime") > 0 then
-            -- local ox = self:get("lastPos")[1]-self.x
-            -- local oy = self:get("lastPos")[2]-self.y
-            -- local len = math.sqrt(ox^2+oy^2)/4
-            -- for i = 1, len do
-            --     table.insert(Particles, Game.Particle:new(self.x-ox*i/len, self.y-oy*i/len))
-            -- end
             local ents = GetEntityCollisions(self)
             for _,ent in pairs(ents) do
                 if ent.invincibility <= 0 and ent.id ~= "rocket" and ((not (ent.id == "player" and (not MultiplayerSetup.friendlyFire))) or (MultiplayerSetup.friendlyFire)) then
@@ -679,8 +673,7 @@ function scene.load(args)
             }
         }
     }
-    
-    -- player = GetEntitiesWithID("player")[1]
+
     hadPlayer = true
 
     if Gamemode ~= "tutorial" then
@@ -1061,12 +1054,6 @@ function scene.update(dt)
 end
 
 function scene.keypressed(k)
-    -- if k == "k" then
-    --     if #GetEntitiesWithID("player") > 0 then
-    --         player.hp = -1
-    --         -- boom("kill_player", 2, 0.005, 4, 0.5*Settings.Audio.Sound Volume/100)
-    --     end
-    -- end
     if table.index(MatchControl({type = "key", button = k}), "pause") then
         if Gamemode == "playtest" then
             SceneManager.LoadScene("scenes/menu", {menu = "customize"})
@@ -1097,13 +1084,6 @@ function scene.keypressed(k)
             player.callbacks.slash(player,x,y)
         end
     end
-    -- if k == "b" then
-    --     local stats = player:get("stats")
-    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "add"})
-    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "mul"})
-    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "sub"})
-    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "div"})
-    -- end
 end
 
 function scene.mousepressed(x, y, b, t, p)
@@ -1119,22 +1099,6 @@ function scene.mousepressed(x, y, b, t, p)
             local m_x = (x-centerpoint[1])/scale
             local m_y = (y-centerpoint[2])/scale
             gameOverMenu:click(m_x,m_y,b)
-            -- local my = (love.graphics.getHeight()-lgfont:getHeight())/2+lgfont:getHeight()*2
-            -- local itm = math.floor((y-my)/lrfont:getHeight())
-            -- if itm == 0 then
-            --     if GameSetups[Gamemode].canRespawn then
-            --         AddNewPlayer(Settings.customization, Gamemode == "calm" or Gamemode == "tutorial")
-            --         IsDead = false
-            --     elseif IsMultiplayer then
-            --         Spectating = true
-            --     else
-            --         SceneManager.LoadScene("scenes/game", {mode=Gamemode})
-            --     end
-            -- end
-            -- if itm == 1 then
-            --     Net.Disconnect()
-            --     SceneManager.LoadScene("scenes/menu")
-            -- end
         else
             if not t then
                 if table.index(MatchControl({type = "mouse", button = b}), "skip_wave") and (runTimer and Spawned < 5) then
@@ -1159,19 +1123,6 @@ function scene.mousepressed(x, y, b, t, p)
         local m_x = (x-centerpoint[1])/scale
         local m_y = (y-centerpoint[2])/scale
         pauseMenu:click(m_x,m_y,b)
-        -- local my = (love.graphics.getHeight()-lgfont:getHeight())/2
-        -- local itm = math.floor((y-my)/lrfont:getHeight())
-        -- if itm == 0 then
-        --     Paused = not Paused
-        --     ShowGameMenu = not ShowGameMenu
-        -- end
-        -- if itm == 1 then
-        --     SceneManager.LoadScene("scenes/game", {mode = Gamemode})
-        -- end
-        -- if itm == 2 then
-        --     Net.Disconnect()
-        --     SceneManager.LoadScene("scenes/menu")
-        -- end
     end
 end
 
@@ -1463,12 +1414,6 @@ function scene.draw()
         if s then
             love.mouse.setCursor(r)
         end
-        -- love.graphics.setFont(xlfont)
-        -- love.graphics.printf(Localize("gameover.title"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2-xlfont:getHeight()*2, love.graphics.getWidth(), "center")
-        -- love.graphics.setFont(lgfont)
-        -- love.graphics.printf(Localize("score"):format(Score), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2, love.graphics.getWidth(), "center")
-        -- love.graphics.printf(Localize(GameSetups[Gamemode].canRespawn and "gameover.respawn" or (IsMultiplayer and "gameover.spectate" or "gameover.retry")), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*2+lrfont:getHeight()*0, love.graphics.getWidth(), "center")
-        -- love.graphics.printf(Localize("gameover.exit"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*2+lrfont:getHeight()*1, love.graphics.getWidth(), "center")
     end
 
     if ShowGameMenu then
@@ -1484,12 +1429,6 @@ function scene.draw()
         if s then
             love.mouse.setCursor(r)
         end
-        -- love.graphics.setFont(xlfont)
-        -- love.graphics.printf(Localize("paused.title"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2-xlfont:getHeight()*2, love.graphics.getWidth(), "center")
-        -- love.graphics.setFont(lgfont)
-        -- love.graphics.printf(Localize("paused.resume"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*0, love.graphics.getWidth(), "center")
-        -- love.graphics.printf(Localize("paused.restart"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*1, love.graphics.getWidth(), "center")
-        -- love.graphics.printf(Localize("paused.exit"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*2, love.graphics.getWidth(), "center")
     end
 
     love.graphics.pop()
@@ -1523,12 +1462,6 @@ function scene.gamepadaxis(stick,axis,value)
             MenuSelection = selection
         end
     end
-    -- if axis == "triggerright" then
-    --     if value >= 0.5 and lastTriggerValue < 0.5 then
-    --         player:mousepressed(stick:getGamepadAxis("leftx")*96+love.graphics.getWidth()/2,stick:getGamepadAxis("lefty")*96+love.graphics.getHeight()/2,1)
-    --     end
-    --     lastTriggerValue = value
-    -- end
 end
 
 function scene.gamepadpressed(stick,b)
@@ -1549,27 +1482,9 @@ function scene.gamepadpressed(stick,b)
             if ShowGameMenu then
                 setSelection(pauseMenu)
             end
-        else
-            -- if GameSetups[Gamemode].canRespawn then
-            --     AddNewPlayer(Settings.customization, Gamemode == "calm" or Gamemode == "tutorial")
-            --     IsDead = false
-            -- elseif IsMultiplayer then
-            --     Spectating = true
-            -- else
-            --     SceneManager.LoadScene("scenes/game", {mode=Gamemode})
-            -- end
         end
     end
-    -- if b == "back" then
-    --     if Paused then
-    --         Net.Disconnect()
-    --         SceneManager.LoadScene("scenes/menu")
-    --     end
-    --     if #GetEntitiesWithID("player") == 0 then
-    --         Net.Disconnect()
-    --         SceneManager.LoadScene("scenes/menu")
-    --     end
-    -- end
+
     if table.index(controlMatches, "advance_text") and not Paused and Gamemode == "tutorial" then
         AttemptTutorialAdvance(true)
     end
