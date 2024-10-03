@@ -24,6 +24,7 @@ local settingsMenu = UI.Element:new({
                 UI.Button:new({
                     defaultSelected = true,
                     id = "video",
+                    scrollThrough = true,
                     x = 0,
                     y = -80,
                     width = 256,
@@ -53,6 +54,7 @@ local settingsMenu = UI.Element:new({
                 }),
                 UI.Button:new({
                     id = "audio",
+                    scrollThrough = true,
                     x = 0,
                     y = 0,
                     width = 256,
@@ -82,6 +84,7 @@ local settingsMenu = UI.Element:new({
                 }),
                 UI.Button:new({
                     id = "gameplay",
+                    scrollThrough = true,
                     x = 0,
                     y = 80,
                     width = 256,
@@ -163,6 +166,7 @@ local sVideoMenu = UI.Element:new({
                 UI.Toggle:new({
                     defaultSelected = true,
                     id = "color_by_operator",
+                    scrollThrough = true,
                     cursor = "hand",
                     x = 112,
                     y = -104,
@@ -191,6 +195,7 @@ local sVideoMenu = UI.Element:new({
                 }),
                 UI.Toggle:new({
                     id = "smooth_timer",
+                    scrollThrough = true,
                     cursor = "hand",
                     x = 112,
                     y = -56,
@@ -219,6 +224,7 @@ local sVideoMenu = UI.Element:new({
                 }),
                 UI.Slider:new({
                     id = "ui_scale",
+                    scrollThrough = true,
                     x = 112,
                     y = -8,
                     width = 256,
@@ -280,6 +286,7 @@ local sVideoMenu = UI.Element:new({
                 }),
                 UI.Slider:new({
                     id = "background_brightness",
+                    scrollThrough = true,
                     x = 112,
                     y = 40,
                     width = 256,
@@ -341,6 +348,7 @@ local sVideoMenu = UI.Element:new({
                 }),
                 UI.Button:new({
                     id = "language",
+                    scrollThrough = true,
                     cursor = "hand",
                     x = 112,
                     y = 88,
@@ -589,6 +597,7 @@ local sAudioMenu = UI.Element:new({
                 UI.Slider:new({
                     defaultSelected = true,
                     id = "music_volume",
+                    scrollThrough = true,
                     x = 112,
                     y = -104,
                     width = 256,
@@ -650,6 +659,7 @@ local sAudioMenu = UI.Element:new({
                 }),
                 UI.Slider:new({
                     id = "sound_volume",
+                    scrollThrough = true,
                     x = 112,
                     y = -56,
                     width = 256,
@@ -794,6 +804,7 @@ local sGameplayMenu = UI.Element:new({
                 UI.Button:new({
                     defaultSelected = true,
                     id = "dice_mode",
+                    scrollThrough = true,
                     cursor = "hand",
                     x = 112,
                     y = -104,
@@ -950,6 +961,7 @@ local sGameplayMenu = UI.Element:new({
                 }),
                 UI.Toggle:new({
                     id = "auto_aim_on",
+                    scrollThrough = true,
                     cursor = "hand",
                     x = 112,
                     y = -56,
@@ -978,6 +990,7 @@ local sGameplayMenu = UI.Element:new({
                 }),
                 UI.Slider:new({
                     id = "auto_aim_limit",
+                    scrollThrough = true,
                     x = 112,
                     y = -8,
                     width = 256,
@@ -1039,6 +1052,7 @@ local sGameplayMenu = UI.Element:new({
                 }),
                 UI.Button:new({
                     id = "controls",
+                    scrollThrough = true,
                     cursor = "hand",
                     x = 112,
                     y = 40,
