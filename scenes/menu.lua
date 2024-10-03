@@ -120,6 +120,81 @@ function scene.load(args)
     table.insert(MenuVersions, {name = "LÖVE", version = major .. "." .. minor .. " (" .. name .. ")"})
 end
 
+function OnScreenKeyboard(showKeyboard,input)
+    local base = UI.Element:new({children = {
+        UI.Text:new({
+            id = "title",
+            x = 0,
+            y = -240,
+            width = 512,
+            height = lgfont:getHeight(),
+            font = lgfont_2x,
+            fontScale = 0.5,
+            text = function() return Localize("text_input") end,
+            alignHoriz = "center",
+            alignVert = "center"
+        })
+    }})
+    local textView = UI.Panel:new({
+        id = "text_view",
+        x = 0,
+        y = -200,
+        width = 128,
+        height = 24,
+        background = function() return GetTheme().button_secondary.background end,
+        border = function() return GetTheme().button_secondary.border end,
+        draw = function(me,...)
+            UI.TextInput.draw(me,...)
+        end,
+        click = function(me,...)
+            UI.TextInput.click(me,...);
+            (input or {}).selected = me.selected
+        end,
+        clickInstance = function(me,...)
+            UI.TextInput.clickInstance(me,...);
+            (input or {}).selected = me.selected
+        end,
+        selected = true,
+        input = (input or {}).input,
+        children = {
+            UI.Text:new({
+                text = function(me) return ((input or {}).input or {}).content or "" end,
+                textinputInstance = function(me,t)
+                    ---@type Input
+                    local inputobj = (input or {}).input
+                    if inputobj then
+                        inputobj:textinput(t)
+                    end
+                end,
+                keypressInstance = function(me,k)
+                    ---@type Input
+                    local inputobj = (input or {}).input
+                    if inputobj then
+                        inputobj:defaultKeyboard(k)
+                    end
+                    if k == "return" then
+                        if (input or {}).keypressInstance then
+                            (input or {}):keypressInstance(k)
+                        end
+                    end
+                end,
+                font = mdfont_2x,
+                fontScale = 0.5,
+                color = function() return GetTheme().button_secondary.text end,
+                width = 128,
+                height = 24,
+                alignHoriz = "center",
+                alignVert = "center",
+                clickThrough = true
+            })
+        }
+    });
+    (input or {}).selected = true
+    base:addChild(textView)
+    OpenDialog(base)
+    Dialogs[1].isKeyboard = true
+end
+
 local function scroll(mx,my,x,y)
     local screenWidth = 1280
     local screenHeight = 720

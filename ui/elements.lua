@@ -424,6 +424,9 @@ function UI.TextInput:click(mx,my,b)
             self:onconfirm(self.input.content)
         end
         self.selected = false
+        if (Dialogs[1] or {}).isKeyboard then
+            table.remove(Dialogs, 1)
+        end
         love.keyboard.setTextInput(false)
     end
     return false, self
@@ -432,6 +435,14 @@ end
 function UI.TextInput:clickInstance(mx,my,b)
     if b == 1 then
         self.selected = true
+        if not (Dialogs[1] or {}).isKeyboard then
+            if IsMobile then
+                OnScreenKeyboard(false,self)
+            end
+            if Gamepads[1] then
+                OnScreenKeyboard(true,self)
+            end
+        end
         love.keyboard.setTextInput(true)
         self.clickTime = love.timer.getTime()
         local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
@@ -498,6 +509,9 @@ function UI.TextInput:keypressInstance(k)
                 self:onconfirm(self.input.content)
             end
             self.selected = false
+            if (Dialogs[1] or {}).isKeyboard then
+                table.remove(Dialogs, 1)
+            end
             love.keyboard.setTextInput(false)
         end
     end

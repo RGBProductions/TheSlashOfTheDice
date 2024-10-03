@@ -193,6 +193,8 @@
         "gamepad_connected": "Controller Connected",
         "gamepad_disconnected": "Controller Disconnected",
 
+        "text_input": "Enter a value below",
+
         "credits.programming": "Programming",
         "credits.graphics": "Graphics",
         "credits.music": "Music",
