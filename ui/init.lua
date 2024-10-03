@@ -613,6 +613,13 @@ function UI.Element:unpackChildren(ox,oy,isChild,intent)
     return children
 end
 
+function UI.Element:isHidden()
+    if self.parent then
+        if self.parent:isHidden() then return true end
+    end
+    return self.hidden == true
+end
+
 --#endregion
 
 require "ui.elements"

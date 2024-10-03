@@ -436,11 +436,10 @@ function UI.TextInput:clickInstance(mx,my,b)
     if b == 1 then
         self.selected = true
         if not (Dialogs[1] or {}).isKeyboard then
-            if IsMobile then
-                OnScreenKeyboard(false,self)
-            end
             if Gamepads[1] then
                 OnScreenKeyboard(true,self)
+            elseif IsMobile then
+                OnScreenKeyboard(false,self)
             end
         end
         love.keyboard.setTextInput(true)
@@ -474,15 +473,20 @@ function UI.TextInput:clickInstance(mx,my,b)
         local startX = baseX+ox
         local lastTextPos = 0
         local textPos = 0
-        while startX + font:getWidth(utf8.sub(self.input.content, 1, textPos))*fontscale < mx and textPos <= utf8.len(self.input.content) do
-            lastTextPos = textPos
-            textPos = textPos + 1
-        end
-        local d1 = math.abs((startX + font:getWidth(utf8.sub(self.input.content, 1, lastTextPos))*fontscale) - mx)
-        local d2 = math.abs((startX + font:getWidth(utf8.sub(self.input.content, 1, textPos))*fontscale) - mx)
-        local sel = textPos
-        if d1 < d2 then
-            sel = lastTextPos
+        local sel = 0
+        if mx == nil and my == nil then
+            sel = utf8.len(self.input.content)
+        else
+            while startX + font:getWidth(utf8.sub(self.input.content, 1, textPos))*fontscale < mx and textPos <= utf8.len(self.input.content) do
+                lastTextPos = textPos
+                textPos = textPos + 1
+            end
+            local d1 = math.abs((startX + font:getWidth(utf8.sub(self.input.content, 1, lastTextPos))*fontscale) - mx)
+            local d2 = math.abs((startX + font:getWidth(utf8.sub(self.input.content, 1, textPos))*fontscale) - mx)
+            sel = textPos
+            if d1 < d2 then
+                sel = lastTextPos
+            end
         end
         self.input.selection[1] = sel
         self.input.selection[2] = sel
@@ -619,7 +623,7 @@ function UI.Slider:clickInstance(mx,my,b)
         
         local thumbX = w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0)))
         local thumbSize = self.thumbSize or 1
-        if mx >= -w/2+thumbX-thumbSize/2*h and mx < -w/2+thumbX+thumbSize/2*h and my >= -thumbSize/2*h and my < thumbSize/2*h then
+        if (mx == nil and my == nil) or (mx >= -w/2+thumbX-thumbSize/2*h and mx < -w/2+thumbX+thumbSize/2*h and my >= -thumbSize/2*h and my < thumbSize/2*h) then
             self.grabThumb = true
         else
             local pos = mx-(-w/2)
@@ -1154,10 +1158,18 @@ end
 UI.ScrollablePanel.unpackChildrenDefault = UI.Element.unpackChildren
 
 function UI.ScrollablePanel:getSelectionTarget(dir,selection)
+    local children = self:unpackChildrenDefault(0,0)
+    local hasSelectedChild = false
+    for _,child in ipairs(children) do
+        if child.element == (selection or {}).element then
+            hasSelectedChild = true
+        end
+    end
+    if not hasSelectedChild then return end
     local elements = self:unpackChildrenDefault() or {}
     local sort = {}
     for _,elem in ipairs(elements) do
-        if elem.element ~= selection.element and elem.element.canSelect then
+        if elem.element ~= selection.element and elem.element.canSelect and not elem.element:isHidden() then
             local ox,oy = elem.x-selection.x, elem.y-selection.y
             local distance = math.sqrt(ox*ox+oy*oy)
             local m = (distance == 0 and 1 or distance)

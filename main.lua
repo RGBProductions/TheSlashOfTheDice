@@ -892,3 +892,5 @@ function love.lowmemory()
     print("LOW MEMORY, ATTEMPTING TO CLEAR")
     collectgarbage()
 end
+
+IsMobile = true

@@ -67,9 +67,15 @@
         "key.goback": "Press escape to go back",
         "gamepad.goback": "Press B to go back",
 
+        "keyboard.lowercase": "lowercase",
+        "keyboard.uppercase": "Uppercase",
+        "keyboard.caps_lock": "UPPERCASE",
+        "keyboard.backspace": "Backspace",
+
         "button.back": "Back",
         "button.cancel": "Cancel",
         "button.apply": "Apply",
+        "button.confirm": "Confirm",
         "button.close": "Close",
         "button.ok": "OK",
         "button.play": "Play",

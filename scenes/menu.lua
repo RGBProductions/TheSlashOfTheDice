@@ -2,28 +2,39 @@ local scene = {}
 
 love.keyboard.setKeyRepeat(true)
 
-function SetMenu(m)
-    CurrentMenu = m
-    if (Menus[CurrentMenu] or {}).unpackChildren then
-        for _,child in ipairs((Menus[CurrentMenu] or {}):unpackChildren(nil,nil,nil,1)) do
-            if child.element.defaultSelected then
-                MenuSelection = child
-                break
+function GetDefaultSelection(menu)
+    if (menu or {}).unpackChildren then
+        for _,child in ipairs((menu or {}):unpackChildren(nil,nil,nil,1)) do
+            if child.element.defaultSelected and not child.element:isHidden() then
+                return child
             end
         end
     end
 end
 
+function SetMenu(m)
+    CurrentMenu = m
+    MenuSelection = GetDefaultSelection(Menus[CurrentMenu])
+    -- if (Menus[CurrentMenu] or {}).unpackChildren then
+    --     for _,child in ipairs((Menus[CurrentMenu] or {}):unpackChildren(nil,nil,nil,1)) do
+    --         if child.element.defaultSelected and not child.element.hidden then
+    --             MenuSelection = child
+    --             break
+    --         end
+    --     end
+    -- end
+end
+
 function OpenDialog(element)
-    local selection = nil
-    if (element or {}).unpackChildren then
-        for _,child in ipairs((element or {}):unpackChildren(nil,nil,nil,1)) do
-            if child.element.defaultSelected then
-                selection = child
-                break
-            end
-        end
-    end
+    local selection = GetDefaultSelection(element)
+    -- if (element or {}).unpackChildren then
+    --     for _,child in ipairs((element or {}):unpackChildren(nil,nil,nil,1)) do
+    --         if child.element.defaultSelected and not child.element.hidden then
+    --             selection = child
+    --             break
+    --         end
+    --     end
+    -- end
     table.insert(Dialogs, 1, {element = element, selection = selection})
 end
 
@@ -63,6 +74,7 @@ function scene.load(args)
     SetMenu(args.menu or "main")
 
     Dialogs = {}
+    -- OnScreenKeyboard(false,UI.TextInput:new({}))
 
     WeighingModes = {
         "Legacy",
@@ -120,7 +132,170 @@ function scene.load(args)
     table.insert(MenuVersions, {name = "LÖVE", version = major .. "." .. minor .. " (" .. name .. ")"})
 end
 
+local keyboardLayout = {
+    letters = {
+        {"Q",-200,0,32,32},
+        {"W",-160,0,32,32},
+        {"E",-120,0,32,32},
+        {"R",-80,0,32,32},
+        {"T",-40,0,32,32},
+        {"Y",0,0,32,32},
+        {"U",40,0,32,32},
+        {"I",80,0,32,32},
+        {"O",120,0,32,32},
+        {"P",160,0,32,32},
+        {string.char(0x00).."backspace", 248, 0, 128, 32, "keyboard.backspace"},
+        {"A",-200+12,40,32,32},
+        {"S",-160+12,40,32,32},
+        {"D",-120+12,40,32,32},
+        {"F",-80+12,40,32,32},
+        {"G",-40+12,40,32,32},
+        {"H",0+12,40,32,32},
+        {"J",40+12,40,32,32},
+        {"K",80+12,40,32,32},
+        {"L",120+12,40,32,32},
+        {string.char(0x00).."return", 248, 40, 128, 32, "button.confirm"},
+        {"Z",-200+24,80,32,32},
+        {"X",-160+24,80,32,32},
+        {"C",-120+24,80,32,32},
+        {"V",-80+24,80,32,32},
+        {"B",-40+24,80,32,32},
+        {"N",0+24,80,32,32},
+        {"M",40+24,80,32,32},
+        {string.char(0x01).."case", -288, 40, 128, 32},
+        {string.char(0x01).."special", 248, 80, 128, 32},
+        {",", -152, 120, 32, 32},
+        {" ", 0, 120, 256, 32},
+        {".", 152, 120, 32, 32},
+        {string.char(0x00).."escape", 248, 120, 128, 32, "button.cancel"},
+    },
+    special = {
+        {"1",-200,0,32,32},
+        {"2",-160,0,32,32},
+        {"3",-120,0,32,32},
+        {"4",-80,0,32,32},
+        {"5",-40,0,32,32},
+        {"6",0,0,32,32},
+        {"7",40,0,32,32},
+        {"8",80,0,32,32},
+        {"9",120,0,32,32},
+        {"0",160,0,32,32},
+        {string.char(0x00).."backspace", 248, 0, 128, 32, "Backspace"},
+        {"@",-200,40,32,32},
+        {"#",-160,40,32,32},
+        {"$",-120,40,32,32},
+        {"_",-80,40,32,32},
+        {"&",-40,40,32,32},
+        {"-",0,40,32,32},
+        {"+",40,40,32,32},
+        {"(",80,40,32,32},
+        {")",120,40,32,32},
+        {"/",160,40,32,32},
+        {string.char(0x00).."return", 248, 40, 128, 32, "Confirm"},
+        {"*",-200,80,32,32},
+        {"\"",-160,80,32,32},
+        {"'",-120,80,32,32},
+        {":",-80,80,32,32},
+        {";",-40,80,32,32},
+        {"!",0,80,32,32},
+        {"?",40,80,32,32},
+        {"~",80,80,32,32},
+        {"=",120,80,32,32},
+        {"\\",160,80,32,32},
+        {string.char(0x01).."special", 248, 80, 128, 32},
+        {",", -152, 120, 32, 32},
+        {" ", 0, 120, 256, 32},
+        {".", 152, 120, 32, 32},
+        {string.char(0x00).."escape", 248, 120, 128, 32, "Cancel"},
+    }
+}
+
+local keyboard = UI.Element:new({id = "keyboard", case = 1, set = 0, children = {
+    UI.Element:new({
+        id = "letters",
+        hidden = false,
+        children = {}
+    }),
+    UI.Element:new({
+        id = "special",
+        hidden = true,
+        children = {}
+    })
+}})
+
+local function addKeyButton(object,letter,i)
+    object:addChild(
+        UI.Button:new({
+            defaultSelected = i == 1,
+            id = letter[1],
+            x = letter[2],
+            y = letter[3],
+            width = letter[4],
+            height = letter[5],
+            background = function() return GetTheme().button_secondary.background end,
+            border = function() return GetTheme().button_secondary.border end,
+            children = {
+                UI.Text:new({
+                    x = 0,
+                    y = 0,
+                    width = letter[4],
+                    height = letter[5],
+                    text = function(self)
+                        if letter[1] == string.char(0x01).."case" then
+                            return Localize("keyboard." .. (self.parent.parent.parent.case == 0 and "lowercase" or (self.parent.parent.parent.case == 1 and "uppercase" or "caps_lock")))
+                        end
+                        if letter[1] == string.char(0x01).."special" then
+                            return self.parent.parent.parent.set == 1 and "ABC" or "123 !@#"
+                        end
+                        return (letter[6] ~= nil and Localize(letter[6]) or nil) or (self.parent.parent.parent.case == 0 and letter[1]:lower() or letter[1]:upper())
+                    end,
+                    font = lgfont_2x,
+                    fontScale = function (self)
+                        local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                        local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                        local width = font:getWidth(text)
+                        return math.min(0.5,(letter[4])/width)
+                    end,
+                    alignHoriz = "center",
+                    alignVert = "center",
+                    clickThrough = true
+                })
+            },
+            onclick = function(self)
+                local char = letter[1]
+                if char:sub(1,1) == string.char(0x00) then
+                    SceneManager.KeyPressed(char:sub(2,-1))
+                elseif char:sub(1,1) == string.char(0x01) then
+                    if char:sub(2,-1) == "case" then
+                        self.parent.parent.case = (self.parent.parent.case + 1) % 3
+                    end
+                    if char:sub(2,-1) == "special" then
+                        self.parent.parent.set = (self.parent.parent.set + 1) % 2
+                        self.parent.parent:getChildById("letters").hidden = self.parent.parent.set == 1
+                        self.parent.parent:getChildById("special").hidden = self.parent.parent.set == 0
+                        local thisButOther = (self.parent.parent.set == 0 and self.parent.parent:getChildById("letters") or self.parent.parent:getChildById("special")):getChildById(string.char(0x01).."special");
+                        (Dialogs[1] or {}).selection = {element = thisButOther, x = ((Dialogs[1] or {}).selection or {}).x, y = ((Dialogs[1] or {}).selection or {}).y}
+                    end
+                else
+                    SceneManager.TextInput(self.parent.parent.case == 0 and char:lower() or char:upper())
+                    if self.parent.parent.case == 1 then
+                        self.parent.parent.case = 0
+                    end
+                end
+            end
+        })
+    )
+end
+
+for i,letter in ipairs(keyboardLayout.letters) do
+    addKeyButton(keyboard:getChildById("letters"), letter, i)
+end
+for i,letter in ipairs(keyboardLayout.special) do
+    addKeyButton(keyboard:getChildById("special"), letter, i)
+end
+
 function OnScreenKeyboard(showKeyboard,input)
+    local originalContent = ((input or {}).input or {}).content or ""
     local base = UI.Element:new({children = {
         UI.Text:new({
             id = "title",
@@ -135,6 +310,7 @@ function OnScreenKeyboard(showKeyboard,input)
             alignVert = "center"
         })
     }})
+
     local textView = UI.Panel:new({
         id = "text_view",
         x = 0,
@@ -146,10 +322,10 @@ function OnScreenKeyboard(showKeyboard,input)
         draw = function(me,...)
             UI.TextInput.draw(me,...)
         end,
-        click = function(me,...)
-            UI.TextInput.click(me,...);
-            (input or {}).selected = me.selected
-        end,
+        -- click = function(me,...)
+        --     UI.TextInput.click(me,...);
+        --     (input or {}).selected = me.selected
+        -- end,
         clickInstance = function(me,...)
             UI.TextInput.clickInstance(me,...);
             (input or {}).selected = me.selected
@@ -177,6 +353,10 @@ function OnScreenKeyboard(showKeyboard,input)
                             (input or {}):keypressInstance(k)
                         end
                     end
+                    if k == "escape" then
+                        inputobj.content = originalContent;
+                        (input or {}).selected = false
+                    end
                 end,
                 font = mdfont_2x,
                 fontScale = 0.5,
@@ -188,9 +368,74 @@ function OnScreenKeyboard(showKeyboard,input)
                 clickThrough = true
             })
         }
-    });
+    })
+
+    local scrollLeft = UI.Button:new({
+        id = "scroll_left",
+        width = 24,
+        height = 24,
+        x = -84,
+        y = -200,
+        background = function() return GetTheme().button_secondary.background end,
+        border = function() return GetTheme().button_secondary.border end,
+        children = {
+            UI.Text:new({
+                clickThrough = true,
+                x = 0,
+                y = 0,
+                width = 24,
+                height = 24,
+                text = function() return "<" end,
+                color = function() return GetTheme().button_secondary.text end,
+                font = lgfont_2x,
+                fontScale = 0.5,
+                alignHoriz = "center",
+                alignVert = "center"
+            })
+        },
+        onclick = function()
+            if input then
+                input:keypressInstance("left")
+            end
+        end
+    })
+
+    local scrollRight = UI.Button:new({
+        id = "scroll_right",
+        width = 24,
+        height = 24,
+        x = 84,
+        y = -200,
+        background = function() return GetTheme().button_secondary.background end,
+        border = function() return GetTheme().button_secondary.border end,
+        children = {
+            UI.Text:new({
+                clickThrough = true,
+                x = 0,
+                y = 0,
+                width = 24,
+                height = 24,
+                text = function() return ">" end,
+                color = function() return GetTheme().button_secondary.text end,
+                font = lgfont_2x,
+                fontScale = 0.5,
+                alignHoriz = "center",
+                alignVert = "center"
+            })
+        },
+        onclick = function()
+            if input then
+                input:keypressInstance("right")
+            end
+        end
+    })
+
+    if showKeyboard then base:addChild(keyboard) end
+    
     (input or {}).selected = true
+    base:addChild(scrollLeft)
     base:addChild(textView)
+    base:addChild(scrollRight)
     OpenDialog(base)
     Dialogs[1].isKeyboard = true
 end
@@ -247,7 +492,17 @@ function GetSelectionTarget(dir, menu, selection)
                     return target
                 end
             end
-            if elem.element ~= selection.element and elem.element.canSelect then
+        end
+
+        local elementsNoTarget = (menu or {}):unpackChildren(nil,nil,nil,1)
+        for _,elem in ipairs(elementsNoTarget) do
+            if type(elem.element.getSelectionTarget) == "function" then
+                local target = elem.element:getSelectionTarget(dir,selection)
+                if target then
+                    return target
+                end
+            end
+            if elem.element ~= selection.element and elem.element.canSelect and not elem.element:isHidden() then
                 local ox,oy = elem.x-selection.x, elem.y-selection.y
                 local distance = math.sqrt(ox*ox+oy*oy)
                 local m = (distance == 0 and 1 or distance)
@@ -425,11 +680,6 @@ function scene.keypressed(k)
             end
         end
     end
-    if k == "escape" then
-        if Dialogs[1] then
-            table.remove(Dialogs, 1)
-        end
-    end
     local hasDialog = #Dialogs > 0
     for d = #Dialogs, 1, -1 do
         local dialog = Dialogs[d]
@@ -442,6 +692,11 @@ function scene.keypressed(k)
     end
     if (Menus[CurrentMenu] or {}).keypress and not hasDialog then
         (Menus[CurrentMenu] or {}):keypress(k)
+    end
+    if k == "escape" then
+        if Dialogs[1] then
+            table.remove(Dialogs, 1)
+        end
     end
 end
 
@@ -678,7 +933,7 @@ function scene.gamepadpressed(stick,button)
             selection = MenuSelection
         end
         if ((selection or {}).element or {}).clickInstance then
-            ((selection or {}).element or {}):clickInstance()
+            ((selection or {}).element or {}):clickInstance(nil,nil,1)
         end
     end
 
