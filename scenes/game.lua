@@ -1434,6 +1434,8 @@ function scene.draw()
     love.graphics.translate(centerpoint[1], centerpoint[2])
     love.graphics.scale(scale,scale)
 
+    local c = "arrow"
+
     if IsDead and not Spectating then
         love.graphics.setColor(0,0,0,0.5)
         love.graphics.rectangle("fill", -centerpoint[1]/scale, -centerpoint[2]/scale, love.graphics.getWidth()/scale, love.graphics.getHeight()/scale)
@@ -1442,11 +1444,7 @@ function scene.draw()
         if Gamepads[1] then
             gameOverMenu:drawSelected()
         end
-        local c = gameOverMenu:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or "arrow"
-        local s,r = pcall(love.mouse.getSystemCursor, c)
-        if s then
-            love.mouse.setCursor(r)
-        end
+        c = gameOverMenu:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or "arrow"
     end
 
     if ShowGameMenu then
@@ -1457,11 +1455,16 @@ function scene.draw()
         if Gamepads[1] then
             pauseMenu:drawSelected()
         end
-        local c = pauseMenu:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or "arrow"
+        c = pauseMenu:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or "arrow"
         local s,r = pcall(love.mouse.getSystemCursor, c)
         if s then
             love.mouse.setCursor(r)
         end
+    end
+
+    local s,r = pcall(love.mouse.getSystemCursor, c)
+    if s then
+        love.mouse.setCursor(r)
     end
 
     love.graphics.pop()
