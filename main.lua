@@ -783,12 +783,10 @@ end
 
 ---@param stick love.Joystick
 function love.joystickremoved(stick)
-    if stick:isGamepad() then
-        Popup("gamepad_disconnected", stick:getName())
-        local i = table.index(Gamepads, stick)
-        if i then
-            table.remove(Gamepads, i)
-        end
+    Popup("gamepad_disconnected", stick:getName())
+    local i = table.index(Gamepads, stick)
+    if i then
+        table.remove(Gamepads, i)
     end
 end
 

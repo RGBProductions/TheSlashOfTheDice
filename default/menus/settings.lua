@@ -233,7 +233,7 @@ local sVideoMenu = UI.Element:new({
                     fill = 1,
                     initWith = function() return Settings.video.ui_scale end,
                     onvaluechanged = function(self,value)
-                        tempSettings.video.ui_scale = value
+                        tempSettings.video.ui_scale = math.max(0.5,math.min(2,value))
                         self:getChildByType(UI.TextInput).input.content = tostring(math.floor(value*100)/100)
                     end,
                     children = {
@@ -274,7 +274,7 @@ local sVideoMenu = UI.Element:new({
                             },
                             onvaluechanged = function(self,value)
                                 local num = tonumber(value) or 0
-                                tempSettings.video.ui_scale = num
+                                tempSettings.video.ui_scale = math.max(self.parent.min,math.min(self.parent.max,num))
                                 self.parent.fill = math.max(self.parent.min,math.min(self.parent.max,num))
                             end,
                             onconfirm = function(self,value)
