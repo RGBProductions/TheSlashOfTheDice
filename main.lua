@@ -190,6 +190,83 @@ require "ui"
 require "menus"
 require "cosmetics"
 
+Dialogs = {}
+
+function GetDefaultSelection(menu)
+    if (menu or {}).unpackChildren then
+        for _,child in ipairs((menu or {}):unpackChildren(nil,nil,nil,1)) do
+            if child.element.defaultSelected and not child.element:isHidden() then
+                if type(child.element.onSelection) == "function" then
+                    child.element:onSelection({0,0}, nil)
+                end
+                return child
+            end
+        end
+    end
+end
+
+---@param dir {[1]: number, [2]: number}
+function GetSelectionTarget(dir, menu, selection)
+    menu = menu or Menus[CurrentMenu]
+    selection = selection or MenuSelection
+    if Dialogs[1] then
+        menu = Dialogs[1].element
+        selection = Dialogs[1].selection
+    end
+
+    if not selection then return end -- nothing to select?
+
+    if (menu or {}).unpackChildren then
+        local elements = (menu or {}):unpackChildren() or {}
+        local sort = {}
+        for _,elem in ipairs(elements) do
+            if type(elem.element.getSelectionTarget) == "function" then
+                local target = elem.element:getSelectionTarget(dir,selection)
+                if target then
+                    if type((target.element or {}).onSelection) == "function" then
+                        (target.element or {}):onSelection(dir,selection)
+                    end
+                    return target
+                end
+            end
+        end
+
+        local elementsNoTarget = (menu or {}):unpackChildren(nil,nil,nil,1)
+        for _,elem in ipairs(elementsNoTarget) do
+            if type(elem.element.getSelectionTarget) == "function" then
+                local target = elem.element:getSelectionTarget(dir,selection)
+                if target then
+                    return target
+                end
+            end
+            if elem.element ~= selection.element and elem.element.canSelect and not elem.element:isHidden() then
+                local ox,oy = elem.x-selection.x, elem.y-selection.y
+                local distance = math.sqrt(ox*ox+oy*oy)
+                local m = (distance == 0 and 1 or distance)
+                local nx,ny = ox/m,oy/m
+                local parallel = math.dot(dir, {nx,ny})
+                local weight = (parallel^8*math.sign(parallel)) * 1/(distance/16)
+                table.insert(sort, {element = elem, weight = weight})
+            end
+        end
+        table.sort(sort, function (a, b)
+            if b.weight == a.weight then
+                if b.element.y == a.element.y then
+                    return b.element.x > a.element.x
+                end
+                return b.element.y > a.element.y
+            end
+            return b.weight < a.weight
+        end)
+        if type((sort[1].element.element or {}).onSelection) == "function" then
+            (sort[1].element.element or {}):onSelection(dir, selection)
+        end
+        return sort[1].element
+    end
+
+    return nil
+end
+
 Logos = {}
 
 function BoxCollision(x1,y1,w1,h1, x2,y2,w2,h2)
@@ -494,6 +571,11 @@ function IsControlPressed(name)
     return pressed
 end
 
+function WasAxisTriggered(name)
+    if not Axes[name] then return false end
+    return ((Axes[name] or 0) >= 0.5 and (LastAxes[name] or 0) < 0.5)
+end
+
 function WasControlTriggered(name)
     if not Settings.controls[name] then return false end
     local pressed = false
@@ -659,7 +741,11 @@ function love.load()
     Events.fire("modPreInit")
     Events.fire("modPostInit")
     
-    SceneManager.LoadScene("scenes/menu", {})
+    if love.filesystem.getInfo("hidephotosensitivity") then
+        SceneManager.LoadScene("scenes/menu", {})
+    else
+        SceneManager.LoadScene("scenes/photosensitivity", {})
+    end
 end
 
 local saveTime = 0

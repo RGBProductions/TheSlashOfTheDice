@@ -2,16 +2,6 @@ local scene = {}
 
 love.keyboard.setKeyRepeat(true)
 
-function GetDefaultSelection(menu)
-    if (menu or {}).unpackChildren then
-        for _,child in ipairs((menu or {}):unpackChildren(nil,nil,nil,1)) do
-            if child.element.defaultSelected and not child.element:isHidden() then
-                return child
-            end
-        end
-    end
-end
-
 function SetMenu(m)
     CurrentMenu = m
     MenuSelection = GetDefaultSelection(Menus[CurrentMenu])
@@ -471,62 +461,6 @@ local function scroll(mx,my,x,y)
     end
 end
 
----@param dir {[1]: number, [2]: number}
-function GetSelectionTarget(dir, menu, selection)
-    menu = menu or Menus[CurrentMenu]
-    selection = selection or MenuSelection
-    if Dialogs[1] then
-        menu = Dialogs[1].element
-        selection = Dialogs[1].selection
-    end
-
-    if not selection then return end -- nothing to select?
-
-    if (menu or {}).unpackChildren then
-        local elements = (menu or {}):unpackChildren() or {}
-        local sort = {}
-        for _,elem in ipairs(elements) do
-            if type(elem.element.getSelectionTarget) == "function" then
-                local target = elem.element:getSelectionTarget(dir,selection)
-                if target then
-                    return target
-                end
-            end
-        end
-
-        local elementsNoTarget = (menu or {}):unpackChildren(nil,nil,nil,1)
-        for _,elem in ipairs(elementsNoTarget) do
-            if type(elem.element.getSelectionTarget) == "function" then
-                local target = elem.element:getSelectionTarget(dir,selection)
-                if target then
-                    return target
-                end
-            end
-            if elem.element ~= selection.element and elem.element.canSelect and not elem.element:isHidden() then
-                local ox,oy = elem.x-selection.x, elem.y-selection.y
-                local distance = math.sqrt(ox*ox+oy*oy)
-                local m = (distance == 0 and 1 or distance)
-                local nx,ny = ox/m,oy/m
-                local parallel = math.dot(dir, {nx,ny})
-                local weight = (parallel^8*math.sign(parallel)) * 1/(distance/16)
-                table.insert(sort, {element = elem, weight = weight})
-            end
-        end
-        table.sort(sort, function (a, b)
-            if b.weight == a.weight then
-                if b.element.y == a.element.y then
-                    return b.element.x > a.element.x
-                end
-                return b.element.y > a.element.y
-            end
-            return b.weight < a.weight
-        end)
-        return sort[1].element
-    end
-
-    return nil
-end
-
 function scene.update(dt)
     MenuTime = MenuTime + dt
     local blend = math.pow(1/((8/7)^60), dt)
@@ -920,8 +854,25 @@ function scene.gamepadpressed(stick,button)
     end
 
     if button == "b" then
-        if Dialogs[1] then
-            table.remove(Dialogs, 1)
+        SceneManager.KeyPressed("escape")
+    end
+
+    if (Dialogs[1] or {}).isKeyboard then
+        if button == "x" then
+            SceneManager.KeyPressed("backspace")
+        end
+        if button == "y" then
+            SceneManager.KeyPressed("return")
+        end
+        if (Dialogs[1] or {}).element then
+            local special = Dialogs[1].element:getChildById(string.char(0x01).."special")
+            local case = Dialogs[1].element:getChildById(string.char(0x01).."case")
+            if button == "rightshoulder" then
+                special:clickInstance()
+            end
+            if button == "leftshoulder" then
+                case:clickInstance()
+            end
         end
     end
 
@@ -972,6 +923,13 @@ function scene.gamepadaxis(stick,axis,value)
             ControlRemap.control = nil
         end
         return
+    end
+
+    if WasAxisTriggered("triggerright") then
+        SceneManager.KeyPressed("right")
+    end
+    if WasAxisTriggered("triggerleft") then
+        SceneManager.KeyPressed("left")
     end
 
     local selection

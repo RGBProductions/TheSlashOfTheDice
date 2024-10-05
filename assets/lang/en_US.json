@@ -280,6 +280,17 @@
         "customization.hats.pride_prog.name": "Progress Flag",
         "customization.hats.pride_trans.name": "Transgender Flag",
         "customization.hats.pride_transfem.name": "Transfem Flag",
-        "customization.hats.pride_transmasc.name": "Transmasc Flag"
+        "customization.hats.pride_transmasc.name": "Transmasc Flag",
+
+        "photosensitivity.warning": "WARNING - READ CAREFULLY",
+        "photosensitivity1": "The Slash of the Dice contains ",
+        "photosensitivity2": "rapidly moving patterns",
+        "photosensitivity3": " that may trigger ",
+        "photosensitivity4": "seizures or other health complications",
+        "photosensitivity5": " for individuals with photosensitive epilepsy.\n\nIf you suffer from this or another photosensitive condition, ",
+        "photosensitivity6": "please avoid playing this game!",
+        "photosensitivity.continue": "Continue",
+        "photosensitivity.exit": "Quit",
+        "photosensitivity.dont_show_again": "Don't Show This Again"
     }
 }

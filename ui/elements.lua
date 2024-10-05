@@ -525,7 +525,7 @@ end
 
 --#region Slider
 
-UI.Slider = UI.Element:new({canSelect = true})
+UI.Slider = UI.Element:new({canSelect = true, preventScroll = true})
 
 function UI.Slider:initInstance()
     local initWith = (type(self.initWith) == "function" and self.initWith(self)) or (self.initWith or self.fill)
@@ -593,6 +593,36 @@ function UI.Slider:drawInstance()
 
     love.graphics.setColor(r,g,b,a)
     love.graphics.setLineWidth(lw)
+
+    -- * hacky fix slider edition * --
+
+    local selection = MenuSelection
+    if Dialogs[1] then
+        selection = Dialogs[1].selection
+    end
+    local isSelected = (selection or {}).element == self
+
+    if Gamepads[1] then
+        local scrollValue = Gamepads[1]:getGamepadAxis("rightx")
+        if math.abs(scrollValue) >= 0.2 then
+            if isSelected then
+                local change = ((math.abs(scrollValue)-0.2)/0.8)*math.sign(scrollValue)*((self.max or 0)-(self.min or 0))*love.timer.getDelta()
+                self.fillChange = (self.fillChange or 0) + change
+                if not self.step then
+                    self.fill = math.max((self.min or 0),math.min((self.max or 1), (self.fill or 0)+self.fillChange))
+                    self.fillChange = 0
+                else
+                    while math.abs(self.fillChange) >= self.step do
+                        self.fill = math.max((self.min or 0),math.min((self.max or 1), (self.fill or 0)+self.step*math.sign(self.fillChange)))
+                        self.fillChange = self.fillChange - self.step*math.sign(self.fillChange)
+                    end
+                end
+                if type(self.onvaluechanged) == "function" then
+                    self:onvaluechanged(self.fill)
+                end
+            end
+        end
+    end
 end
 
 function UI.Slider:drawSelectedInstance()
@@ -709,6 +739,61 @@ function UI.ColorPicker:drawInstance()
 
     love.graphics.setColor(r,g,b,a)
     love.graphics.setLineWidth(lw)
+
+    -- * hacky fix color picker edition * --
+
+    local selection = MenuSelection
+    if Dialogs[1] then
+        selection = Dialogs[1].selection
+    end
+    local isSelected = (selection or {}).element == self
+
+    if Gamepads[1] then
+        local scrollValueX = Gamepads[1]:getGamepadAxis("rightx")
+        local scrollValueY = -Gamepads[1]:getGamepadAxis("righty")
+        local m = math.sqrt(scrollValueX^2+scrollValueY^2)
+        if m >= 0.2 then
+            if isSelected then
+                if self.selectedHalf == 0 then
+                    self.saturation = math.max(0, math.min(1, self.saturation + scrollValueX*love.timer.getDelta()))
+                    self.value = math.max(0, math.min(1, self.value + scrollValueY*love.timer.getDelta()))
+                    if type(self.oncolorchanged) == "function" then self:oncolorchanged({self.hue or 0, self.saturation or 0, self.value or 0}, {hsx.hsv2rgb(self.hue or 0, self.saturation or 0, self.value or 0)}) end
+                end
+                if self.selectedHalf == 1 then
+                    self.hue = (self.hue + scrollValueY*love.timer.getDelta())%1
+                    if type(self.oncolorchanged) == "function" then self:oncolorchanged({self.hue or 0, self.saturation or 0, self.value or 0}, {hsx.hsv2rgb(self.hue or 0, self.saturation or 0, self.value or 0)}) end
+                end
+            end
+        end
+    end
+end
+
+function UI.ColorPicker:drawSelectedInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    local barWidth = self.barWidth or 32
+    if type(barWidth) == "function" then barWidth = barWidth(self) end
+        
+    local previewHeight = self.previewHeight or 32
+    if type(previewHeight) == "function" then previewHeight = previewHeight(self) end
+
+    local mainWidth = w-barWidth-8
+    local mainHeight = h-previewHeight-8
+    
+    local X,Y,W,H
+    if self.selectedHalf == 0 then
+        X,Y,W,H = -w/2, -h/2, mainWidth, mainHeight
+    end
+    if self.selectedHalf == 1 then
+        X,Y,W,H = -w/2+mainWidth+8, -h/2, barWidth, mainHeight
+    end
+    love.graphics.setLineWidth(8)
+    love.graphics.setColor(0,0,0)
+    love.graphics.rectangle("line", X,Y,W,H)
+    love.graphics.setLineWidth(4)
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("line", X,Y,W,H)
 end
 
 function UI.ColorPicker:touchInstance(mx,my)
@@ -717,6 +802,7 @@ function UI.ColorPicker:touchInstance(mx,my)
 end
 
 function UI.ColorPicker:clickInstance(mx,my,b)
+    if Gamepads[1] ~= nil then return end
     if b == 1 then
         local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
         local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
@@ -791,6 +877,27 @@ function UI.ColorPicker:mousemoveInstance(mx,my,dx,dy)
     end
 
     if colorChanged and type(self.oncolorchanged) == "function" then self:oncolorchanged({self.hue or 0, self.saturation or 0, self.value or 0}, self:getRGB()) end
+end
+
+function UI.ColorPicker:getSelectionTarget(dir,selection)
+    if dir[1] == 1 and self.selectedHalf == 0 then
+        self.selectedHalf = 1
+        return {element = self, x = self:getX(), y = self:getY()}
+    end
+    if dir[1] == -1 and self.selectedHalf == 1 then
+        self.selectedHalf = 0
+        return {element = self, x = self:getX(), y = self:getY()}
+    end
+    return nil
+end
+
+function UI.ColorPicker:onSelection(dir,from)
+    if from.element == self then return end
+    if dir[1] == -1 then
+        self.selectedHalf = 1
+    else
+        self.selectedHalf = 0
+    end
 end
 
 function UI.ColorPicker:release(mx,my,b)
@@ -911,7 +1018,7 @@ function UI.ScrollablePanel:draw(stencilValue)
     if Gamepads[1] then
         local scrollValue = Gamepads[1]:getGamepadAxis("righty")
         if math.abs(scrollValue) >= 0.2 then
-            if hasSelectedChild then
+            if hasSelectedChild and not ((selection or {}).element or {}).preventScroll then
                 local _,u_pos = self:getHighestPoint()
                 local _,d_pos = self:getLowestPoint()
                 local minScrollY = math.min(0,u_pos+h/2)

@@ -114,7 +114,7 @@ function UI.Element:drawInstance()
     end
 end
 
-function UI.Element:drawSelected()
+function UI.Element:drawSelected(selection)
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
     local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
     
@@ -125,15 +125,15 @@ function UI.Element:drawSelected()
     love.graphics.translate(x, y)
 
     if not self.hidden then
-        local selection = MenuSelection
-        if Dialogs[1] then selection = Dialogs[1].selection or selection end
+        selection = selection or MenuSelection
+        if Dialogs[1] then selection = selection or Dialogs[1].selection end
         if type(self.drawSelectedInstance) == "function" and self == selection.element then
-            self:drawSelectedInstance()
+            self:drawSelectedInstance(selection)
         end
 
         for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
             if type(child) == "table" and type(child.draw) == "function" then
-                child:drawSelected()
+                child:drawSelected(selection)
             end
         end
     end
@@ -141,7 +141,7 @@ function UI.Element:drawSelected()
     love.graphics.pop()
 end
 
-function UI.Element:drawSelectedInstance() end
+function UI.Element:drawSelectedInstance(selection) end
 
 function UI.Element:click(mx,my,b)
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
@@ -619,6 +619,24 @@ function UI.Element:isHidden()
     end
     return self.hidden == true
 end
+
+function UI.Element:getX()
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    if self.parent then
+        x = x + self.parent:getX()
+    end
+    return x
+end
+
+function UI.Element:getY()
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    if self.parent then
+        y = y + self.parent:getY()
+    end
+    return y
+end
+
+function UI.Element:onSelection(dir, from) end
 
 --#endregion
 
