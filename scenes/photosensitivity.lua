@@ -1,43 +1,5 @@
 local scene = {}
 
---[[
-
-ザ・スッラッシュ・オブ・ザ・ダイスには
-急速に動くパターンが含まれており、
-光感受性てんかんをお持ちの方には
-発作や他の健康問題を
-引き起こす可能性があります。
-
-この症状やその他の光感受性の問題がある方は、
-このゲームのプレイを避けてください！
-
-
-
-
-ザ・スッラッシュ・オブ・ザ・ダイスには
-急速に動くパターンが含まれており、
-光感受性てんかんをお持ちの方には
-発作や他の健康問題を
-引き起こす可能性があります。
-
-この症状やその他の光感受性の問題がある方は、
-このゲームのプレイを避けてください！
-
-
-
-The Slash of the Dice contains
-rapidly moving patterns
-that may trigger
-seizures or other health complications
-for individuals with photosensitive epilepsy.
-
-If you suffer from this or another photosensitive condition,
-please avoid playing this game!
-
-
-
-]]
-
 ---@diagnostic disable-next-line: param-type-mismatch
 local photosensitivity = love.graphics.newText(lgfont_2x)
 photosensitivity:addf({{1,1,1}, Localize("photosensitivity1"), {1,0.5,0.4}, Localize("photosensitivity2"), {1,1,1}, Localize("photosensitivity3"), {1,0.5,0.4}, Localize("photosensitivity4"), {1,1,1}, Localize("photosensitivity5"), {1,0.5,0.4}, Localize("photosensitivity6")}, (1280-64)*2, "center", 0, 0)
@@ -108,7 +70,7 @@ local menu = UI.Element:new({
             scrollThrough = true,
             cursor = "hand",
             x = function()
-                return -(32+lgfont:getWidth(Localize("photosensitivity.dont_show_again")))/2+16
+                return -(32+lgfont_2x:getWidth(Localize("photosensitivity.dont_show_again"))/2)/2+16
             end,
             y = 264,
             width = 32,
@@ -119,10 +81,10 @@ local menu = UI.Element:new({
                     text = function() return Localize("photosensitivity.dont_show_again") end,
                     font = lgfont_2x,
                     fontScale = 0.5,
-                    x = function() return lgfont:getWidth(Localize("photosensitivity.dont_show_again"))/2+24 + 32 end,
+                    x = function() return lgfont_2x:getWidth(Localize("photosensitivity.dont_show_again"))/4+24 + 32 end,
                     y = 0,
                     width = function()
-                        return lgfont:getWidth(Localize("photosensitivity.dont_show_again")) + 64
+                        return lgfont_2x:getWidth(Localize("photosensitivity.dont_show_again"))/2 + 64
                     end,
                     height = 32,
                     alignHoriz = "left",
