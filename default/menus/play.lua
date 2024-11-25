@@ -4,10 +4,11 @@ local playMenu = UI.Element:new({
             x = 0,
             y = -180,
             width = 512,
-            height = xlfont:getHeight(),
+            height = 72,
             font = xlfont_2x,
             fontScale = 0.5,
             alignHoriz = "center",
+            alignVert = "center",
             text = function() return Localize("title.menu.play") end
         }),
         UI.ScrollablePanel:new({
