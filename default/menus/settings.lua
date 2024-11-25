@@ -6,10 +6,11 @@ local settingsMenu = UI.Element:new({
             x = 0,
             y = -180,
             width = 512,
-            height = xlfont:getHeight(),
+            height = 72,
             font = xlfont_2x,
             fontScale = 0.5,
             alignHoriz = "center",
+            alignVert = "center",
             text = function() return Localize("title.menu.settings") end
         }),
         UI.ScrollablePanel:new({
@@ -149,10 +150,11 @@ local sVideoMenu = UI.Element:new({
             x = 0,
             y = -180,
             width = 512,
-            height = xlfont:getHeight(),
+            height = 72,
             font = xlfont_2x,
             fontScale = 0.5,
             alignHoriz = "center",
+            alignVert = "center",
             text = function() return Localize("title.menu.video_settings") end
         }),
         UI.ScrollablePanel:new({
@@ -580,10 +582,11 @@ local sAudioMenu = UI.Element:new({
             x = 0,
             y = -180,
             width = 512,
-            height = xlfont:getHeight(),
+            height = 72,
             font = xlfont_2x,
             fontScale = 0.5,
             alignHoriz = "center",
+            alignVert = "center",
             text = function() return Localize("title.menu.audio_settings") end
         }),
         UI.ScrollablePanel:new({
@@ -787,10 +790,11 @@ local sGameplayMenu = UI.Element:new({
             x = 0,
             y = -180,
             width = 512,
-            height = xlfont:getHeight(),
+            height = 72,
             font = xlfont_2x,
             fontScale = 0.5,
             alignHoriz = "center",
+            alignVert = "center",
             text = function() return Localize("title.menu.gameplay_settings") end
         }),
         UI.ScrollablePanel:new({
