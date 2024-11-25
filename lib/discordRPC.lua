@@ -1,4 +1,5 @@
----@diagnostic disable: undefined-field
+---@diagnostic disable: undefined-field, inject-field
+
 local ffi = require "ffi"
 local discordRPClib
 local os = love.system.getOS()

@@ -263,8 +263,8 @@ local function addKeyButton(object,letter,i)
                         self.parent.parent.set = (self.parent.parent.set + 1) % 2
                         self.parent.parent:getChildById("letters").hidden = self.parent.parent.set == 1
                         self.parent.parent:getChildById("special").hidden = self.parent.parent.set == 0
-                        local thisButOther = (self.parent.parent.set == 0 and self.parent.parent:getChildById("letters") or self.parent.parent:getChildById("special")):getChildById(string.char(0x01).."special");
-                        (Dialogs[1] or {}).selection = {element = thisButOther, x = ((Dialogs[1] or {}).selection or {}).x, y = ((Dialogs[1] or {}).selection or {}).y}
+                        local specialCharsButton = (self.parent.parent.set == 0 and self.parent.parent:getChildById("letters") or self.parent.parent:getChildById("special")):getChildById(string.char(0x01).."special");
+                        (Dialogs[1] or {}).selection = {element = specialCharsButton, x = ((Dialogs[1] or {}).selection or {}).x, y = ((Dialogs[1] or {}).selection or {}).y}
                     end
                 else
                     SceneManager.TextInput(self.parent.parent.case == 0 and char:lower() or char:upper())

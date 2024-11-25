@@ -751,7 +751,7 @@ end
 local saveTime = 0
 
 GlobalTime = 0
-local presenceTimer = 15
+local presenceTimer = 14
 
 function love.update(dt,step)
     if FrameStep and not step then
