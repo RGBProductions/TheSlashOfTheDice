@@ -441,6 +441,22 @@ Settings = {
 
 table.merge(Settings.controls, ControlDefaults)
 
+do
+    local systemLang = os.getenv("LANG") or "en_US.UTF-8"
+    local langCode = systemLang:split_plain(".")[1]
+    langCode = langCode:sub(1,2):lower() .. "_" .. langCode:sub(4,-1):upper()
+    if Languages[langCode] then
+        Settings.language = langCode
+    else
+        for k,_ in pairs(Languages) do
+            if k:sub(1,2) == langCode:sub(1,2) then
+                Settings.language = k
+                break
+            end
+        end
+    end
+end
+
 AxisRebindMethods = {
     menu_up = "gpaxis",
     menu_down = "gpaxis",
