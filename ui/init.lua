@@ -125,8 +125,11 @@ function UI.Element:drawSelected(selection)
     love.graphics.translate(x, y)
 
     if not self.hidden then
-        selection = selection or MenuSelection
-        if Dialogs[1] then selection = selection or Dialogs[1].selection end
+        if Dialogs[1] then
+            selection = selection or Dialogs[1].selection
+        else
+            selection = selection or MenuSelection
+        end
         if type(self.drawSelectedInstance) == "function" and self == selection.element then
             self:drawSelectedInstance(selection)
         end
