@@ -447,6 +447,8 @@ do
     langCode = langCode:sub(1,2):lower() .. "_" .. langCode:sub(4,-1):upper()
     if Languages[langCode] then
         Settings.language = langCode
+    elseif LanguageFallbacks[langCode:sub(1,2)] then
+        Settings.language = LanguageFallbacks[langCode:sub(1,2)]
     else
         for k,_ in pairs(Languages) do
             if k:sub(1,2) == langCode:sub(1,2) then

@@ -1,6 +1,7 @@
 {
     "name": "Español (Latinoamérica)",
     "logo": "en",
+    "fallback": true,
     "text": {
         "tutorial.intro1": "¡Hola! Bienvenido a The Slash of the Dice!",
         "tutorial.intro2": "¡En este juego, debes derrotar interminables oleadas de enemigos mientras también soportas la prueba de la suerte!",
