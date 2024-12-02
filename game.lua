@@ -103,6 +103,11 @@ function Game.Entity:mousepressed(x, y, b)
     self.callbacks["mousepressed"](self, x, y, b)
 end
 
+function Game.Entity:gamepadaxis(stick, axis, value)
+    if not self.callbacks["gamepadaxis"] then return end
+    self.callbacks["gamepadaxis"](self, stick, axis, value)
+end
+
 
 function Game.Particle:new(x, y, lifespan, vx, vy, damp, size, angle)
     local o = {}

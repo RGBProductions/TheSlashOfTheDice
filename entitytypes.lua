@@ -60,49 +60,21 @@ EntityTypes = {
             self:set("bufferTime", (self:get("bufferTime") or 0)-dt)
             local speed = 2
             local usedWASD = false
-            if love.keyboard.isDown("a") then
-                self.vx = self.vx - speed * dt * 60
+
+            local deadzone = 0.2
+            local mx = GetControlValue("move_right")-GetControlValue("move_left")
+            local my = GetControlValue("move_down")-GetControlValue("move_up")
+            
+            if math.sqrt(mx*mx+my*my) >= deadzone then
+                self.vx = self.vx + mx * speed * dt * 60
+                self.vy = self.vy + my * speed * dt * 60
                 Moved = true
                 usedWASD = true
-            end
-            if love.keyboard.isDown("d") then
-                self.vx = self.vx + speed * dt * 60
-                Moved = true
-                usedWASD = true
-            end
-            if love.keyboard.isDown("w") then
-                self.vy = self.vy - speed * dt * 60
-                Moved = true
-                usedWASD = true
-            end
-            if love.keyboard.isDown("s") then
-                self.vy = self.vy + speed * dt * 60
-                Moved = true
-                usedWASD = true
-            end
-    
-            ---@type love.Joystick
-            local joystick = nil
-            for _,stick in ipairs(love.joystick.getJoysticks()) do
-                if stick:isGamepad() then
-                    joystick = stick
-                end
             end
     
             if not usedWASD then
                 local x = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])*speed
                 local y = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings["video"]["ui_scale"])*speed
-                if joystick then
-                    x = joystick:getGamepadAxis("leftx")
-                    y = joystick:getGamepadAxis("lefty")
-                    local m = math.sqrt(x*x+y*y)
-                    if m <= 0.2 then
-                        x = 0
-                        y = 0
-                    end
-                    x = x*speed
-                    y = y*speed
-                end
                 self.vx = self.vx + x * dt * 60
                 self.vy = self.vy + y * dt * 60
                 if Thumbstick.x ~= 0 or Thumbstick.y ~= 0 then
@@ -199,7 +171,7 @@ EntityTypes = {
                 end
             else
                 if (self:get("bufferTime") or 0) > 0 then
-                    slash(self, love.mouse.getX(), love.mouse.getY())
+                    slash(self, self:get("bufferDirection")[1], self:get("bufferDirection")[2])
                     self:set("bufferTime", 0)
                 end
             end
@@ -208,13 +180,20 @@ EntityTypes = {
                 Net.Send({type = "player_update", x = self.x, y = self.y, vx = self.vx, vy = self.vy, stats = self:get("stats")})
             end
         end,
-        mousepressed = function(self, x, y, b)
-            if b == 1 then
-                if self:get("slashTime") <= 0 then
-                    slash(self, x, y)
-                else
-                    self:set("bufferTime", 0.05)
-                end
+        slash = function(self, x, y)
+            if self:get("slashTime") <= 0 then
+                slash(self, x, y)
+            else
+                self:set("bufferTime", 0.05)
+                self:set("bufferDirection", {x,y})
+            end
+        end,
+        gamepadaxis = function(self, stick, axis, value)
+            if WasControlTriggered("slash") then
+                local mx = GetControlValue("move_right")-GetControlValue("move_left")
+                local my = GetControlValue("move_down")-GetControlValue("move_up")
+                local x,y = mx*96+love.graphics.getWidth()/2,my*96+love.graphics.getHeight()/2
+                self.callbacks.slash(self,x,y)
             end
         end,
         draw = function(self)
@@ -398,9 +377,6 @@ EntityTypes = {
             local x = self.x-Camera.x+(love.graphics.getWidth()-scale)/2
             local y = self.y-Camera.y+(love.graphics.getHeight()-scale)/2+ViewMargin
             if x >= -scale and x < love.graphics.getWidth() and y >= -scale and y < love.graphics.getHeight() then
-                -- local ox = player.x - self.x
-                -- local oy = player.y - self.y
-                -- local a = math.atan2(ox,-oy)
                 love.graphics.setColor(1,1,1)
                 love.graphics.draw(RocketSprite, x, y, self.angle, 2, 2, 16, 16)
             end

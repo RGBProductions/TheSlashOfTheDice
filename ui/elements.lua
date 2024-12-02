@@ -2,7 +2,7 @@
 
 --#region Button
 
-UI.Button = UI.Element:new({})
+UI.Button = UI.Element:new({canSelect = true})
 
 function UI.Button:drawInstance()
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
@@ -43,6 +43,18 @@ function UI.Button:drawInstance()
     love.graphics.setLineWidth(lw)
 end
 
+function UI.Button:drawSelectedInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    love.graphics.setLineWidth(8)
+    love.graphics.setColor(0,0,0)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    love.graphics.setLineWidth(4)
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
+end
+
 function UI.Button:clickInstance(mx,my,b)
     if type(self.onclick) == "function" then self:onclick(mx,my,b) end
 end
@@ -51,7 +63,7 @@ end
 
 --#region Toggle
 
-UI.Toggle = UI.Element:new({})
+UI.Toggle = UI.Element:new({canSelect = true})
 
 function UI.Toggle:initInstance()
     if type(self.initWith) == "function" then
@@ -110,6 +122,18 @@ function UI.Toggle:drawInstance()
 
     love.graphics.setColor(r,g,b,a)
     love.graphics.setLineWidth(lw)
+end
+
+function UI.Toggle:drawSelectedInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    love.graphics.setLineWidth(8)
+    love.graphics.setColor(0,0,0)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    love.graphics.setLineWidth(4)
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
 end
 
 function UI.Toggle:clickInstance(mx,my,b)
@@ -245,13 +269,14 @@ end
 
 --#region Text Input
 
-UI.TextInput = UI.Element:new({})
+UI.TextInput = UI.Element:new({canSelect = true})
 
 function UI.TextInput:initInstance()
+    local initWith = (type(self.initWith) == "function" and self.initWith(self)) or (self.initWith or "")
     if not self.input then
-        local initWith = (type(self.initWith) == "function" and self.initWith(self)) or (self.initWith or "")
         self.input = typingutil.newInputObj(tostring(initWith), self.maxLength)
     end
+    self.input.content = tostring(initWith)
 end
 
 function UI.TextInput:draw(stencilValue)
@@ -358,6 +383,18 @@ function UI.TextInput:drawInstance()
     love.graphics.setLineWidth(lw)
 end
 
+function UI.TextInput:drawSelectedInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    love.graphics.setLineWidth(8)
+    love.graphics.setColor(0,0,0)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
+    love.graphics.setLineWidth(4)
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("line", -w/2, -h/2, w, h)
+end
+
 function UI.TextInput:click(mx,my,b)
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
     local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
@@ -381,6 +418,12 @@ function UI.TextInput:click(mx,my,b)
     end
     
     if mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2 then
+        local elem = (Dialogs[1] or {}).element or Menus[CurrentMenu]
+        for _,child in ipairs(elem:unpackChildren(nil,nil,false,1)) do
+            if child.element.selected then
+                child.element.selected = false
+            end
+        end
         if (not self.disabled) and type(self.clickInstance) == "function" then self:clickInstance(mx-x,my-y,b) end
         return true, self
     else
@@ -388,6 +431,9 @@ function UI.TextInput:click(mx,my,b)
             self:onconfirm(self.input.content)
         end
         self.selected = false
+        if (Dialogs[1] or {}).isKeyboard then
+            table.remove(Dialogs, 1)
+        end
         love.keyboard.setTextInput(false)
     end
     return false, self
@@ -396,6 +442,13 @@ end
 function UI.TextInput:clickInstance(mx,my,b)
     if b == 1 then
         self.selected = true
+        if not (Dialogs[1] or {}).isKeyboard then
+            if Gamepads[1] then
+                OnScreenKeyboard(true,self)
+            elseif IsMobile then
+                OnScreenKeyboard(false,self)
+            end
+        end
         love.keyboard.setTextInput(true)
         self.clickTime = love.timer.getTime()
         local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
@@ -427,15 +480,20 @@ function UI.TextInput:clickInstance(mx,my,b)
         local startX = baseX+ox
         local lastTextPos = 0
         local textPos = 0
-        while startX + font:getWidth(utf8.sub(self.input.content, 1, textPos))*fontscale < mx and textPos <= utf8.len(self.input.content) do
-            lastTextPos = textPos
-            textPos = textPos + 1
-        end
-        local d1 = math.abs((startX + font:getWidth(utf8.sub(self.input.content, 1, lastTextPos))*fontscale) - mx)
-        local d2 = math.abs((startX + font:getWidth(utf8.sub(self.input.content, 1, textPos))*fontscale) - mx)
-        local sel = textPos
-        if d1 < d2 then
-            sel = lastTextPos
+        local sel = 0
+        if mx == nil and my == nil then
+            sel = utf8.len(self.input.content)
+        else
+            while startX + font:getWidth(utf8.sub(self.input.content, 1, textPos))*fontscale < mx and textPos <= utf8.len(self.input.content) do
+                lastTextPos = textPos
+                textPos = textPos + 1
+            end
+            local d1 = math.abs((startX + font:getWidth(utf8.sub(self.input.content, 1, lastTextPos))*fontscale) - mx)
+            local d2 = math.abs((startX + font:getWidth(utf8.sub(self.input.content, 1, textPos))*fontscale) - mx)
+            sel = textPos
+            if d1 < d2 then
+                sel = lastTextPos
+            end
         end
         self.input.selection[1] = sel
         self.input.selection[2] = sel
@@ -462,6 +520,9 @@ function UI.TextInput:keypressInstance(k)
                 self:onconfirm(self.input.content)
             end
             self.selected = false
+            if (Dialogs[1] or {}).isKeyboard then
+                table.remove(Dialogs, 1)
+            end
             love.keyboard.setTextInput(false)
         end
     end
@@ -471,7 +532,7 @@ end
 
 --#region Slider
 
-UI.Slider = UI.Element:new({})
+UI.Slider = UI.Element:new({canSelect = true, preventScroll = true})
 
 function UI.Slider:initInstance()
     local initWith = (type(self.initWith) == "function" and self.initWith(self)) or (self.initWith or self.fill)
@@ -539,6 +600,52 @@ function UI.Slider:drawInstance()
 
     love.graphics.setColor(r,g,b,a)
     love.graphics.setLineWidth(lw)
+
+    -- * hacky fix slider edition * --
+
+    local selection = MenuSelection
+    if Dialogs[1] then
+        selection = Dialogs[1].selection
+    end
+    local isSelected = (selection or {}).element == self
+
+    if Gamepads[1] then
+        local scrollValue = Gamepads[1]:getGamepadAxis("rightx")
+        if math.abs(scrollValue) >= 0.2 then
+            if isSelected then
+                local change = ((math.abs(scrollValue)-0.2)/0.8)*math.sign(scrollValue)*((self.max or 0)-(self.min or 0))*love.timer.getDelta()
+                self.fillChange = (self.fillChange or 0) + change
+                if not self.step then
+                    self.fill = math.max((self.min or 0),math.min((self.max or 1), (self.fill or 0)+self.fillChange))
+                    self.fillChange = 0
+                else
+                    while math.abs(self.fillChange) >= self.step do
+                        self.fill = math.max((self.min or 0),math.min((self.max or 1), (self.fill or 0)+self.step*math.sign(self.fillChange)))
+                        self.fillChange = self.fillChange - self.step*math.sign(self.fillChange)
+                    end
+                end
+                if type(self.onvaluechanged) == "function" then
+                    self:onvaluechanged(self.fill)
+                end
+            end
+        end
+    end
+end
+
+function UI.Slider:drawSelectedInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    local thumbSize = self.thumbSize or 1
+
+    if type(thumbSize) == "function" then thumbSize = thumbSize(self) end
+    
+    love.graphics.setLineWidth(8)
+    love.graphics.setColor(0,0,0)
+    love.graphics.circle("line", -w/2 + w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0))), 0, thumbSize/2*h)
+    love.graphics.setLineWidth(4)
+    love.graphics.setColor(1,1,1)
+    love.graphics.circle("line", -w/2 + w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0))), 0, thumbSize/2*h)
 end
 
 function UI.Slider:touchInstance(mx,my)
@@ -553,7 +660,7 @@ function UI.Slider:clickInstance(mx,my,b)
         
         local thumbX = w*(((self.fill or 0)-(self.min or 0))/((self.max or 1)-(self.min or 0)))
         local thumbSize = self.thumbSize or 1
-        if mx >= -w/2+thumbX-thumbSize/2*h and mx < -w/2+thumbX+thumbSize/2*h and my >= -thumbSize/2*h and my < thumbSize/2*h then
+        if (mx == nil and my == nil) or (mx >= -w/2+thumbX-thumbSize/2*h and mx < -w/2+thumbX+thumbSize/2*h and my >= -thumbSize/2*h and my < thumbSize/2*h) then
             self.grabThumb = true
         else
             local pos = mx-(-w/2)
@@ -591,7 +698,7 @@ end
 
 --#region ColorPicker
 
-UI.ColorPicker = UI.Element:new({})
+UI.ColorPicker = UI.Element:new({canSelect = true})
 
 local colorPick = love.graphics.newShader("assets/shaders/color.glsl")
 local blank = love.graphics.newImage("assets/images/ui/blank.png")
@@ -639,6 +746,61 @@ function UI.ColorPicker:drawInstance()
 
     love.graphics.setColor(r,g,b,a)
     love.graphics.setLineWidth(lw)
+
+    -- * hacky fix color picker edition * --
+
+    local selection = MenuSelection
+    if Dialogs[1] then
+        selection = Dialogs[1].selection
+    end
+    local isSelected = (selection or {}).element == self
+
+    if Gamepads[1] then
+        local scrollValueX = Gamepads[1]:getGamepadAxis("rightx")
+        local scrollValueY = -Gamepads[1]:getGamepadAxis("righty")
+        local m = math.sqrt(scrollValueX^2+scrollValueY^2)
+        if m >= 0.2 then
+            if isSelected then
+                if self.selectedHalf == 0 then
+                    self.saturation = math.max(0, math.min(1, self.saturation + scrollValueX*love.timer.getDelta()))
+                    self.value = math.max(0, math.min(1, self.value + scrollValueY*love.timer.getDelta()))
+                    if type(self.oncolorchanged) == "function" then self:oncolorchanged({self.hue or 0, self.saturation or 0, self.value or 0}, {hsx.hsv2rgb(self.hue or 0, self.saturation or 0, self.value or 0)}) end
+                end
+                if self.selectedHalf == 1 then
+                    self.hue = (self.hue + scrollValueY*love.timer.getDelta())%1
+                    if type(self.oncolorchanged) == "function" then self:oncolorchanged({self.hue or 0, self.saturation or 0, self.value or 0}, {hsx.hsv2rgb(self.hue or 0, self.saturation or 0, self.value or 0)}) end
+                end
+            end
+        end
+    end
+end
+
+function UI.ColorPicker:drawSelectedInstance()
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+    
+    local barWidth = self.barWidth or 32
+    if type(barWidth) == "function" then barWidth = barWidth(self) end
+        
+    local previewHeight = self.previewHeight or 32
+    if type(previewHeight) == "function" then previewHeight = previewHeight(self) end
+
+    local mainWidth = w-barWidth-8
+    local mainHeight = h-previewHeight-8
+    
+    local X,Y,W,H
+    if self.selectedHalf == 0 then
+        X,Y,W,H = -w/2, -h/2, mainWidth, mainHeight
+    end
+    if self.selectedHalf == 1 then
+        X,Y,W,H = -w/2+mainWidth+8, -h/2, barWidth, mainHeight
+    end
+    love.graphics.setLineWidth(8)
+    love.graphics.setColor(0,0,0)
+    love.graphics.rectangle("line", X,Y,W,H)
+    love.graphics.setLineWidth(4)
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("line", X,Y,W,H)
 end
 
 function UI.ColorPicker:touchInstance(mx,my)
@@ -647,6 +809,7 @@ function UI.ColorPicker:touchInstance(mx,my)
 end
 
 function UI.ColorPicker:clickInstance(mx,my,b)
+    if Gamepads[1] ~= nil then return end
     if b == 1 then
         local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
         local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
@@ -721,6 +884,27 @@ function UI.ColorPicker:mousemoveInstance(mx,my,dx,dy)
     end
 
     if colorChanged and type(self.oncolorchanged) == "function" then self:oncolorchanged({self.hue or 0, self.saturation or 0, self.value or 0}, self:getRGB()) end
+end
+
+function UI.ColorPicker:getSelectionTarget(dir,selection)
+    if dir[1] == 1 and self.selectedHalf == 0 then
+        self.selectedHalf = 1
+        return {element = self, x = self:getX(), y = self:getY()}
+    end
+    if dir[1] == -1 and self.selectedHalf == 1 then
+        self.selectedHalf = 0
+        return {element = self, x = self:getX(), y = self:getY()}
+    end
+    return nil
+end
+
+function UI.ColorPicker:onSelection(dir,from)
+    if from.element == self then return end
+    if dir[1] == -1 then
+        self.selectedHalf = 1
+    else
+        self.selectedHalf = 0
+    end
 end
 
 function UI.ColorPicker:release(mx,my,b)
@@ -814,6 +998,79 @@ function UI.ScrollablePanel:draw(stencilValue)
             if type(child) == "table" and type(child.draw) == "function" then
                 love.graphics.setStencilTest("gequal", stencilValue)
                 child:draw(stencilValue)
+                love.graphics.setStencilTest()
+            end
+        end
+
+        love.graphics.pop()
+        love.graphics.stencil(draw, "decrement")
+    end
+
+    love.graphics.pop()
+
+    -- * hacky fix * --
+
+    local children = self:unpackChildrenDefault(0,0)
+    local hasSelectedChild = false
+    local selection = MenuSelection
+    if Dialogs[1] then
+        selection = Dialogs[1].selection
+    end
+    for _,child in ipairs(children) do
+        if child.element == (selection or {}).element then
+            hasSelectedChild = true
+        end
+    end
+
+    if Gamepads[1] then
+        local scrollValue = Gamepads[1]:getGamepadAxis("righty")
+        if math.abs(scrollValue) >= 0.2 then
+            if hasSelectedChild and not ((selection or {}).element or {}).preventScroll then
+                local _,u_pos = self:getHighestPoint()
+                local _,d_pos = self:getLowestPoint()
+                local minScrollY = math.min(0,u_pos+h/2)
+                local maxScrollY = math.max(0,d_pos-h/2)
+                local lastScrollY = self.scrollY
+                self.scrollY = math.max(minScrollY, math.min(maxScrollY, (self.scrollY or 0) + scrollValue*512*love.timer.getDelta()))
+                selection.y = selection.y-(self.scrollY-lastScrollY)
+            end
+        end
+    end
+end
+
+function UI.ScrollablePanel:drawSelected()
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    love.graphics.push()
+    love.graphics.translate(x, y)
+
+    if not self.hidden then
+        local selection = MenuSelection
+        if Dialogs[1] then selection = Dialogs[1].selection or selection end
+        
+        local function draw()
+            if type(self.drawInstance) == "function" then
+                self:drawInstance()
+            end
+        end
+
+        if type(self.drawSelectedInstance) == "function" and self == selection.element then
+            self:drawSelectedInstance()
+        end
+
+        love.graphics.stencil(draw, "increment")
+
+        love.graphics.push()
+        love.graphics.translate(-(self.scrollX or 0), -(self.scrollY or 0))
+
+        for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+            if type(child) == "table" and type(child.draw) == "function" then
+                love.graphics.setStencilTest("gequal", 1)
+                child:drawSelected()
                 love.graphics.setStencilTest()
             end
         end
@@ -1010,6 +1267,82 @@ function UI.ScrollablePanel:getCursor(mx,my)
         return self.cursor
     end
     return nil
+end
+
+UI.ScrollablePanel.unpackChildrenDefault = UI.Element.unpackChildren
+
+function UI.ScrollablePanel:getSelectionTarget(dir,selection)
+    local children = self:unpackChildrenDefault(0,0)
+    local hasSelectedChild = false
+    for _,child in ipairs(children) do
+        if child.element == (selection or {}).element then
+            hasSelectedChild = true
+        end
+    end
+    if not hasSelectedChild then return end
+    local elements = self:unpackChildrenDefault() or {}
+    local sort = {}
+    for _,elem in ipairs(elements) do
+        if elem.element ~= selection.element and elem.element.canSelect and not elem.element:isHidden() then
+            local ox,oy = elem.x-selection.x, elem.y-selection.y
+            local distance = math.sqrt(ox*ox+oy*oy)
+            local m = (distance == 0 and 1 or distance)
+            local nx,ny = ox/m,oy/m
+            local parallel = math.dot(dir, {nx,ny})
+            if parallel > 0 then
+                local weight = (parallel^8*math.sign(parallel)) * 1/(distance/16)
+                table.insert(sort, {element = elem, weight = weight})
+            end
+        end
+    end
+    if #sort == 0 then return nil end
+    table.sort(sort, function (a, b)
+        if b.weight == a.weight then
+            if b.element.y == a.element.y then
+                return b.element.x > a.element.x
+            end
+            return b.element.y > a.element.y
+        end
+        return b.weight < a.weight
+    end)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    local lowest,lowy = sort[1].element.element:getLowestPoint()
+    local highest,highy = sort[1].element.element:getHighestPoint()
+    local sely = (type(sort[1].element.element.y) == "function" and sort[1].element.element.y(sort[1].element.element)) or (sort[1].element.element.y or 0)
+    lowy = lowy + sely - self.scrollY
+    highy = highy + sely - self.scrollY
+    local isBelow = lowy > h/2
+    local isAbove = highy < -h/2
+    local target = self.scrollY
+    if isAbove and isBelow then
+        -- Target = middle
+        target = ((lowy) + ((highy))) / 2 + self.scrollY
+    elseif isAbove then
+        -- Target = top
+        target = highy-(-h/2) + self.scrollY
+    elseif isBelow then
+        -- Target = bottom
+        target = lowy-(h/2) + self.scrollY
+    end
+
+    if target ~= self.scrollY then
+        self.scrollY = target
+    end
+
+    return sort[1].element
+end
+
+function UI.ScrollablePanel:unpackChildren(ox,oy,isChild,intent)
+    if intent == 1 then
+        self.scrollX = 0
+        self.scrollY = 0
+        return self:unpackChildrenDefault(ox,oy,isChild)
+    end
+
+    return {}
 end
 
 --#endregion

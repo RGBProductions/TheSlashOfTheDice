@@ -1,10 +1,15 @@
 Languages = {}
 
+LanguageFallbacks = {}
+
 for _,lang in ipairs(love.filesystem.getDirectoryItems("assets/lang")) do
     local s,r = pcall(json.decode, love.filesystem.read("assets/lang/"..lang))
     if s then
         local name = lang:sub(1,-6)
         Languages[name] = r
+        if r.fallback then
+            LanguageFallbacks[name:sub(1,2)] = name
+        end
     end
 end
 

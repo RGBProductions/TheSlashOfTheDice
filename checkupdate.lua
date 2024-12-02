@@ -64,7 +64,7 @@ function check()
     local lines = split(data, "\n")
     local cmp = 0
     if #lines > 1 then
-        cmp = (tonumber(lines[2]) > tonumber(version_number) and 1) or (tonumber(lines[2]) < tonumber(version_number) and -1) or 0
+        cmp = ((tonumber(lines[2]) > tonumber(version_number)) and -1) or ((tonumber(lines[2]) < tonumber(version_number)) and 1) or 0
     else
         print("No version code exists. Comparing via name instead")
         cmp = CompareVersions(version, lines[1])

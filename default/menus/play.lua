@@ -4,10 +4,11 @@ local playMenu = UI.Element:new({
             x = 0,
             y = -180,
             width = 512,
-            height = xlfont:getHeight(),
+            height = 72,
             font = xlfont_2x,
             fontScale = 0.5,
             alignHoriz = "center",
+            alignVert = "center",
             text = function() return Localize("title.menu.play") end
         }),
         UI.ScrollablePanel:new({
@@ -19,6 +20,7 @@ local playMenu = UI.Element:new({
             background = {0,0,0,0},
             children = {
                 UI.Button:new({
+                    defaultSelected = true,
                     scrollThrough = true,
                     id = "tutorial",
                     x = 0,
@@ -150,7 +152,7 @@ local playMenu = UI.Element:new({
                                         background = function() return GetTheme().button_secondary.background end,
                                         border = function() return GetTheme().button_secondary.border end,
                                         onclick = function(me)
-                                            table.remove(Dialogs, table.index(Dialogs, me.parent))
+                                            table.remove(Dialogs, 1)
                                         end,
                                         cursor = "hand",
                                         children = {
@@ -171,7 +173,7 @@ local playMenu = UI.Element:new({
                                     })
                                 }
                             })
-                            table.insert(Dialogs, popup)
+                            OpenDialog(popup)
                         end
                     end
                 })

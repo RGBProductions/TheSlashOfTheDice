@@ -114,6 +114,38 @@ function UI.Element:drawInstance()
     end
 end
 
+function UI.Element:drawSelected(selection)
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    
+    local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)
+    local h = (type(self.height) == "function" and self.height(self)) or (self.height or 0)
+
+    love.graphics.push()
+    love.graphics.translate(x, y)
+
+    if not self.hidden then
+        if Dialogs[1] then
+            selection = selection or Dialogs[1].selection
+        else
+            selection = selection or MenuSelection
+        end
+        if type(self.drawSelectedInstance) == "function" and self == selection.element then
+            self:drawSelectedInstance(selection)
+        end
+
+        for _,child in ipairs(type(self.children) == "table" and self.children or {}) do
+            if type(child) == "table" and type(child.draw) == "function" then
+                child:drawSelected(selection)
+            end
+        end
+    end
+
+    love.graphics.pop()
+end
+
+function UI.Element:drawSelectedInstance(selection) end
+
 function UI.Element:click(mx,my,b)
     local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
     local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
@@ -551,6 +583,63 @@ function UI.Element:getRightmostPoint(dontRecurse,ox)
     end
     return rightmost,pos
 end
+
+function UI.Element:unpackChildren(ox,oy,isChild,intent)
+    ox = ox or ((type(self.x) == "function" and self.x(self)) or (self.x or 0))
+    oy = oy or ((type(self.y) == "function" and self.y(self)) or (self.y or 0))
+    
+    local children = {}
+    for _,child in ipairs(self.children or {}) do
+        local cx = ((type(child.x) == "function" and child.x(child)) or (child.x or 0))
+        local cy = ((type(child.y) == "function" and child.y(child)) or (child.y or 0))
+        table.insert(children, {element = child, x = cx+ox, y = cy+oy, isHighest = false, isLowest = false, isLeftmost = false, isRightmost = false})
+        local subchildren = child:unpackChildren(ox+cx,oy+cy,true,intent)
+        for _,sub in ipairs(subchildren) do
+            table.insert(children, sub)
+        end
+    end
+
+    if not isChild then
+        local leftmost = self:getLeftmostChild(false,ox)
+        local rightmost = self:getRightmostChild(false,ox)
+        local highest = self:getHighestChild(false,oy)
+        local lowest = self:getLowestChild(false,oy)
+
+        for _,child in ipairs(children) do
+            child.isLeftmost = child.element == leftmost
+            child.isRightmost = child.element == rightmost
+            child.isHighest = child.element == highest
+            child.isLowest = child.element == lowest
+        end
+    end
+
+    return children
+end
+
+function UI.Element:isHidden()
+    if self.parent then
+        if self.parent:isHidden() then return true end
+    end
+    return self.hidden == true
+end
+
+function UI.Element:getX()
+    local x = (type(self.x) == "function" and self.x(self)) or (self.x or 0)
+    if self.parent then
+        x = x + self.parent:getX()
+    end
+    return x
+end
+
+function UI.Element:getY()
+    local y = (type(self.y) == "function" and self.y(self)) or (self.y or 0)
+    if self.parent then
+        y = y + self.parent:getY()
+    end
+    return y
+end
+
+function UI.Element:onSelection(dir, from) end
 
 --#endregion
 

@@ -1,4 +1,4 @@
--- this version, 1.2 is the last one i'm using this game scene in.
+-- this version, 1.2.1, is the last one i'm using this game scene in.
 -- for 1.3 i'm going to completely rewrite it.
 -- i just hate how long and bad it is.
 
@@ -7,8 +7,229 @@ local scene = {}
 local blendAmt = 1/((5/4)^60)
 local tutorialBounds = 1024
 
+local frame = 0
+
+local pauseMenu = UI.Element:new({
+    children = {
+        UI.Text:new({
+            x = 0,
+            y = -128,
+            width = 512,
+            height = xlfont_2x:getHeight()/2,
+            font = xlfont_2x,
+            fontScale = 0.5,
+            alignHoriz = "center",
+            text = function() return Localize("paused.title") end
+        }),
+        UI.Button:new({
+            id = "resume",
+            defaultSelected = true,
+            x = 0,
+            y = -64-16+64,
+            width = 256,
+            height = 64,
+            background = function() return GetTheme().button_secondary.background end,
+            border = function() return GetTheme().button_secondary.border end,
+            cursor = "hand",
+            children = {
+                UI.Text:new({
+                    clickThrough = true,
+                    x = 0,
+                    y = 0,
+                    width = 256,
+                    height = 64,
+                    text = function(self) return Localize("paused.resume") end,
+                    font = lgfont_2x,
+                    fontScale = 0.5,
+                    alignHoriz = "center",
+                    alignVert = "center"
+                })
+            },
+            onclick = function(self)
+                Paused = false
+                ShowGameMenu = false
+            end
+        }),
+        UI.Button:new({
+            id = "restart",
+            x = 0,
+            y = 0+64,
+            width = 256,
+            height = 64,
+            background = function() return GetTheme().button_secondary.background end,
+            border = function() return GetTheme().button_secondary.border end,
+            cursor = "hand",
+            children = {
+                UI.Text:new({
+                    clickThrough = true,
+                    x = 0,
+                    y = 0,
+                    width = 256,
+                    height = 64,
+                    text = function(self) return Localize("paused.restart") end,
+                    font = lgfont_2x,
+                    fontScale = 0.5,
+                    alignHoriz = "center",
+                    alignVert = "center"
+                })
+            },
+            onclick = function(self)
+                SceneManager.LoadScene("scenes/game", {mode=Gamemode})
+                frame = 0
+            end
+        }),
+        UI.Button:new({
+            id = "exit",
+            x = 0,
+            y = 64+16+64,
+            width = 256,
+            height = 64,
+            background = function() return GetTheme().button_secondary.background end,
+            border = function() return GetTheme().button_secondary.border end,
+            cursor = "hand",
+            children = {
+                UI.Text:new({
+                    clickThrough = true,
+                    x = 0,
+                    y = 0,
+                    width = 256,
+                    height = 64,
+                    text = function(self) return Localize("paused.exit") end,
+                    font = lgfont_2x,
+                    fontScale = 0.5,
+                    alignHoriz = "center",
+                    alignVert = "center"
+                })
+            },
+            onclick = function(self)
+                Net.Disconnect()
+                SceneManager.LoadScene("scenes/menu")
+            end
+        })
+    }
+})
+
+local gameOverMenu = UI.Element:new({
+    children = {
+        UI.Text:new({
+            x = 0,
+            y = -128,
+            width = 512,
+            height = xlfont_2x:getHeight()/2,
+            font = xlfont_2x,
+            fontScale = 0.5,
+            alignHoriz = "center",
+            text = function() return Localize("gameover.title") end
+        }),
+        UI.Text:new({
+            x = 0,
+            y = -64,
+            width = 512,
+            height = lgfont_2x:getHeight()/2,
+            font = lgfont_2x,
+            fontScale = 0.5,
+            alignHoriz = "center",
+            text = function() return Localize("score"):format(Score) end
+        }),
+        UI.Button:new({
+            id = "restart",
+            defaultSelected = true,
+            x = 0,
+            y = 0+32,
+            width = 256,
+            height = 64,
+            background = function() return GetTheme().button_secondary.background end,
+            border = function() return GetTheme().button_secondary.border end,
+            cursor = "hand",
+            children = {
+                UI.Text:new({
+                    clickThrough = true,
+                    x = 0,
+                    y = 0,
+                    width = 256,
+                    height = 64,
+                    text = function(self) return Localize(GameSetups[Gamemode].canRespawn and "gameover.respawn" or (IsMultiplayer and "gameover.spectate" or "gameover.retry")) end,
+                    font = lgfont_2x,
+                    fontScale = 0.5,
+                    alignHoriz = "center",
+                    alignVert = "center"
+                }),
+                UI.Panel:new({
+                    id = "restart_cover",
+                    x = 0,
+                    y = 0,
+                    width = 256,
+                    height = 64,
+                    cursor = "arrow",
+                    background = {0,0,0,0.75}
+                })
+            },
+            onclick = function(self)
+                if GameSetups[Gamemode].canRespawn then
+                    AddNewPlayer(Settings.customization, Gamemode == "calm" or Gamemode == "tutorial")
+                    IsDead = false
+                elseif IsMultiplayer then
+                    Spectating = true
+                else
+                    SceneManager.LoadScene("scenes/game", {mode=Gamemode})
+                    frame = 0
+                end
+            end
+        }),
+        UI.Button:new({
+            id = "exit",
+            x = 0,
+            y = 64+16+32,
+            width = 256,
+            height = 64,
+            background = function() return GetTheme().button_secondary.background end,
+            border = function() return GetTheme().button_secondary.border end,
+            cursor = "hand",
+            children = {
+                UI.Text:new({
+                    clickThrough = true,
+                    x = 0,
+                    y = 0,
+                    width = 256,
+                    height = 64,
+                    text = function(self) return Localize("gameover.exit") end,
+                    font = lgfont_2x,
+                    fontScale = 0.5,
+                    alignHoriz = "center",
+                    alignVert = "center"
+                }),
+                UI.Panel:new({
+                    id = "exit_cover",
+                    x = 0,
+                    y = 0,
+                    width = 256,
+                    height = 64,
+                    cursor = "arrow",
+                    background = {0,0,0,0.75}
+                })
+            },
+            onclick = function(self)
+                Net.Disconnect()
+                SceneManager.LoadScene("scenes/menu")
+            end
+        })
+    }
+})
+local gameOverTimer = 0
+
+local function setSelection(menu)
+    if (menu or {}).unpackChildren then
+        for _,child in ipairs((menu or {}):unpackChildren()) do
+            if child.element.defaultSelected then
+                MenuSelection = child
+                break
+            end
+        end
+    end
+end
+
 function AddNewPlayer(customization,keepStats,netinfo,isOwn)
-    player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["update"] = EntityTypes.player.update, ["keypressed"] = function(self, k) end, ["mousepressed"] = EntityTypes.player.mousepressed, ["draw"] = EntityTypes.player.draw}, {
+    player = Game.Entity:new("player", 0, 0, 0, 0, 100, {["slash"] = EntityTypes.player.slash, ["update"] = EntityTypes.player.update, ["keypressed"] = function(self, k) end, ["mousepressed"] = EntityTypes.player.mousepressed, ["gamepadaxis"] = EntityTypes.player.gamepadaxis, ["draw"] = EntityTypes.player.draw}, {
         slashTime = 0,
         lastPos = {0,0},
         stats = keepStats and (Stats or {
@@ -74,12 +295,6 @@ function AddNetPlayer(info,stats)
         end
 
         if self:get("slashTime") > 0 then
-            -- local ox = self:get("lastPos")[1]-self.x
-            -- local oy = self:get("lastPos")[2]-self.y
-            -- local len = math.sqrt(ox^2+oy^2)/4
-            -- for i = 1, len do
-            --     table.insert(Particles, Game.Particle:new(self.x-ox*i/len, self.y-oy*i/len))
-            -- end
             local ents = GetEntityCollisions(self)
             for _,ent in pairs(ents) do
                 if ent.invincibility <= 0 and ent.id ~= "rocket" and ((not (ent.id == "player" and (not MultiplayerSetup.friendlyFire))) or (MultiplayerSetup.friendlyFire)) then
@@ -154,6 +369,7 @@ function scene.load(args)
     if args.seed then
         love.math.setRandomSeed(args.seed)
     end
+    frame = 0
     StopMusic()
     Thumbstick = {
         x = 0,
@@ -272,7 +488,10 @@ function scene.load(args)
                 {text = "tutorial.intro1", pause = true},
                 {text = "tutorial.intro2", pause = true},
                 {text = "tutorial.intro3", pause = true},
-                {text = (IsMobile and "tutorial.intro4.mobile" or "tutorial.intro4.desktop"), format = {"Escape"}, pause = true},
+                {text = function() return (ShowMobileUI and "tutorial.intro4.mobile" or ((Gamepads[1] ~= nil) and "tutorial.intro4.gamepad" or "tutorial.intro4.desktop")) end, format = {function()
+                    local strings = GetControlStrings("pause")
+                    return strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"]
+                end}, pause = true},
                 {text = "tutorial.intro5", pause = true}
             }
         }, {
@@ -283,7 +502,101 @@ function scene.load(args)
                 }
             },
             messages = {
-                {text = (IsMobile and "tutorial.movement.mobile" or "tutorial.movement.desktop"), format = {"W","A","S","D"}}
+                {text = function()
+                    if ShowMobileUI then return "tutorial.movement.mobile" end
+                    if Gamepads[1] == nil then return "tutorial.movement.desktop" end
+
+                    local strings = {
+                        up = GetControlStrings("move_up"),
+                        down = GetControlStrings("move_down"),
+                        left = GetControlStrings("move_left"),
+                        right = GetControlStrings("move_right")
+                    }
+                    local axes = {
+                        up = GetControlAxis("move_up") or "",
+                        down = GetControlAxis("move_down") or "",
+                        left = GetControlAxis("move_left") or "",
+                        right = GetControlAxis("move_right") or ""
+                    }
+                    if Gamepads[1] ~= nil then
+                        local up,down,left,right = axes.up,axes.down,axes.left,axes.right
+                        if up:sub(1,-2) == down:sub(1,-2) then
+                            up = up:sub(1,-2)
+                            down = down:sub(1,-2)
+                        end
+                        if right:sub(1,-2) == left:sub(1,-2) then
+                            right = right:sub(1,-2)
+                            left = left:sub(1,-2)
+                        end
+                        if up:sub(1,-2) == down:sub(1,-2) and up:sub(1,-2) == left:sub(1,-2) and up:sub(1,-2) == right:sub(1,-2) then
+                            up = up:sub(1,-2)
+                            down = down:sub(1,-2)
+                            right = right:sub(1,-2)
+                            left = left:sub(1,-2)
+                        end
+                        if up == down and up == left and up == right then
+                            return "tutorial.movement.gamepad_single"
+                        end
+                        if (up == down and left ~= right) or (up ~= down and left == right) then
+                            return "tutorial.movement.gamepad_triple"
+                        end
+                        if (up == down and left == right) then
+                            return "tutorial.movement.gamepad_double"
+                        end
+                        return "tutorial.movement.gamepad"
+                    end
+                    return "tutorial.movement.desktop"
+                end, format = function()
+                    local strings = {
+                        up = GetControlStrings("move_up"),
+                        down = GetControlStrings("move_down"),
+                        left = GetControlStrings("move_left"),
+                        right = GetControlStrings("move_right")
+                    }
+                    local axes = {
+                        up = GetControlAxis("move_up") or "",
+                        down = GetControlAxis("move_down") or "",
+                        left = GetControlAxis("move_left") or "",
+                        right = GetControlAxis("move_right") or ""
+                    }
+                    if Gamepads[1] ~= nil then
+                        local up,down,left,right = axes.up,axes.down,axes.left,axes.right
+                        if up:sub(1,-2) == down:sub(1,-2) then
+                            up = up:sub(1,-2)
+                            down = down:sub(1,-2)
+                        end
+                        if right:sub(1,-2) == left:sub(1,-2) then
+                            right = right:sub(1,-2)
+                            left = left:sub(1,-2)
+                        end
+                        if up:sub(1,-2) == down:sub(1,-2) and up:sub(1,-2) == left:sub(1,-2) and up:sub(1,-2) == right:sub(1,-2) then
+                            up = up:sub(1,-2)
+                            down = down:sub(1,-2)
+                            right = right:sub(1,-2)
+                            left = left:sub(1,-2)
+                        end
+                        local gstrings = {
+                            up = GetAxisString(up),
+                            down = GetAxisString(down),
+                            left = GetAxisString(left),
+                            right = GetAxisString(right)
+                        }
+                        if up == down and up == left and up == right then
+                            return {gstrings.up}
+                        end
+                        if (up == down and left ~= right) then
+                            return {gstrings.up,gstrings.left,gstrings.right}
+                        end
+                        if (up ~= down and left == right) then
+                            return {gstrings.up,gstrings.down,gstrings.left}
+                        end
+                        if (up == down and left == right) then
+                            return {gstrings.up,gstrings.left}
+                        end
+                        return {gstrings.up,gstrings.down,gstrings.left,gstrings.right}
+                    end
+                    return {strings.up.desktop, strings.left.desktop, strings.down.desktop, strings.right.desktop}
+                end}
             }
         }, {
             criteria = {
@@ -295,7 +608,10 @@ function scene.load(args)
             messages = {
                 {text = "tutorial.slash1", pause = true},
                 {text = "tutorial.slash2", pause = true},
-                {text = (IsMobile and "tutorial.slash3.mobile" or "tutorial.slash3.desktop")}
+                {text = function() return (ShowMobileUI and "tutorial.slash3.mobile" or ((Gamepads[1] ~= nil) and "tutorial.slash3.gamepad" or "tutorial.slash3.desktop")) end, format = {function()
+                    local strings = GetControlStrings("slash")
+                    return strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"]
+                end}}
             }
         }, {
             messages = {
@@ -352,7 +668,11 @@ function scene.load(args)
                 {text = "tutorial.end3", pause = true, onShow = function()
                     showTimer = true
                 end},
-                {text = "tutorial.end4", onShow = function()
+                {text = function() return (ShowMobileUI and "tutorial.end4.mobile" or ((Gamepads[1] ~= nil) and "tutorial.end4.gamepad" or "tutorial.end4.desktop")) end, format = {function()
+                    local strings = GetControlStrings("skip_wave")
+                    return strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"]
+                end}, pause = true},
+                {text = "tutorial.end5", onShow = function()
                     runTimer = true
                 end}
             }
@@ -372,8 +692,7 @@ function scene.load(args)
             }
         }
     }
-    
-    -- player = GetEntitiesWithID("player")[1]
+
     hadPlayer = true
 
     if Gamemode ~= "tutorial" then
@@ -411,13 +730,6 @@ end
 function AddDamageIndicator(x, y, amt, color)
     color = color or {1,1,1}
     table.insert(DamageIndicators, {x = x, y = y, amt = amt, color = color, time = love.timer.getTime()})
-end
-
-function BoxCollision(x1,y1,w1,h1, x2,y2,w2,h2)
-    return x1 < x2+w2 and
-           x2 < x1+w1 and
-           y1 < y2+h2 and
-           y2 < y1+h1
 end
 
 function GetEntitiesWithID(id)
@@ -468,10 +780,13 @@ end
 
 function AttemptTutorialAdvance(fromKey)
     local format = TutorialStages[Stage].messages[Message].format or {}
+    if type(format) == "function" then format = format() end
     for i,v in ipairs(format) do
         if type(v) == "function" then format[i] = v() end
     end
-    local txt = Localize(TutorialStages[Stage].messages[Message].text):format(unpack(format))
+    local stageText = TutorialStages[Stage].messages[Message].text
+    if type(stageText) == "function" then stageText = stageText() end
+    local txt = Localize(stageText):format(unpack(format))
     if MessageProgress < utf8.len(txt) and fromKey then
         MessageProgress = utf8.len(txt)
         return
@@ -490,17 +805,19 @@ function AttemptTutorialAdvance(fromKey)
     end
 end
 
-local frame = 0
 function scene.update(dt)
     frame = frame + 1
     if not (Paused and not IsMultiplayer) then
         if Gamemode == "tutorial" then
             CharTime = CharTime + dt
             local format = TutorialStages[Stage].messages[Message].format or {}
+            if type(format) == "function" then format = format() end
             for i,v in ipairs(format) do
                 if type(v) == "function" then format[i] = v() end
             end
-            local txt = Localize(TutorialStages[Stage].messages[Message].text):format(unpack(format))
+            local stageText = TutorialStages[Stage].messages[Message].text
+            if type(stageText) == "function" then stageText = stageText() end
+            local txt = Localize(stageText):format(unpack(format))
             local beeped = false
             while CharTime >= GetTextDelay() do
                 if MessageProgress < utf8.len(txt) then
@@ -695,6 +1012,10 @@ function scene.update(dt)
                         end
                     elseif Entities[e] == player then
                         IsDead = true
+                        gameOverMenu:getChildById("restart_cover").hidden = false
+                        gameOverMenu:getChildById("exit_cover").hidden = false
+                        gameOverTimer = 1
+                        setSelection(gameOverMenu)
                     end
                     table.remove(Entities, e)
                     boom("kill", 2, 0.005, 4, 0.5*Settings.audio.sound_volume/100)
@@ -751,93 +1072,90 @@ function scene.update(dt)
             Achievements.Advance("die_tutorial")
         end
     end
+
+    if gameOverTimer > 0 then
+        gameOverTimer = gameOverTimer - dt
+        gameOverMenu:getChildById("restart_cover").background[4] = math.max(0,math.min(1,gameOverTimer*4))*0.75
+        gameOverMenu:getChildById("exit_cover").background[4] = math.max(0,math.min(1,gameOverTimer*4))*0.75
+        if gameOverTimer <= 0 then
+            gameOverMenu:getChildById("restart_cover").hidden = true
+            gameOverMenu:getChildById("exit_cover").hidden = true
+        end
+    end
+
     hadPlayer = #GetEntitiesWithID("player") > 0
 end
 
 function scene.keypressed(k)
-    if k == "k" then
-        if #GetEntitiesWithID("player") > 0 then
-            player.hp = -1
-            -- boom("kill_player", 2, 0.005, 4, 0.5*Settings.Audio.Sound Volume/100)
-        end
-    end
-    if k == "escape" then
+    if table.index(MatchControl({type = "key", button = k}), "pause") then
         if Gamemode == "playtest" then
             SceneManager.LoadScene("scenes/menu", {menu = "customize"})
+            return
         end
         if #GetEntitiesWithID("player") > 0 or Spectating then
             Paused = not Paused
             ShowGameMenu = not ShowGameMenu
+            if ShowGameMenu then
+                setSelection(pauseMenu)
+            end
         else
             Net.Disconnect()
             SceneManager.LoadScene("scenes/menu")
         end
     end
-    if k == "space" and not Paused and Gamemode == "tutorial" then
+    if table.index(MatchControl({type = "key", button = k}), "advance_text") and not Paused and Gamemode == "tutorial" then
         AttemptTutorialAdvance(true)
     end
-    if k == "space" and #GetEntitiesWithID("player") == 0 and not Spectating then
-        if GameSetups[Gamemode].canRespawn then
-            AddNewPlayer(Settings.customization, Gamemode == "calm" or Gamemode == "tutorial")
-            IsDead = false
-        elseif IsMultiplayer then
-            Spectating = true
-        else
-            SceneManager.LoadScene("scenes/game", {mode=Gamemode})
+    if not Paused then
+        if table.index(MatchControl({type = "key", button = k}), "skip_wave") and (runTimer and Spawned < 5) then
+            SpawnTimer = SpawnDelay
+        end
+        if table.index(MatchControl({type = "key", button = k}), "slash") and player then
+            local mx = GetControlValue("move_right")-GetControlValue("move_left")
+            local my = GetControlValue("move_down")-GetControlValue("move_up")
+            local x,y = mx*96+love.graphics.getWidth()/2,my*96+love.graphics.getHeight()/2
+            player.callbacks.slash(player,x,y)
         end
     end
-    -- if k == "b" then
-    --     local stats = player:get("stats")
-    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "add"})
-    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "mul"})
-    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "sub"})
-    --     table.insert(Dice, {die = Game.Die:new(), stat = stats[love.math.random(1, #stats)], operation = "div"})
-    -- end
 end
 
 function scene.mousepressed(x, y, b, t, p)
     if not Paused then
         if IsDead and not Spectating then
-            local my = (love.graphics.getHeight()-lgfont:getHeight())/2+lgfont:getHeight()*2
-            local itm = math.floor((y-my)/lrfont:getHeight())
-            if itm == 0 then
-                if GameSetups[Gamemode].canRespawn then
-                    AddNewPlayer(Settings.customization, Gamemode == "calm" or Gamemode == "tutorial")
-                    IsDead = false
-                elseif IsMultiplayer then
-                    Spectating = true
-                else
-                    SceneManager.LoadScene("scenes/game", {mode=Gamemode})
-                end
-            end
-            if itm == 1 then
-                Net.Disconnect()
-                SceneManager.LoadScene("scenes/menu")
-            end
+            local screenWidth = 1280
+            local screenHeight = 720
+            local centerpoint = {
+                love.graphics.getWidth()/2,
+                love.graphics.getHeight()/2
+            }
+            local scale = math.min(love.graphics.getWidth()/screenWidth, love.graphics.getHeight()/screenHeight)
+            local m_x = (x-centerpoint[1])/scale
+            local m_y = (y-centerpoint[2])/scale
+            gameOverMenu:click(m_x,m_y,b)
         else
-            if b == 2 and (runTimer and Spawned < 5) then
-                SpawnTimer = SpawnDelay
-            end
             if not t then
+                if table.index(MatchControl({type = "mouse", button = b}), "skip_wave") and (runTimer and Spawned < 5) then
+                    SpawnTimer = SpawnDelay
+                end
+                if table.index(MatchControl({type = "mouse", button = b}), "slash") and player then
+                    player.callbacks.slash(player,x,y)
+                end
                 for _,ent in pairs(Entities) do
                     ent:mousepressed(x,y,b)
                 end
             end
         end
     else
-        local my = (love.graphics.getHeight()-lgfont:getHeight())/2
-        local itm = math.floor((y-my)/lrfont:getHeight())
-        if itm == 0 then
-            Paused = not Paused
-            ShowGameMenu = not ShowGameMenu
-        end
-        if itm == 1 then
-            SceneManager.LoadScene("scenes/game", {mode = Gamemode})
-        end
-        if itm == 2 then
-            Net.Disconnect()
-            SceneManager.LoadScene("scenes/menu")
-        end
+        local screenWidth = 1280
+        local screenHeight = 720
+        local centerpoint = {
+            love.graphics.getWidth()/2,
+            love.graphics.getHeight()/2
+        }
+        local scale = math.min(love.graphics.getWidth()/screenWidth, love.graphics.getHeight()/screenHeight)
+        local m_x = (x-centerpoint[1])/scale
+        local m_y = (y-centerpoint[2])/scale
+        pauseMenu:click(m_x,m_y,b)
     end
 end
 
@@ -1035,7 +1353,7 @@ function scene.draw()
 
     if Gamemode == "playtest" then
         love.graphics.setColor(0,0,0)
-        local txt = Localize("playtesting" .. (IsMobile and "_mobile" or ""))
+        local txt = Localize("playtesting" .. (IsMobile and "_mobile" or "")):format(GetControlStrings("pause")[(Gamepads[1] ~= nil) and "gamepad" or "desktop"])
         pcall(love.graphics.printf, txt, 0, pos-2, love.graphics.getWidth(), "center")
         pcall(love.graphics.printf, txt, 0, pos-2, love.graphics.getWidth(), "center")
         pcall(love.graphics.printf, txt, 0, pos+2, love.graphics.getWidth(), "center")
@@ -1057,14 +1375,21 @@ function scene.draw()
         pcall(love.graphics.printf, TutorialText, 150, pos, love.graphics.getWidth()-300, "center")
 
         local format = TutorialStages[Stage].messages[Message].format or {}
+        if type(format) == "function" then format = format() end
         for i,v in ipairs(format) do
             if type(v) == "function" then format[i] = v() end
         end
-        local txt = Localize(TutorialStages[Stage].messages[Message].text):format(unpack(format))
+        local stageText = TutorialStages[Stage].messages[Message].text
+        if type(stageText) == "function" then stageText = stageText() end
+        local txt = Localize(stageText):format(unpack(format))
         if MessageProgress >= utf8.len(txt) and TutorialStages[Stage].messages[Message].pause then
             local w,l = lgfont:getWrap(txt, love.graphics.getWidth()-300)
             local h = #l*lgfont:getHeight()
-            local advance = Localize("tutorial.advance." .. (IsMobile and "mobile" or "desktop"))
+            local advance = Localize("tutorial.advance." .. (ShowMobileUI and "mobile" or ((Gamepads[1] ~= nil) and "gamepad" or "desktop")))
+            if not ShowMobileUI then
+                local strings = GetControlStrings("advance_text")
+                advance = advance:format(strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"])
+            end
             love.graphics.setFont(mdfont)
 
             love.graphics.setColor(0,0,0)
@@ -1081,6 +1406,7 @@ function scene.draw()
     end
 
     if ShowMobileUI then
+        love.graphics.setColor(1,1,1)
         love.graphics.setLineWidth(8)
         love.graphics.circle("line", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+96, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-96, Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
         love.graphics.circle("fill", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+96+Thumbstick.x, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-96+Thumbstick.y, Thumbstick.innerRad*ViewScale*Settings.video.ui_scale)
@@ -1093,67 +1419,154 @@ function scene.draw()
         love.graphics.draw(PauseIcon, love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64, 64, 0, Pausebutton.size/PauseIcon:getWidth()*Settings.video.ui_scale, Pausebutton.size/PauseIcon:getHeight()*Settings.video.ui_scale)
     end
 
+    local screenWidth = 1280
+    local screenHeight = 720
+    local leftMargin = 0
+    local rightMargin = 0
+    local topMargin = 0
+    local bottomMargin = 0
+    local centerpoint = {
+        (leftMargin+(love.graphics.getWidth()-rightMargin))/2,
+        (topMargin+(love.graphics.getHeight()-bottomMargin))/2
+    }
+    local scale = math.min(love.graphics.getWidth()/screenWidth, love.graphics.getHeight()/screenHeight)
+    love.graphics.push()
+    love.graphics.translate(centerpoint[1], centerpoint[2])
+    love.graphics.scale(scale,scale)
+
+    local c = "arrow"
+
     if IsDead and not Spectating then
         love.graphics.setColor(0,0,0,0.5)
-        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+        love.graphics.rectangle("fill", -centerpoint[1]/scale, -centerpoint[2]/scale, love.graphics.getWidth()/scale, love.graphics.getHeight()/scale)
         love.graphics.setColor(1,1,1)
-        love.graphics.setFont(xlfont)
-        love.graphics.printf(Localize("gameover.title"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2-xlfont:getHeight()*2, love.graphics.getWidth(), "center")
-        love.graphics.setFont(lgfont)
-        love.graphics.printf(Localize("score"):format(Score), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2, love.graphics.getWidth(), "center")
-        love.graphics.printf(Localize(GameSetups[Gamemode].canRespawn and "gameover.respawn" or (IsMultiplayer and "gameover.spectate" or "gameover.retry")), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*2+lrfont:getHeight()*0, love.graphics.getWidth(), "center")
-        love.graphics.printf(Localize("gameover.exit"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lgfont:getHeight()*2+lrfont:getHeight()*1, love.graphics.getWidth(), "center")
+        gameOverMenu:draw()
+        if Gamepads[1] then
+            gameOverMenu:drawSelected()
+        end
+        c = gameOverMenu:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or "arrow"
     end
 
     if ShowGameMenu then
         love.graphics.setColor(0,0,0,0.5)
-        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+        love.graphics.rectangle("fill", -centerpoint[1]/scale, -centerpoint[2]/scale, love.graphics.getWidth()/scale, love.graphics.getHeight()/scale)
         love.graphics.setColor(1,1,1)
-        love.graphics.setFont(xlfont)
-        love.graphics.printf(Localize("paused.title"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2-xlfont:getHeight()*2, love.graphics.getWidth(), "center")
-        love.graphics.setFont(lgfont)
-        love.graphics.printf(Localize("paused.resume"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*0, love.graphics.getWidth(), "center")
-        love.graphics.printf(Localize("paused.restart"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*1, love.graphics.getWidth(), "center")
-        love.graphics.printf(Localize("paused.exit"), 0, (love.graphics.getHeight()-love.graphics.getFont():getHeight())/2+lrfont:getHeight()*2, love.graphics.getWidth(), "center")
+        pauseMenu:draw()
+        if Gamepads[1] then
+            pauseMenu:drawSelected()
+        end
+        c = pauseMenu:getCursor((love.mouse.getX()-centerpoint[1])/scale, (love.mouse.getY()-centerpoint[2])/scale) or "arrow"
+        local s,r = pcall(love.mouse.getSystemCursor, c)
+        if s then
+            love.mouse.setCursor(r)
+        end
     end
+
+    local s,r = pcall(love.mouse.getSystemCursor, c)
+    if s then
+        love.mouse.setCursor(r)
+    end
+
+    love.graphics.pop()
     
     love.graphics.setColor(1,1,1)
 end
 
-function scene.gamepadpressed(stick,b)
-    if b == "b" then
-        player:mousepressed(stick:getGamepadAxis("leftx")*96+love.graphics.getWidth()/2,stick:getGamepadAxis("lefty")*96+love.graphics.getHeight()/2,1)
+function scene.gamepadaxis(stick,axis,value)
+    if stick ~= Gamepads[1] then return end
+    player:gamepadaxis(stick,axis,value)
+
+    if ShowGameMenu or (IsDead and not Spectating) and Gamemode ~= "playtest" then
+        local selection
+
+        local menu = ShowGameMenu and pauseMenu or gameOverMenu
+
+        if WasControlTriggered("menu_right") then
+            selection = GetSelectionTarget({1,0}, menu, MenuSelection) or selection
+        end
+        if WasControlTriggered("menu_left") then
+            selection = GetSelectionTarget({-1,0}, menu, MenuSelection) or selection
+        end
+        if WasControlTriggered("menu_down") then
+            selection = GetSelectionTarget({0,1}, menu, MenuSelection) or selection
+        end
+        if WasControlTriggered("menu_up") then
+            selection = GetSelectionTarget({0,-1}, menu, MenuSelection) or selection
+        end
+        
+        if selection then
+            MenuSelection = selection
+        end
     end
-    if b == "start" then
+end
+
+function scene.gamepadpressed(stick,b)
+    if frame < 2 then return end
+    if stick ~= Gamepads[1] then return end
+    local controlMatches = MatchControl({type = "gpbutton", button = b})
+    if table.index(controlMatches, "skip_wave") and (runTimer and Spawned < 5) then
+        SpawnTimer = SpawnDelay
+    end
+    if table.index(controlMatches, "pause") then
         if Gamemode == "playtest" then
             SceneManager.LoadScene("scenes/menu", {menu = "customize"})
+            return
         end
-        if #GetEntitiesWithID("player") > 0 or Spectating then
+        if not (IsDead and not Spectating) then
             Paused = not Paused
             ShowGameMenu = not ShowGameMenu
-        else
-            if GameSetups[Gamemode].canRespawn then
-                AddNewPlayer(Settings.customization, Gamemode == "calm" or Gamemode == "tutorial")
-                IsDead = false
-            elseif IsMultiplayer then
-                Spectating = true
-            else
-                SceneManager.LoadScene("scenes/game", {mode=Gamemode})
+            if ShowGameMenu then
+                setSelection(pauseMenu)
             end
         end
     end
-    if b == "back" then
-        if Paused then
-            Net.Disconnect()
-            SceneManager.LoadScene("scenes/menu")
+
+    if table.index(controlMatches, "advance_text") and not Paused and Gamemode == "tutorial" then
+        AttemptTutorialAdvance(true)
+    end
+    if not Paused then
+        if table.index(MatchControl({type = "gpbutton", button = b}), "skip_wave") and (runTimer and Spawned < 5) then
+            SpawnTimer = SpawnDelay
         end
-        if #GetEntitiesWithID("player") == 0 then
-            Net.Disconnect()
-            SceneManager.LoadScene("scenes/menu")
+        if table.index(MatchControl({type = "gpbutton", button = b}), "slash") and player then
+            local mx = GetControlValue("move_right")-GetControlValue("move_left")
+            local my = GetControlValue("move_down")-GetControlValue("move_up")
+            local x,y = mx*96+love.graphics.getWidth()/2,my*96+love.graphics.getHeight()/2
+            player.callbacks.slash(player,x,y)
         end
     end
-    if b == "a" and not Paused and Gamemode == "tutorial" then
-        AttemptTutorialAdvance(true)
+
+    if ShowGameMenu or (IsDead and not Spectating) then
+        local selection
+
+        local menu = ShowGameMenu and pauseMenu or gameOverMenu
+
+        local matches = MatchControl({type = "gpbutton", button = b})
+
+        if table.index(matches, "menu_right") then
+            selection = GetSelectionTarget({1,0}, menu, MenuSelection) or selection
+        end
+        if table.index(matches, "menu_left") then
+            selection = GetSelectionTarget({-1,0}, menu, MenuSelection) or selection
+        end
+        if table.index(matches, "menu_down") then
+            selection = GetSelectionTarget({0,1}, menu, MenuSelection) or selection
+        end
+        if table.index(matches, "menu_up") then
+            selection = GetSelectionTarget({0,-1}, menu, MenuSelection) or selection
+        end
+
+        if selection then
+            MenuSelection = selection
+        end
+    end
+
+    if b == "a" then
+        if ShowGameMenu or (IsDead and not Spectating) then
+            if (MenuSelection or {}).element.clickInstance then
+                (MenuSelection or {}).element:clickInstance()
+            end
+        end
     end
 end
 
@@ -1167,7 +1580,10 @@ function scene.touchpressed(id,x,y)
     end
     local sx,sy = x-(love.graphics.getWidth()-Slashstick.radius*ViewScale*ViewScale*Settings.video.ui_scale-64),y-(love.graphics.getHeight()-Slashstick.radius*ViewScale*ViewScale*Settings.video.ui_scale-64)
     if math.sqrt(sx*sx+sy*sy) <= Slashstick.radius*ViewScale*Settings.video.ui_scale and player then
-        player:mousepressed(Thumbstick.x+love.graphics.getWidth()/2,Thumbstick.y+love.graphics.getHeight()/2,1)
+        local mx = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
+        local my = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
+        local X,Y = mx*96+love.graphics.getWidth()/2,my*96+love.graphics.getHeight()/2
+        player.callbacks.slash(player, X, Y)
         return
     end
     if x >= love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64 and x < love.graphics.getWidth()-64 and y >= 64 and y < Pausebutton.size*ViewScale*Settings.video.ui_scale+64 then
@@ -1177,6 +1593,9 @@ function scene.touchpressed(id,x,y)
         end
         Paused = not Paused
         ShowGameMenu = not ShowGameMenu
+        if ShowGameMenu then
+            setSelection(pauseMenu)
+        end
         return
     end
     if not (IsDead and not Spectating) then
@@ -1191,7 +1610,7 @@ function scene.touchpressed(id,x,y)
             end
         end
     end
-    if not Paused and Gamemode == "tutorial" then
+    if not Paused and Gamemode == "tutorial" and ShowMobileUI then
         AttemptTutorialAdvance(true)
     end
 end

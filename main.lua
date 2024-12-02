@@ -30,7 +30,6 @@ UpdateTime = 0
 ViewScale = 1
 ViewMargin = 0
 FontScale = IsMobile and 1.5 or 1
--- ViewMargin = 0
 
 SlashIcon = love.graphics.newImage("assets/images/ui/slash.png")
 PauseIcon = love.graphics.newImage("assets/images/ui/pause.png")
@@ -85,8 +84,6 @@ if DiscordRPC then
 else
     print("Discord RPC was not initialized.")
 end
-
--- smfont = love.graphics.getFont()
 
 smfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12)
 
@@ -170,9 +167,14 @@ function randFloat(min,max)
 end
 
 AchievementUnlocks = {}
+Popups = {}
 
 function UnlockAchievement(id, titleText)
     table.insert(AchievementUnlocks, {achievement = id, time = 0, titleText = titleText})
+end
+
+function Popup(titleText, text)
+    table.insert(Popups, {text = text, time = 0, titleText = titleText})
 end
 
 require "events"
@@ -188,7 +190,91 @@ require "ui"
 require "menus"
 require "cosmetics"
 
+Dialogs = {}
+
+function GetDefaultSelection(menu)
+    if (menu or {}).unpackChildren then
+        for _,child in ipairs((menu or {}):unpackChildren(nil,nil,nil,1)) do
+            if child.element.defaultSelected and not child.element:isHidden() then
+                if type(child.element.onSelection) == "function" then
+                    child.element:onSelection({0,0}, nil)
+                end
+                return child
+            end
+        end
+    end
+end
+
+---@param dir {[1]: number, [2]: number}
+function GetSelectionTarget(dir, menu, selection)
+    menu = menu or Menus[CurrentMenu]
+    selection = selection or MenuSelection
+    if Dialogs[1] then
+        menu = Dialogs[1].element
+        selection = Dialogs[1].selection
+    end
+
+    if not selection then return end -- nothing to select?
+
+    if (menu or {}).unpackChildren then
+        local elements = (menu or {}):unpackChildren() or {}
+        local sort = {}
+        for _,elem in ipairs(elements) do
+            if type(elem.element.getSelectionTarget) == "function" then
+                local target = elem.element:getSelectionTarget(dir,selection)
+                if target then
+                    if type((target.element or {}).onSelection) == "function" then
+                        (target.element or {}):onSelection(dir,selection)
+                    end
+                    return target
+                end
+            end
+        end
+
+        local elementsNoTarget = (menu or {}):unpackChildren(nil,nil,nil,1)
+        for _,elem in ipairs(elementsNoTarget) do
+            if type(elem.element.getSelectionTarget) == "function" then
+                local target = elem.element:getSelectionTarget(dir,selection)
+                if target then
+                    return target
+                end
+            end
+            if elem.element ~= selection.element and elem.element.canSelect and not elem.element:isHidden() then
+                local ox,oy = elem.x-selection.x, elem.y-selection.y
+                local distance = math.sqrt(ox*ox+oy*oy)
+                local m = (distance == 0 and 1 or distance)
+                local nx,ny = ox/m,oy/m
+                local parallel = math.dot(dir, {nx,ny})
+                local weight = (parallel^8*math.sign(parallel)) * 1/(distance/16)
+                table.insert(sort, {element = elem, weight = weight})
+            end
+        end
+        table.sort(sort, function (a, b)
+            if b.weight == a.weight then
+                if b.element.y == a.element.y then
+                    return b.element.x > a.element.x
+                end
+                return b.element.y > a.element.y
+            end
+            return b.weight < a.weight
+        end)
+        if type((sort[1].element.element or {}).onSelection) == "function" then
+            (sort[1].element.element or {}):onSelection(dir, selection)
+        end
+        return sort[1].element
+    end
+
+    return nil
+end
+
 Logos = {}
+
+function BoxCollision(x1,y1,w1,h1, x2,y2,w2,h2)
+    return x1 < x2+w2 and
+           x2 < x1+w1 and
+           y1 < y2+h2 and
+           y2 < y1+h1
+end
 
 function GetLogo(name)
     if Logos[name] then return Logos[name] end
@@ -303,6 +389,24 @@ DiscordPresence = {
     largeImageKey = "main_icon"
 }
 
+---@type love.Joystick[]
+Gamepads = {}
+
+ControlDefaults = {
+    menu_up = {{type = "key", button = "up"}, {type = "gptrigger", axis = "lefty-", threshold = 0.5}},
+    menu_down = {{type = "key", button = "down"}, {type = "gptrigger", axis = "lefty+", threshold = 0.5}},
+    menu_left = {{type = "key", button = "left"}, {type = "gptrigger", axis = "leftx-", threshold = 0.5}},
+    menu_right = {{type = "key", button = "right"}, {type = "gptrigger", axis = "leftx+", threshold = 0.5}},
+    move_up = {{type = "key", button = "w"}, {type = "gpaxis", axis = "lefty-"}},
+    move_down = {{type = "key", button = "s"}, {type = "gpaxis", axis = "lefty+"}},
+    move_left = {{type = "key", button = "a"}, {type = "gpaxis", axis = "leftx-"}},
+    move_right = {{type = "key", button = "d"}, {type = "gpaxis", axis = "leftx+"}},
+    slash = {{type = "mouse", button = 1}, {type = "gptrigger", axis = "triggerright", threshold = 0.5}},
+    skip_wave = {{type = "mouse", button = 2}, {type = "gpbutton", button = "x"}},
+    pause = {{type = "key", button = "escape"}, {type = "gpbutton", button = "start"}},
+    advance_text = {{type = "key", button = "space"}, {type = "gpbutton", button = "a"}}
+}
+
 Settings = {
     language = "en_US",
 
@@ -325,6 +429,8 @@ Settings = {
         auto_aim_limit = 45
     },
 
+    controls = {},
+
     customization = {
         color = {0,1,1},
         hat = nil,
@@ -333,9 +439,226 @@ Settings = {
     }
 }
 
+table.merge(Settings.controls, ControlDefaults)
+
+do
+    local systemLang = os.getenv("LANG") or "en_US.UTF-8"
+    local langCode = systemLang:split_plain(".")[1]
+    langCode = langCode:sub(1,2):lower() .. "_" .. langCode:sub(4,-1):upper()
+    if Languages[langCode] then
+        Settings.language = langCode
+    elseif LanguageFallbacks[langCode:sub(1,2)] then
+        Settings.language = LanguageFallbacks[langCode:sub(1,2)]
+    else
+        for k,_ in pairs(Languages) do
+            if k:sub(1,2) == langCode:sub(1,2) then
+                Settings.language = k
+                break
+            end
+        end
+    end
+end
+
+AxisRebindMethods = {
+    menu_up = "gpaxis",
+    menu_down = "gpaxis",
+    menu_left = "gpaxis",
+    menu_right = "gpaxis",
+    move_up = "gpaxis",
+    move_down = "gpaxis",
+    move_left = "gpaxis",
+    move_right = "gpaxis",
+    slash = "gptrigger",
+    skip_wave = "gptrigger",
+    pause = "gptrigger",
+    advance_text = "gptrigger"
+}
+
 if love.filesystem.getInfo("settings.json") then
     local itms = json.decode(love.filesystem.read("settings.json"))
     Settings = table.merge(Settings, itms)
+end
+
+Axes = {}
+LastAxes = {}
+
+function GetAxisString(name)
+    local axes = {
+        ["left"] = "Left Stick",
+        ["right"] = "Right Stick",
+        ["leftx"] = "Left Stick",
+        ["leftx-"] = "Left Stick ← ",
+        ["leftx+"] = "Left Stick → ",
+        ["lefty"] = "Left Stick",
+        ["lefty-"] = "Left Stick ↑ ",
+        ["lefty+"] = "Left Stick ↓ ",
+        ["rightx"] = "Right Stick",
+        ["rightx-"] = "Right Stick ← ",
+        ["rightx+"] = "Right Stick → ",
+        ["righty"] = "Right Stick",
+        ["righty-"] = "Right Stick ↑ ",
+        ["righty+"] = "Right Stick ↓ ",
+        ["triggerleft"] = "Left Trigger",
+        ["triggerright"] = "Right Trigger",
+        ["leftshoulder"] = "Left Bumper",
+        ["rightshoulder"] = "Right Bumper",
+        ["leftstick"] = "Left Stick ⭗",
+        ["rightstick"] = "Right Stick ⭗"
+    }
+    return axes[name] or name
+end
+
+function GetControlEntryName(name,entry)
+    if not Settings.controls[name] then return name end
+    local mousebuttons = {
+        "Left",
+        "Right",
+        "Middle"
+    }
+    local c = Settings.controls[name][entry] or {}
+    if c.type == "key" then
+        return c.button:sub(1,1):upper() .. c.button:sub(2,-1):lower()
+    end
+    if c.type == "mouse" then
+        if mousebuttons[c.button] then
+            return mousebuttons[c.button] .. " Mouse Button"
+        else
+            return "Mouse Button " .. c.button
+        end
+    end
+    if c.type == "gpbutton" then
+        return c.button:sub(1,1):upper() .. c.button:sub(2,-1):lower()
+    end
+    if c.type == "gptrigger" or c.type == "gpaxis" then
+        return GetAxisString(c.axis)
+    end
+    return name
+end
+
+function GetControlStrings(name)
+    local strings = {
+        desktop = name,
+        gamepad = name
+    }
+    if not Settings.controls[name] then return strings end
+    local mousebuttons = {
+        "Left",
+        "Right",
+        "Middle"
+    }
+    for _,c in ipairs(Settings.controls[name]) do
+        if c.type == "key" then
+            strings.desktop = c.button:sub(1,1):upper() .. c.button:sub(2,-1):lower()
+        end
+        if c.type == "mouse" then
+            if mousebuttons[c.button] then
+                strings.desktop = mousebuttons[c.button] .. " Mouse Button"
+            else
+                strings.desktop = "Mouse Button " .. c.button
+            end
+        end
+        if c.type == "gpbutton" then
+            strings.gamepad = c.button:sub(1,1):upper() .. c.button:sub(2,-1):lower()
+        end
+        if c.type == "gptrigger" or c.type == "gpaxis" then
+            strings.gamepad = GetAxisString(c.axis)
+        end
+    end
+    return strings
+end
+
+function IsControlPressed(name)
+    if not Settings.controls[name] then return false end
+    local pressed = false
+    for _,c in ipairs(Settings.controls[name]) do
+        if c.type == "key" then
+            ---@diagnostic disable-next-line: param-type-mismatch
+            pressed = pressed or love.keyboard.isDown(c.button)
+        end
+        if c.type == "mouse" then
+            ---@diagnostic disable-next-line: param-type-mismatch
+            pressed = pressed or love.mouse.isDown(c.button)
+        end
+        if c.type == "gptrigger" then
+            pressed = pressed or (Axes[c.axis] or 0) >= c.threshold
+        end
+        if c.type == "gpaxis" then
+            pressed = pressed or math.abs((Axes[c.axis] or 0)) >= 0.5
+        end
+    end
+    return pressed
+end
+
+function WasAxisTriggered(name)
+    if not Axes[name] then return false end
+    return ((Axes[name] or 0) >= 0.5 and (LastAxes[name] or 0) < 0.5)
+end
+
+function WasControlTriggered(name)
+    if not Settings.controls[name] then return false end
+    local pressed = false
+    for _,c in ipairs(Settings.controls[name]) do
+        if c.type == "gptrigger" then
+            pressed = pressed or ((Axes[c.axis] or 0) >= c.threshold and (LastAxes[c.axis] or 0) < c.threshold)
+        end
+    end
+    return pressed
+end
+
+function GetControlValue(name)
+    if not Settings.controls[name] then return 0 end
+    local value = 0
+    for _,c in ipairs(Settings.controls[name]) do
+        if c.type == "key" then
+            ---@diagnostic disable-next-line: param-type-mismatch
+            value = math.max(value, love.keyboard.isDown(c.button) and 1 or 0)
+        end
+        if c.type == "mouse" then
+            ---@diagnostic disable-next-line: param-type-mismatch
+            value = math.max(value, love.mouse.isDown(c.button) and 1 or 0)
+        end
+        if c.type == "gptrigger" then
+            value = math.max(value, ((Axes[c.axis] or 0) >= c.threshold) and 1 or 0)
+        end
+        if c.type == "gpaxis" then
+            if math.abs((Axes[c.axis] or 0)) > value then
+                value = (Axes[c.axis] or 0)
+            end
+        end
+    end
+    return value
+end
+
+function GetControlAxis(name)
+    if not Settings.controls[name] then return nil end
+    for _,c in ipairs(Settings.controls[name]) do
+        if c.type == "gptrigger" or c.type == "gpaxis" then
+            return c.axis
+        end
+    end
+    return nil
+end
+
+function MatchControl(control)
+    local matches = {}
+    for name,c in pairs(Settings.controls) do
+        local match = false
+        for _,alt in ipairs(c) do
+            local matchA = true
+            for k,v in pairs(control) do
+                if alt[k] ~= v then
+                    matchA = false
+                end
+            end
+            if matchA then
+                match = true
+            end
+        end
+        if match then
+            table.insert(matches, name)
+        end
+    end
+    return matches
 end
 
 ResetFonts()
@@ -346,15 +669,34 @@ function DeathHandler(event)
     if Settings.customization.death_effect then
         local trail = Cosmetics.Effects[Settings.customization.death_effect]
         if trail.events.player_death then
-        local actions = trail.events.player_death.actions
-        for _,v in ipairs(actions) do
-            if v.type == "particle_burst" then
-                for _=1,v.amount do
-                    local dir = randFloat(0,2*math.pi)
-                    local vx,vy = math.sin(dir), math.cos(dir)
-                    local velocity = v.velocity
-                    if type(velocity) == "table" then velocity = randFloat(velocity[1],velocity[2]) end
-                    local particle = Game.Particle:new(event.x, event.y, v.life, vx*velocity, vy*velocity, 20, randFloat(v.size[1],v.size[2]))
+            local actions = trail.events.player_death.actions
+            for _,v in ipairs(actions) do
+                if v.type == "particle_burst" then
+                    for _=1,v.amount do
+                        local dir = randFloat(0,2*math.pi)
+                        local vx,vy = math.sin(dir), math.cos(dir)
+                        local velocity = v.velocity
+                        if type(velocity) == "table" then velocity = randFloat(velocity[1],velocity[2]) end
+                        local particle = Game.Particle:new(event.x, event.y, v.life, vx*velocity, vy*velocity, 20, randFloat(v.size[1],v.size[2]))
+                        particle.image = v.image
+                        table.insert(Particles, particle)
+                    end
+                end
+            end
+        end
+    end
+end
+
+function StepHandler(event)
+    if Settings.customization.trail then
+        local trail = Cosmetics.Trails[Settings.customization.trail]
+        if trail.events.step then
+            local actions = trail.events.step.actions
+            for _,v in ipairs(actions) do
+                if v.type == "particle" then
+                    local sx,sy = randFloat(-v.spawnRadius,v.spawnRadius),randFloat(-v.spawnRadius,v.spawnRadius)
+                    local a = randFloat(v.angle[1],v.angle[2])
+                    local particle = Game.Particle:new(event.x+sx, event.y+sy, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]), a)
                     particle.image = v.image
                     table.insert(Particles, particle)
                 end
@@ -362,26 +704,10 @@ function DeathHandler(event)
         end
     end
 end
-end
-function StepHandler(event) 
-    if Settings.customization.trail then
-        local trail = Cosmetics.Trails[Settings.customization.trail]
-        if trail.events.step then
-        local actions = trail.events.step.actions
-        for _,v in ipairs(actions) do
-            if v.type == "particle" then
-                local sx,sy = randFloat(-v.spawnRadius,v.spawnRadius),randFloat(-v.spawnRadius,v.spawnRadius)
-                local a = randFloat(v.angle[1],v.angle[2])
-                local particle = Game.Particle:new(event.x+sx, event.y+sy, v.life, v.velocity[1], v.velocity[2], 5, randFloat(v.size[1],v.size[2]), a)
-                particle.image = v.image
-                table.insert(Particles, particle)
-            end
-        end
-    end
-    end
-end
+
 Events.on("step",StepHandler)
 Events.on("player_death", DeathHandler)
+
 function WriteSettings()
     local s,r = pcall(json.encode,Settings)
     if not s then
@@ -433,13 +759,17 @@ function love.load()
     Events.fire("modPreInit")
     Events.fire("modPostInit")
     
-    SceneManager.LoadScene("scenes/menu", {})
+    if love.filesystem.getInfo("hidephotosensitivity") then
+        SceneManager.LoadScene("scenes/menu", {})
+    else
+        SceneManager.LoadScene("scenes/photosensitivity", {})
+    end
 end
 
 local saveTime = 0
 
 GlobalTime = 0
-local presenceTimer = 15
+local presenceTimer = 14
 
 function love.update(dt,step)
     if FrameStep and not step then
@@ -492,6 +822,12 @@ function love.update(dt,step)
             table.remove(AchievementUnlocks, 1)
         end
     end
+    if #Popups >= 1 then
+        Popups[1].time = Popups[1].time + dt
+        if Popups[1].time >= 3 then
+            table.remove(Popups, 1)
+        end
+    end
 
     UpdateTime = love.timer.getTime() - t
 end
@@ -524,7 +860,7 @@ function love.keypressed(k)
     if k == "f5" and FrameStep then
         love.update(1/60,true)
     end
-    ShowMobileUI = false
+    ShowMobileUI = k == "escape" and not love.keyboard.isDown("escape")
     SceneManager.KeyPressed(k)
 end
 
@@ -541,8 +877,42 @@ function love.mousereleased(x,y,b)
     SceneManager.MouseReleased(x,y,b)
 end
 
+---@param stick love.Joystick
+function love.joystickadded(stick)
+    -- there is a chance a gamepad has 21 buttons and 1 axis
+    -- but i'm betting on it being rare enough to not matter
+    local buttons = stick:getButtonCount()
+    local axes = stick:getAxisCount()
+    local mayBeMouse = (buttons == 21) and (axes == 1)
+    if stick:isGamepad() and not mayBeMouse then
+        Popup("gamepad_connected", stick:getName())
+        table.insert(Gamepads, stick)
+    end
+end
+
+---@param stick love.Joystick
+function love.joystickremoved(stick)
+    Popup("gamepad_disconnected", stick:getName())
+    local i = table.index(Gamepads, stick)
+    if i then
+        table.remove(Gamepads, i)
+    end
+end
+
 function love.gamepadpressed(stick,b)
     SceneManager.GamepadPressed(stick,b)
+end
+
+function love.gamepadaxis(stick,axis,value)
+    if stick == Gamepads[1] then
+        Axes[axis] = value
+        Axes[axis.."+"] = math.max(0,value)
+        Axes[axis.."-"] = -math.min(0,value)
+    end
+    SceneManager.GamepadAxis(stick,axis,value)
+    for name,v in pairs(Axes) do
+        LastAxes[name] = v
+    end
 end
 
 function love.touchpressed(...)
@@ -576,7 +946,22 @@ function love.draw()
         love.graphics.print(txt, love.graphics.getWidth()-w-2, love.graphics.getHeight()-h-2+lrfont:getHeight())
         love.graphics.setColor(0,0,0,math.min(1,(3-AchievementUnlocks[1].time)*2))
         love.graphics.setLineWidth(2)
-        love.graphics.rectangle("line", love.graphics.getWidth()-h-8-w-3, love.graphics.getHeight()-h-3, w+h+8, h)
+        love.graphics.rectangle("line", love.graphics.getWidth()-w-h-3-8, love.graphics.getHeight()-h-3, w+h+3+8, h+3)
+    end
+    if #Popups >= 1 then
+        local txt = Localize(Popups[1].text)
+        local w = math.max(lrfont:getWidth(Localize(Popups[1].titleText)), lgfont:getWidth(txt))+16
+        local h = lrfont:getHeight()+lgfont:getHeight()
+        love.graphics.setColor(0.1,0.1,0.1,math.min(1,(3-Popups[1].time)*2))
+        love.graphics.rectangle("fill", love.graphics.getWidth()-w-4, love.graphics.getHeight()-h-4, w+4, h+4)
+        love.graphics.setColor(1,1,1,math.min(1,(3-Popups[1].time)*2))
+        love.graphics.setFont(lrfont)
+        love.graphics.print(Localize(Popups[1].titleText), love.graphics.getWidth()-w-2+8, love.graphics.getHeight()-h-2)
+        love.graphics.setFont(lgfont)
+        love.graphics.print(txt, love.graphics.getWidth()-w-2+8, love.graphics.getHeight()-h-2+lrfont:getHeight())
+        love.graphics.setColor(0,0,0,math.min(1,(3-Popups[1].time)*2))
+        love.graphics.setLineWidth(2)
+        love.graphics.rectangle("line", love.graphics.getWidth()-w-3, love.graphics.getHeight()-h-3, w+3, h+3)
     end
 
     love.graphics.setFont(smfont)

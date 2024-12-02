@@ -1,37 +1,48 @@
 {
     "name": "Español (Latinoamérica)",
     "logo": "en",
+    "fallback": true,
     "text": {
         "tutorial.intro1": "¡Hola! Bienvenido a The Slash of the Dice!",
         "tutorial.intro2": "¡En este juego, debes derrotar interminables oleadas de enemigos mientras también soportas la prueba de la suerte!",
         "tutorial.intro3": "Pero antes de entrar en todos los pequeños trucos de este juego, ¡deberías aprender a jugar de verdad!",
-        "tutorial.intro4.desktop": "Si necesitas tomarte un descanso, puedes pausar el juego pulsando la tecla Escape",
+        "tutorial.intro4.desktop": "Si necesitas tomarte un descanso, puedes pausar el juego pulsando %s.",
         "tutorial.intro4.mobile": "Si necesitas tomarte un descanso, puedes pausar el juego pulsando el botón Pausa de la parte superior derecha.",
-        "tutorial.intro5": "Puedes salir del tutorial en cualquier momento pulsando \"Volver al título\" en el menú de pausa",
-        "tutorial.movimiento.escritorio": "Para moverte, usa las teclas W, A, S y D. Pruébalo!",
-        "tutorial.movimiento.movil": "Para moverte, usa el thumbstick de la parte inferior izquierda. Pruébalo!",
-        "tutorial.barra1": "¡Buen trabajo!",
+        "tutorial.intro4.gamepad": "Si necesitas tomarte un descanso, puedes pausar el juego pulsando %s.",
+        "tutorial.intro5": "Puedes salir del tutorial en cualquier momento pulsando \"Volver al título\" en el menú de pausa.",
+        "tutorial.movement.desktop": "Para moverte, usa las teclas %s, %s, %s y %s. Pruébalo!",
+        "tutorial.movement.gamepad": "Para moverte, usa %s, %s, %s y %s. Pruébalo!",
+        "tutorial.movement.gamepad_triple": "Para moverte, usa %s, %s y %s. Pruébalo!",
+        "tutorial.movement.gamepad_double": "Para moverte, usa %s y %s. Pruébalo!",
+        "tutorial.movement.gamepad_single": "Para moverte, usa %s. Pruébalo!",
+        "tutorial.movement.mobile": "Para moverte, usa el thumbstick de la parte inferior izquierda. Pruébalo!",
+        "tutorial.slash1": "¡Buen trabajo!",
         "tutorial.slash2": "En este juego, tienes una habilidad de tajo. Esta habilidad te lanza hacia delante ¡y daña todo lo que encuentra a su paso!",
-        "tutorial.slash3.desktop": "Para usar esta habilidad, ¡haz clic con el botón izquierdo del ratón en la dirección en la que quieras lanzar el tajo!",
+        "tutorial.slash3.desktop": "¡Para usar esta habilidad, presiona %s en la dirección en la que quieras lanzar el tajo!",
         "tutorial.slash3.mobile": "¡Para usar esta habilidad, toca el botón de barra en la parte inferior derecha mientras te mueves en la dirección en la que quieres lanzar la barra!",
-        "tutorial.dice1": "¡Bien! Ahora aprenderás la mecánica de la que posiblemente sea la pieza más común de los juegos de mesa: los dados",
-        "tutorial.dice2": "En la esquina inferior derecha de tu pantalla, verás aparecer un único dado",
+        "tutorial.slash3.gamepad": "¡Para usar esta habilidad, presiona %s mientras te mueves en la dirección en la que quieres dar el tajo!",
+        "tutorial.dice1": "¡Bien! Ahora aprenderás la mecánica de la que posiblemente sea la pieza más común de los juegos de mesa: los dados.",
+        "tutorial.dice2": "En la esquina inferior derecha de tu pantalla, verás aparecer un único dado.",
         "tutorial.dice3": "¡Estos dados determinarán cuánto cambian tus estadísticas cada vez que mates a un enemigo!",
         "tutorial.dice4": "¡Oh, cierto! Casi me olvido de los enemigos. ¿Cómo iba a olvidarme de ellos? Son una parte vital del juego!",
         "tutorial.dice5": "Vamos a verlos, ¿vale?",
-        "tutorial.enemies1": "¡Aquí cerca verás a los enemigos del juego! Normalmente te harían daño, pero por el bien del tutorial, he congelado a este para que no ataque",
-        "tutorial.enemies2": "¡Cuantos más de estos mates, más alta será tu puntuación! Puedes ver tu puntuación actual en la parte inferior izquierda",
-        "tutorial.enemies3": "Tus puntos ahora mismo es 0. ¡Cambiemos eso! Acuchilla al enemigo hasta derrotarlo",
-        "tutorial.enemies4": "¡Bien! Te habrás dado cuenta de que has recibido un dado cuando has matado al enemigo",
+        "tutorial.enemies1": "¡Aquí cerca verás a los enemigos del juego! Normalmente te harían daño, pero por el bien del tutorial, he congelado a este para que no ataque.",
+        "tutorial.enemies2": "¡Cuantos más de estos mates, más alta será tu puntuación! Puedes ver tu puntuación actual en la parte inferior izquierda.",
+        "tutorial.enemies3": "Tus puntos ahora mismo es 0. ¡Cambiemos eso! Acuchilla al enemigo hasta derrotarlo.",
+        "tutorial.enemies4": "¡Bien! Te habrás dado cuenta de que has recibido un dado cuando has matado al enemigo.",
         "tutorial.enemies5": "Puede haber sido bien o malo. Todo se reduce a la suerte!",
-        "tutorial.end1": "El juego genera enemigos, como el que acabas de derrotar, cada pocos segundos. A medida que avanza el juego, estos enemigos se hacen más fuertes hasta que finalmente ya no puedes derrotarlos",
-        "tutorial.end2": "Por el bien del tutorial, la fuerza de los enemigos no aumentará, y sus ataques se han debilitado",
-        "tutorial.end3": "El temporizador de la parte superior muestra el tiempo que falta para que aparezca el siguiente enemigo. Cuando llega a cero, aparece otro enemigo",
-        "tutorial.end4": "¡Para completar el tutorial, derrota a 5 enemigos más!",
+        "tutorial.end1": "El juego genera enemigos, como el que acabas de derrotar, cada pocos segundos. A medida que avanza el juego, estos enemigos se hacen más fuertes hasta que finalmente ya no puedes derrotarlos.",
+        "tutorial.end2": "Por el bien del tutorial, la fuerza de los enemigos no aumentará, y sus ataques se han debilitado.",
+        "tutorial.end3": "El temporizador de la parte superior muestra el tiempo que falta para que aparezca el siguiente enemigo. Cuando llega a cero, aparece otro enemigo.",
+        "tutorial.end4.desktop": "También puedes saltarte el temporizador presionando %s.",
+        "tutorial.end4.mobile": "También puedes saltarte el temporizador pulsando el botón \"fast-forward\".",
+        "tutorial.end4.gamepad": "También puedes saltarte el temporizador pulsando %s.",
+        "tutorial.end5": "¡Para completar el tutorial, derrota a 5 enemigos más!",
         "tutorial.complete": "¡Buen trabajo!\nHas completado el tutorial. Vuelve al título para empezar a jugar!",
         
-        "tutorial.advance.desktop": "Pulsa espacio para continuar",
-        "tutorial.advance.mobile": "Pulsa en cualquier lugar para continuar",
+        "tutorial.advance.desktop": "Pulsa %s para continuar.",
+        "tutorial.advance.mobile": "Pulsa en cualquier lugar para continuar.",
+        "tutorial.advance.gamepad": "Pulsa %s para continuar.",
 
         "title.menu.play": "Jugar juego",
         "title.menu.settings": "Ajustes",
@@ -49,15 +60,23 @@
 
         "title.language": "Seleccionar idioma",
         "title.dice_mode": "Seleccionar modo dados",
+        "title.controls": "Controles",
 
         "title.credits": "Créditos",
         "title.achievements": "Logros",
         
         "key.goback": "Pulsa escape para volver",
+        "gamepad.goback": "Presiona B para regresar.",
+
+        "keyboard.lowercase": "minúsculas",
+        "keyboard.uppercase": "Mayúsculas",
+        "keyboard.caps_lock": "MAYÚSCULAS",
+        "keyboard.backspace": "Retroceso",
 
         "button.back": "Atrás",
         "button.cancel": "Cancelar",
         "button.apply": "Aplicar",
+        "button.confirm": "Confirmar",
         "button.close": "Cerrar",
         "button.ok": "OK",
         "button.play": "Jugar",
@@ -84,6 +103,9 @@
         "settings.dice_mode": "Modo dados",
         "settings.auto_aim_on": "Auto Aim",
         "settings.auto_aim_limit": "Límite de puntería automática",
+        "settings.controls": "Controles",
+
+        "edit_controls": "Editar Controles",
 
         "dice_mode.0": "Legado",
         "dice_mode.1": "Par",
@@ -175,6 +197,11 @@
 
         "achievement_unlocked": "¡Logro desbloqueado!",
 
+        "gamepad_connected": "Controlador Connectado",
+        "gamepad_disconnected": "Controlador Desconectado",
+
+        "text_input": "Escriba el texto a continuación",
+
         "credits.programming": "Programación",
         "credits.graphics": "Gráficos",
         "credits.music":"Música",
@@ -182,8 +209,8 @@
         "credits.testing": "Pruebas beta",
         "credits.ios_macos": "MacOS y iOS Builds",
         "credits.translation": "Traducción",
-        "credits.you_header": "Y gracias",
-        "credits.you_text": "¡por jugar a este juego!",
+        "credits.you_header": "¡Y gracias",
+        "credits.you_text": "por jugar a este juego!",
 
         "update.checking": "Comprobación de actualizaciones",
         "update.new": "Versión Beta",
@@ -199,8 +226,21 @@
         
         "calm_not_unlocked": "¡Derrota 30 oleadas en Default para desbloquear este modo de juego!",
 
-        "playtesting": "Modo Playtest - Pulsa Escape para volver a la personalización",
+        "playtesting": "Modo playtest - Pulsa %s para volver a la personalización",
         "playtesting_mobile": "Modo Playtest - Pulsa el botón de pausa para volver a la personalización",
+
+        "control.menu_up": "Navegar Menú Arriba",
+        "control.menu_down": "Navegar Menú Abajo",
+        "control.menu_left": "Navegar Menú Izquierda",
+        "control.menu_right": "Navegar Menú Derecha",
+        "control.move_up": "Mover Arriba",
+        "control.move_down": "Mover Abajo",
+        "control.move_left": "Mover Izquierda",
+        "control.move_right": "Mover Derecha",
+        "control.slash": "Cortar",
+        "control.skip_wave": "Saltar Onda",
+        "control.pause": "Pausa",
+        "control.advance_text": "Texto Avance",
 
         "customization.none": "Ninguno",
 
@@ -241,6 +281,17 @@
         "customization.hats.pride_prog.name": "Bandera del Progreso",
         "customization.hats.pride_trans.name": "Bandera Transgénero",
         "customization.hats.pride_transfem.name": "Bandera Transfem",
-        "customization.hats.pride_transmasc.name": "Bandera Transmasc"
+        "customization.hats.pride_transmasc.name": "Bandera Transmasc",
+
+        "photosensitivity.warning": "ADVERTENCIA - LEA ATENTAMENTE",
+        "photosensitivity1": "The Slash of the Dice contiene ",
+        "photosensitivity2": "patrones que se mueven rápidamente",
+        "photosensitivity3": " que pueden provocar ",
+        "photosensitivity4": "convulsiones o otras complicaciones de salud",
+        "photosensitivity5": " para personas con epilepsia fotosensible.\n\nSi tu sufres de esto o otra enfermedad fotosensible, ",
+        "photosensitivity6": "evite jugar a este juego!",
+        "photosensitivity.continue": "Continuar",
+        "photosensitivity.exit": "Salir",
+        "photosensitivity.dont_show_again": "No vuelvas a mostrar esto"
     }
 }

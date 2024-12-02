@@ -56,7 +56,7 @@ function scene.draw()
     love.graphics.printf(Localize("title.achievements"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()+ViewMargin, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)
     if not ShowMobileUI then
-        love.graphics.printf(Localize("key.goback"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*2+ViewMargin, love.graphics.getWidth(), "center")
+        love.graphics.printf(Localize(Gamepads[1] ~= nil and "gamepad.goback" or "key.goback"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*2+ViewMargin, love.graphics.getWidth(), "center")
     else
         love.graphics.draw(BackIcon, 64, 64, 0, 64/BackIcon:getWidth()*Settings.video.ui_scale, 64/BackIcon:getHeight()*Settings.video.ui_scale)
     end
@@ -68,16 +68,19 @@ function scene.wheelmoved(x, y)
 end
 
 function scene.update(dt)
-    if love.keyboard.isDown("up") then
-        AchievementScroll = AchievementScroll - 8
+    local lefty = 0
+    if Gamepads[1] ~= nil then
+        lefty = Gamepads[1]:getGamepadAxis("lefty")
+        lefty = ((math.max(0.2, math.abs(lefty))-0.2)/0.8) * math.sign(lefty)
     end
-    if love.keyboard.isDown("down") then
-        AchievementScroll = AchievementScroll + 8
-    end
+    local scrollUp = math.max(0, math.min(1, (love.keyboard.isDown("up") and 1 or 0) - lefty))
+    local scrollDown = math.max(0, math.min(1, (love.keyboard.isDown("down") and 1 or 0) + lefty))
+    local scroll = math.max(-1, math.min(1, scrollUp-scrollDown))
+    AchievementScroll = AchievementScroll - 16*60*dt*scroll
     
     scrollVelocity = math.max(0,math.abs(scrollVelocity)-dt*16)*math.sign(scrollVelocity)
     if not love.mouse.isDown(1) then
-        AchievementScroll = AchievementScroll - scrollVelocity
+        AchievementScroll = AchievementScroll - scrollVelocity*60*dt
     end
 
     local num = 0
@@ -97,17 +100,26 @@ function scene.keypressed(k)
     end
 end
 
-function scene.mousepressed(x,y)
-    scrollVelocity = 0
-    if x >= 64 and x < 64+64*Settings.video.ui_scale and y >= 64 and y < 64+64*Settings.video.ui_scale and ShowMobileUI then
+function scene.gamepadpressed(stick,b)
+    if b == "b" then
         SceneManager.LoadScene("scenes/menu")
     end
+end
+
+function scene.mousepressed(x,y)
+    scrollVelocity = 0
 end
 
 function scene.mousemoved(x,y,dx,dy)
     if love.mouse.isDown(1) then
         scrollVelocity = dy
         AchievementScroll = AchievementScroll - dy
+    end
+end
+
+function scene.touchreleased(id,x,y)
+    if x >= 64 and x < 64+64*Settings.video.ui_scale and y >= 64 and y < 64+64*Settings.video.ui_scale and ShowMobileUI then
+        SceneManager.LoadScene("scenes/menu")
     end
 end
 
