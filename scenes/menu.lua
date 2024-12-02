@@ -116,7 +116,8 @@ function scene.load(args)
 
     ControlRemap = {
         control = nil,
-        entry = 1
+        entry = 1,
+        startTime = love.timer.getTime()
     }
 
     table.insert(MenuVersions, {name = "LÖVE", version = major .. "." .. minor .. " (" .. name .. ")"})
@@ -420,12 +421,43 @@ function OnScreenKeyboard(showKeyboard,input)
         end
     })
 
+    local confirmButton = UI.Button:new({
+        id = "confirm",
+        width = 192,
+        height = 24,
+        x = 0,
+        y = -168,
+        background = function() return GetTheme().button_secondary.background end,
+        border = function() return GetTheme().button_secondary.border end,
+        children = {
+            UI.Text:new({
+                clickThrough = true,
+                x = 0,
+                y = 0,
+                width = 184,
+                height = 24,
+                text = function() return Localize("button.confirm") end,
+                color = function() return GetTheme().button_secondary.text end,
+                font = mdfont_2x,
+                fontScale = 0.5,
+                alignHoriz = "center",
+                alignVert = "center"
+            })
+        },
+        onclick = function()
+            if input then
+                input:keypressInstance("return")
+            end
+        end
+    })
+
     if showKeyboard then base:addChild(keyboard) end
     
     (input or {}).selected = true
     base:addChild(scrollLeft)
     base:addChild(textView)
     base:addChild(scrollRight)
+    base:addChild(confirmButton)
     OpenDialog(base)
     Dialogs[1].isKeyboard = true
 end
@@ -462,6 +494,9 @@ local function scroll(mx,my,x,y)
 end
 
 function scene.update(dt)
+    if ControlRemap.control and love.timer.getTime() - ControlRemap.startTime >= 3 then
+        ControlRemap.control = nil
+    end
     MenuTime = MenuTime + dt
     local blend = math.pow(1/((8/7)^60), dt)
     LogoPos = blend*(LogoPos-16)+16
@@ -544,9 +579,9 @@ function scene.draw()
         love.graphics.draw(Trophy, 32, love.graphics.getHeight()-32-128-32, 0, 128/Trophy:getWidth(), 128/Trophy:getHeight())
     end
     
-    love.graphics.setFont(smfont)
+    love.graphics.setFont(mdfont)
     for i,v in ipairs(MenuVersions) do
-        love.graphics.print(v.name .. " v" .. v.version .. (v.extra and (" - " .. table.concat(v.extra, ", "))or ""), 0, love.graphics.getHeight() - smfont:getHeight()*(#MenuVersions-i+1))
+        love.graphics.print(v.name .. " v" .. v.version .. (v.extra and (" - " .. table.concat(v.extra, ", "))or ""), 0, love.graphics.getHeight() - mdfont:getHeight()*(#MenuVersions-i+1))
     end
 
     love.graphics.setFont(lgfont)
@@ -681,15 +716,7 @@ function scene.mousemoved(x, y, dx, dy)
     end
 end
 
-function scene.mousepressed(x, y, b, t)
-    if t then return end
-    if ControlRemap.control then
-        -- Override
-        Settings.controls[ControlRemap.control][ControlRemap.entry].type = "mouse"
-        Settings.controls[ControlRemap.control][ControlRemap.entry].button = b
-        ControlRemap.control = nil
-        return
-    end
+local function mousepress(x, y, b)
     local screenWidth = 1280
     local screenHeight = 720
     local leftMargin = 160
@@ -718,6 +745,18 @@ function scene.mousepressed(x, y, b, t)
     if (Menus[CurrentMenu] or {}).click and not hasDialog then
         (Menus[CurrentMenu] or {}):click(m_x, m_y, b)
     end
+end
+
+function scene.mousepressed(x, y, b, t)
+    if t or (not t and IsMobile) then return end
+    if ControlRemap.control then
+        -- Override
+        Settings.controls[ControlRemap.control][ControlRemap.entry].type = "mouse"
+        Settings.controls[ControlRemap.control][ControlRemap.entry].button = b
+        ControlRemap.control = nil
+        return
+    end
+    mousepress(x,y,b)
 end
 
 function scene.mousereleased(x, y, b)
@@ -831,7 +870,7 @@ end
 
 function scene.touchreleased(id,x,y)
     if isPress and allowScroll then
-        scene.mousepressed(x,y,1)
+        mousepress(x,y,1)
     end
     scene.mousereleased(x,y,1)
     isPress = false

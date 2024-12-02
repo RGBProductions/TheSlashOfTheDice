@@ -1,149 +1,5 @@
 local tempSettings = {}
 
-local settingsMenu = UI.Element:new({
-    children = {
-        UI.Text:new({
-            x = 0,
-            y = -180,
-            width = 512,
-            height = 72,
-            font = xlfont_2x,
-            fontScale = 0.5,
-            alignHoriz = "center",
-            alignVert = "center",
-            text = function() return Localize("title.menu.settings") end
-        }),
-        UI.ScrollablePanel:new({
-            id = "tabs",
-            x = 0,
-            y = 0,
-            background = {0,0,0,0},
-            border = {0,0,0,0},
-            width = 256,
-            height = 224,
-            children = {
-                UI.Button:new({
-                    defaultSelected = true,
-                    id = "video",
-                    scrollThrough = true,
-                    x = 0,
-                    y = -80,
-                    width = 256,
-                    height = 64,
-                    background = function() return GetTheme().button_secondary.background end,
-                    border = function() return GetTheme().button_secondary.border end,
-                    cursor = "hand",
-                    children = {
-                        UI.Text:new({
-                            clickThrough = true,
-                            x = 0,
-                            y = 0,
-                            width = 256,
-                            height = 64,
-                            text = function(self) return Localize("button.settings.video") end,
-                            color = function() return GetTheme().button_secondary.text end,
-                            font = lgfont_2x,
-                            fontScale = 0.5,
-                            alignHoriz = "center",
-                            alignVert = "center"
-                        })
-                    },
-                    onclick = function(self)
-                        tempSettings = table.merge({},Settings)
-                        SetMenu(self.id.."Settings")
-                    end
-                }),
-                UI.Button:new({
-                    id = "audio",
-                    scrollThrough = true,
-                    x = 0,
-                    y = 0,
-                    width = 256,
-                    height = 64,
-                    background = function() return GetTheme().button_secondary.background end,
-                    border = function() return GetTheme().button_secondary.border end,
-                    cursor = "hand",
-                    children = {
-                        UI.Text:new({
-                            clickThrough = true,
-                            x = 0,
-                            y = 0,
-                            width = 256,
-                            height = 64,
-                            text = function(self) return Localize("button.settings.audio") end,
-                            color = function() return GetTheme().button_secondary.text end,
-                            font = lgfont_2x,
-                            fontScale = 0.5,
-                            alignHoriz = "center",
-                            alignVert = "center"
-                        })
-                    },
-                    onclick = function(self)
-                        tempSettings = table.merge({},Settings)
-                        SetMenu(self.id.."Settings")
-                    end
-                }),
-                UI.Button:new({
-                    id = "gameplay",
-                    scrollThrough = true,
-                    x = 0,
-                    y = 80,
-                    width = 256,
-                    height = 64,
-                    background = function() return GetTheme().button_secondary.background end,
-                    border = function() return GetTheme().button_secondary.border end,
-                    cursor = "hand",
-                    children = {
-                        UI.Text:new({
-                            clickThrough = true,
-                            x = 0,
-                            y = 0,
-                            width = 256,
-                            height = 64,
-                            text = function(self) return Localize("button.settings.gameplay") end,
-                            color = function() return GetTheme().button_secondary.text end,
-                            font = lgfont_2x,
-                            fontScale = 0.5,
-                            alignHoriz = "center",
-                            alignVert = "center"
-                        })
-                    },
-                    onclick = function(self)
-                        tempSettings = table.merge({},Settings)
-                        SetMenu(self.id.."Settings")
-                    end
-                })
-            }
-        }),
-        UI.Button:new({
-            id = "back",
-            x = 0,
-            y = 160,
-            width = 256,
-            height = 64,
-            background = function() return GetTheme().button_back.background end,
-            border = function() return GetTheme().button_back.border end,
-            cursor = "hand",
-            children = {
-                UI.Text:new({
-                    clickThrough = true,
-                    x = 0,
-                    y = 0,
-                    width = 120,
-                    height = 64,
-                    text = function() return Localize("button.back") end,
-                    color = function() return GetTheme().button_back.text end,
-                    font = lgfont_2x,
-                    fontScale = 0.5,
-                    alignHoriz = "center",
-                    alignVert = "center"
-                })
-            },
-            onclick = function() SetMenu("main") end
-        })
-    }
-})
-
 local sVideoMenu = UI.Element:new({
     children = {
         UI.Text:new({
@@ -1090,6 +946,7 @@ local sGameplayMenu = UI.Element:new({
                                     border = function(me) return GetTheme()[tostring(ControlRemap.control)..":"..tostring(ControlRemap.entry) == me.id and "button_primary" or "button_secondary"].border end,
                                     onclick = function(me)
                                         ControlRemap.control = id
+                                        ControlRemap.startTime = love.timer.getTime()
                                         ControlRemap.entry = 1
                                     end,
                                     cursor = "hand",
@@ -1123,6 +980,7 @@ local sGameplayMenu = UI.Element:new({
                                     border = function(me) return GetTheme()[tostring(ControlRemap.control)..":"..tostring(ControlRemap.entry) == me.id and "button_primary" or "button_secondary"].border end,
                                     onclick = function(me)
                                         ControlRemap.control = id
+                                        ControlRemap.startTime = love.timer.getTime()
                                         ControlRemap.entry = 2
                                     end,
                                     cursor = "hand",
@@ -1356,6 +1214,165 @@ local sGameplayMenu = UI.Element:new({
             onclick = function()
                 SetMenu("settings")
             end
+        })
+    }
+})
+
+local settingsMenu = UI.Element:new({
+    children = {
+        UI.Text:new({
+            x = 0,
+            y = -180,
+            width = 512,
+            height = 72,
+            font = xlfont_2x,
+            fontScale = 0.5,
+            alignHoriz = "center",
+            alignVert = "center",
+            text = function() return Localize("title.menu.settings") end
+        }),
+        UI.ScrollablePanel:new({
+            id = "tabs",
+            x = 0,
+            y = 0,
+            background = {0,0,0,0},
+            border = {0,0,0,0},
+            width = 256,
+            height = 224,
+            children = {
+                UI.Button:new({
+                    defaultSelected = true,
+                    id = "video",
+                    scrollThrough = true,
+                    x = 0,
+                    y = -80,
+                    width = 256,
+                    height = 64,
+                    background = function() return GetTheme().button_secondary.background end,
+                    border = function() return GetTheme().button_secondary.border end,
+                    cursor = "hand",
+                    children = {
+                        UI.Text:new({
+                            clickThrough = true,
+                            x = 0,
+                            y = 0,
+                            width = 256,
+                            height = 64,
+                            text = function(self) return Localize("button.settings.video") end,
+                            color = function() return GetTheme().button_secondary.text end,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
+                            alignHoriz = "center",
+                            alignVert = "center"
+                        })
+                    },
+                    onclick = function(self)
+                        for _,child in ipairs(sVideoMenu:unpackChildren(nil,nil,false,1)) do
+                            if type((child.element or {}).initInstance) == "function" then
+                                child.element:initInstance()
+                            end
+                        end
+                        tempSettings = table.merge({},Settings)
+                        SetMenu(self.id.."Settings")
+                    end
+                }),
+                UI.Button:new({
+                    id = "audio",
+                    scrollThrough = true,
+                    x = 0,
+                    y = 0,
+                    width = 256,
+                    height = 64,
+                    background = function() return GetTheme().button_secondary.background end,
+                    border = function() return GetTheme().button_secondary.border end,
+                    cursor = "hand",
+                    children = {
+                        UI.Text:new({
+                            clickThrough = true,
+                            x = 0,
+                            y = 0,
+                            width = 256,
+                            height = 64,
+                            text = function(self) return Localize("button.settings.audio") end,
+                            color = function() return GetTheme().button_secondary.text end,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
+                            alignHoriz = "center",
+                            alignVert = "center"
+                        })
+                    },
+                    onclick = function(self)
+                        for _,child in ipairs(sAudioMenu:unpackChildren(nil,nil,false,1)) do
+                            if type((child.element or {}).initInstance) == "function" then
+                                child.element:initInstance()
+                            end
+                        end
+                        tempSettings = table.merge({},Settings)
+                        SetMenu(self.id.."Settings")
+                    end
+                }),
+                UI.Button:new({
+                    id = "gameplay",
+                    scrollThrough = true,
+                    x = 0,
+                    y = 80,
+                    width = 256,
+                    height = 64,
+                    background = function() return GetTheme().button_secondary.background end,
+                    border = function() return GetTheme().button_secondary.border end,
+                    cursor = "hand",
+                    children = {
+                        UI.Text:new({
+                            clickThrough = true,
+                            x = 0,
+                            y = 0,
+                            width = 256,
+                            height = 64,
+                            text = function(self) return Localize("button.settings.gameplay") end,
+                            color = function() return GetTheme().button_secondary.text end,
+                            font = lgfont_2x,
+                            fontScale = 0.5,
+                            alignHoriz = "center",
+                            alignVert = "center"
+                        })
+                    },
+                    onclick = function(self)
+                        for _,child in ipairs(sGameplayMenu:unpackChildren(nil,nil,false,1)) do
+                            if type((child.element or {}).initInstance) == "function" then
+                                child.element:initInstance()
+                            end
+                        end
+                        tempSettings = table.merge({},Settings)
+                        SetMenu(self.id.."Settings")
+                    end
+                })
+            }
+        }),
+        UI.Button:new({
+            id = "back",
+            x = 0,
+            y = 160,
+            width = 256,
+            height = 64,
+            background = function() return GetTheme().button_back.background end,
+            border = function() return GetTheme().button_back.border end,
+            cursor = "hand",
+            children = {
+                UI.Text:new({
+                    clickThrough = true,
+                    x = 0,
+                    y = 0,
+                    width = 120,
+                    height = 64,
+                    text = function() return Localize("button.back") end,
+                    color = function() return GetTheme().button_back.text end,
+                    font = lgfont_2x,
+                    fontScale = 0.5,
+                    alignHoriz = "center",
+                    alignVert = "center"
+                })
+            },
+            onclick = function() SetMenu("main") end
         })
     }
 })

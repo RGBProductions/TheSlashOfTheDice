@@ -93,15 +93,18 @@ end
 
 function scene.mousepressed(x,y)
     scrollVelocity = 0
-    if x >= 64 and x < 64+64*Settings.video.ui_scale and y >= 64 and y < 64+64*Settings.video.ui_scale and ShowMobileUI then
-        SceneManager.LoadScene("scenes/menu")
-    end
 end
 
 function scene.mousemoved(x,y,dx,dy)
     if love.mouse.isDown(1) then
         scrollVelocity = dy
         CreditScroll = CreditScroll - dy
+    end
+end
+
+function scene.touchreleased(id,x,y)
+    if x >= 64 and x < 64+64*Settings.video.ui_scale and y >= 64 and y < 64+64*Settings.video.ui_scale and ShowMobileUI then
+        SceneManager.LoadScene("scenes/menu")
     end
 end
 

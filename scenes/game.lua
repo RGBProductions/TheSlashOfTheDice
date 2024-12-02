@@ -488,7 +488,7 @@ function scene.load(args)
                 {text = "tutorial.intro1", pause = true},
                 {text = "tutorial.intro2", pause = true},
                 {text = "tutorial.intro3", pause = true},
-                {text = function() return (IsMobile and "tutorial.intro4.mobile" or ((Gamepads[1] ~= nil) and "tutorial.intro4.gamepad" or "tutorial.intro4.desktop")) end, format = {function()
+                {text = function() return (ShowMobileUI and "tutorial.intro4.mobile" or ((Gamepads[1] ~= nil) and "tutorial.intro4.gamepad" or "tutorial.intro4.desktop")) end, format = {function()
                     local strings = GetControlStrings("pause")
                     return strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"]
                 end}, pause = true},
@@ -503,7 +503,7 @@ function scene.load(args)
             },
             messages = {
                 {text = function()
-                    if IsMobile then return "tutorial.movement.mobile" end
+                    if ShowMobileUI then return "tutorial.movement.mobile" end
                     if Gamepads[1] == nil then return "tutorial.movement.desktop" end
 
                     local strings = {
@@ -608,7 +608,7 @@ function scene.load(args)
             messages = {
                 {text = "tutorial.slash1", pause = true},
                 {text = "tutorial.slash2", pause = true},
-                {text = function() return (IsMobile and "tutorial.slash3.mobile" or ((Gamepads[1] ~= nil) and "tutorial.slash3.gamepad" or "tutorial.slash3.desktop")) end, format = {function()
+                {text = function() return (ShowMobileUI and "tutorial.slash3.mobile" or ((Gamepads[1] ~= nil) and "tutorial.slash3.gamepad" or "tutorial.slash3.desktop")) end, format = {function()
                     local strings = GetControlStrings("slash")
                     return strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"]
                 end}}
@@ -668,7 +668,7 @@ function scene.load(args)
                 {text = "tutorial.end3", pause = true, onShow = function()
                     showTimer = true
                 end},
-                {text = function() return (IsMobile and "tutorial.end4.mobile" or ((Gamepads[1] ~= nil) and "tutorial.end4.gamepad" or "tutorial.end4.desktop")) end, format = {function()
+                {text = function() return (ShowMobileUI and "tutorial.end4.mobile" or ((Gamepads[1] ~= nil) and "tutorial.end4.gamepad" or "tutorial.end4.desktop")) end, format = {function()
                     local strings = GetControlStrings("skip_wave")
                     return strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"]
                 end}, pause = true},
@@ -1385,8 +1385,8 @@ function scene.draw()
         if MessageProgress >= utf8.len(txt) and TutorialStages[Stage].messages[Message].pause then
             local w,l = lgfont:getWrap(txt, love.graphics.getWidth()-300)
             local h = #l*lgfont:getHeight()
-            local advance = Localize("tutorial.advance." .. (IsMobile and "mobile" or ((Gamepads[1] ~= nil) and "gamepad" or "desktop")))
-            if not IsMobile then
+            local advance = Localize("tutorial.advance." .. (ShowMobileUI and "mobile" or ((Gamepads[1] ~= nil) and "gamepad" or "desktop")))
+            if not ShowMobileUI then
                 local strings = GetControlStrings("advance_text")
                 advance = advance:format(strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"])
             end
@@ -1610,7 +1610,7 @@ function scene.touchpressed(id,x,y)
             end
         end
     end
-    if not Paused and Gamemode == "tutorial" then
+    if not Paused and Gamemode == "tutorial" and ShowMobileUI then
         AttemptTutorialAdvance(true)
     end
 end

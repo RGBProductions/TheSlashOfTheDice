@@ -860,7 +860,7 @@ function love.keypressed(k)
     if k == "f5" and FrameStep then
         love.update(1/60,true)
     end
-    ShowMobileUI = false
+    ShowMobileUI = k == "escape" and not love.keyboard.isDown("escape")
     SceneManager.KeyPressed(k)
 end
 
@@ -879,7 +879,12 @@ end
 
 ---@param stick love.Joystick
 function love.joystickadded(stick)
-    if stick:isGamepad() then
+    -- there is a chance a gamepad has 21 buttons and 1 axis
+    -- but i'm betting on it being rare enough to not matter
+    local buttons = stick:getButtonCount()
+    local axes = stick:getAxisCount()
+    local mayBeMouse = (buttons == 21) and (axes == 1)
+    if stick:isGamepad() and not mayBeMouse then
         Popup("gamepad_connected", stick:getName())
         table.insert(Gamepads, stick)
     end

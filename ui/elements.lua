@@ -272,10 +272,11 @@ end
 UI.TextInput = UI.Element:new({canSelect = true})
 
 function UI.TextInput:initInstance()
+    local initWith = (type(self.initWith) == "function" and self.initWith(self)) or (self.initWith or "")
     if not self.input then
-        local initWith = (type(self.initWith) == "function" and self.initWith(self)) or (self.initWith or "")
         self.input = typingutil.newInputObj(tostring(initWith), self.maxLength)
     end
+    self.input.content = tostring(initWith)
 end
 
 function UI.TextInput:draw(stencilValue)
@@ -417,6 +418,12 @@ function UI.TextInput:click(mx,my,b)
     end
     
     if mx-x >= -w/2 and mx-x < w/2 and my-y >= -h/2 and my-y < h/2 then
+        local elem = (Dialogs[1] or {}).element or Menus[CurrentMenu]
+        for _,child in ipairs(elem:unpackChildren(nil,nil,false,1)) do
+            if child.element.selected then
+                child.element.selected = false
+            end
+        end
         if (not self.disabled) and type(self.clickInstance) == "function" then self:clickInstance(mx-x,my-y,b) end
         return true, self
     else
