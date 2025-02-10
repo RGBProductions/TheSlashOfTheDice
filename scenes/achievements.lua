@@ -85,6 +85,9 @@ function scene.update(dt)
 
     local iconScale = lgfont:getHeight()+mdfont:getHeight()*2
     AchievementScroll = math.max(0,math.min(iconScale*num+16*(num-1), AchievementScroll))
+    
+    local blend = math.pow(1/((8/7)^60), dt)
+    LogoPos = blend*(LogoPos-16)+16
 end
 
 function scene.keypressed(k)

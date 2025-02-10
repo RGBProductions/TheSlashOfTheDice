@@ -103,7 +103,7 @@ local pauseMenu = UI.Element:new({
             },
             onclick = function(self)
                 Net.Disconnect()
-                SceneManager.LoadScene("scenes/menu")
+                SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
             end
         })
     }
@@ -210,7 +210,7 @@ local gameOverMenu = UI.Element:new({
             },
             onclick = function(self)
                 Net.Disconnect()
-                SceneManager.LoadScene("scenes/menu")
+                SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
             end
         })
     }
@@ -1100,7 +1100,7 @@ function scene.keypressed(k)
             end
         else
             Net.Disconnect()
-            SceneManager.LoadScene("scenes/menu")
+            SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
         end
     end
     if table.index(MatchControl({type = "key", button = k}), "advance_text") and not Paused and Gamemode == "tutorial" then

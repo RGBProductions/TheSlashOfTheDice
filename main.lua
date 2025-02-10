@@ -764,7 +764,7 @@ function love.load()
     Events.fire("modPostInit")
     
     if love.filesystem.getInfo("hidephotosensitivity") then
-        SceneManager.LoadScene("scenes/menu", {})
+        SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
     else
         SceneManager.LoadScene("scenes/photosensitivity", {})
     end

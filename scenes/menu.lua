@@ -59,7 +59,9 @@ function scene.load(args)
         logoName = "logo-en"
     end
     Logo = GetLogo(logoName)
-    LogoPos = love.graphics.getHeight()
+    if args.resetLogoPos then
+        LogoPos = love.graphics.getHeight()
+    end
 
     SetMenu(args.menu or "main")
 

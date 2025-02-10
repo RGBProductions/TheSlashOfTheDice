@@ -70,6 +70,9 @@ function scene.update(dt)
         lastType = Credits[i]["type"]
     end
     CreditScroll = math.max(0,math.min(pos,CreditScroll))
+    
+    local blend = math.pow(1/((8/7)^60), dt)
+    LogoPos = blend*(LogoPos-16)+16
 end
 
 function scene.keypressed(k)
