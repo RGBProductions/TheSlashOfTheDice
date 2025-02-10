@@ -7,14 +7,7 @@ end
 
 function scene.draw()
     love.graphics.setColor(1,1,1)
-    if not IsMobile then
-        love.graphics.setShader(BGShader)
-        BGShader:send("time", GlobalTime*48)
-        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-        love.graphics.setShader()
-    else
-        love.graphics.draw(MenuBGMobile, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
-    end
+    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
     love.graphics.setFont(xlfont)
     love.graphics.printf(Localize("title.credits"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight() - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)

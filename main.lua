@@ -747,12 +747,16 @@ function love.load()
 
     MenuBG = love.graphics.newImage("assets/images/ui/background.png")
     MenuBG:setWrap("repeat", "repeat", "repeat")
-    BGShader = love.graphics.newShader("assets/shaders/menu.glsl")
-    BGShader:send("tex", MenuBG)
-    BGShader:send("texSize", {MenuBG:getDimensions()})
-    BGShader:send("time", (GlobalTime-600)*48)
-    MenuBGMobile = love.graphics.newImage("assets/images/ui/background-mobile.png")
-    MenuBGMobile:setWrap("repeat", "repeat", "repeat")
+    MenuBGMesh = love.graphics.newMesh({
+        {0,0,0,0},
+        {4000,0,4000/MenuBG:getWidth(),0},
+        {0,4000,0,4000/MenuBG:getHeight()},
+        
+        {0,4000,0,4000/MenuBG:getHeight()},
+        {4000,0,4000/MenuBG:getWidth(),0},
+        {4000,4000,4000/MenuBG:getWidth(),4000/MenuBG:getHeight()}
+    }, "triangles")
+    MenuBGMesh:setTexture(MenuBG)
     
     updateThread:start()
 
