@@ -7,7 +7,7 @@ end
 
 function scene.draw()
     love.graphics.setColor(1,1,1)
-    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
+    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%MenuBG:getWidth()), -((GlobalTime*48)%MenuBG:getHeight()))
     love.graphics.setFont(xlfont)
     love.graphics.printf(Localize("title.credits"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight() - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)
@@ -70,7 +70,7 @@ function scene.update(dt)
         lastType = Credits[i]["type"]
     end
     CreditScroll = math.max(0,math.min(pos,CreditScroll))
-    
+
     local blend = math.pow(1/((8/7)^60), dt)
     LogoPos = blend*(LogoPos-16)+16
 end

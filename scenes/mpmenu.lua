@@ -32,7 +32,7 @@ end
 function scene.draw()
     local cursor = "arrow"
     love.graphics.setColor(1,1,1)
-    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
+    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%MenuBG:getWidth()), -((GlobalTime*48)%MenuBG:getHeight()))
     love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos, 0, Settings.video.ui_scale, Settings.video.ui_scale, Logo:getWidth()/2, 0)
     love.graphics.setFont(xlfont)
     love.graphics.printf("Multiplayer", 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale, love.graphics.getWidth(), "center")

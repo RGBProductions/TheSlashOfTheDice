@@ -27,7 +27,7 @@ end
 function scene.draw()
     local cursor = "arrow"
     love.graphics.setColor(1,1,1)
-    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
+    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%MenuBG:getWidth()), -((GlobalTime*48)%MenuBG:getHeight()))
     love.graphics.setFont(xlfont)
     love.graphics.printf("Multiplayer Game", 0, 16, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)

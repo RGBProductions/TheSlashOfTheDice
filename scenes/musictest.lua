@@ -13,7 +13,7 @@ end
 
 function scene.draw()
     love.graphics.setColor(1,1,1)
-    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
+    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%MenuBG:getWidth()), -((GlobalTime*48)%MenuBG:getHeight()))
     love.graphics.draw(Logo, love.graphics.getWidth()/2, love.graphics.getHeight()/2+ViewMargin, 0, Settings["video"]["ui_scale"], Settings["video"]["ui_scale"], Logo:getWidth()/2, Logo:getHeight()/2)
     love.graphics.setFont(xlfont)
     love.graphics.printf(music[cur][2], 0, love.graphics.getHeight()/2 + Logo:getHeight()*ViewScale+ViewMargin, love.graphics.getWidth(), "center")

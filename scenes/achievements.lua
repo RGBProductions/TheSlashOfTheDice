@@ -8,7 +8,7 @@ local scrollVelocity = 0
 
 function scene.draw()
     love.graphics.setColor(1,1,1)
-    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
+    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%MenuBG:getWidth()), -((GlobalTime*48)%MenuBG:getHeight()))
     local pos = 0
     local unlocked = 0
     local total = 0
