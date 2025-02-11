@@ -170,8 +170,6 @@
         "achievement.extreme_luck.name": "Amañado",
         "achievement.singularity.name": "Singularidad",
         "achievement.default_50_waves.name": "Superhuman",
-        "achievement.hackerman.name": "Hackerman",
-
         "achievement.complete_tutorial.description": "Completa el tutorial.",
         "achievement.complete_tutorial_5.description": "Completa el tutorial 5 veces.",
         "achievement.complete_tutorial_10.description": "Completa el tutorial 10 veces.",
@@ -193,7 +191,6 @@
         "achievement.extreme_luck.description": "Saca un 6 cinco veces seguidas.",
         "achievement.singularity.description": "Espera lo suficiente para que aparezcan 50 enemigos.",
         "achievement.default_50_waves.description": "Con todas tus fuerzas, derrota a 50 oleadas en Default.",
-        "achievement.hackerman.description": "Demuestra que eres un programador experto desbloqueando este logro.",
 
         "achievement_unlocked": "¡Logro desbloqueado!",
 

@@ -1,4 +1,5 @@
 Added "Swap Mobile Buttons" setting
+Removed "Hackerman" achievement
 Achievement spritework fixes
 Internal menu background fix
 Menu position no longer freezes when entering credits or achievements
