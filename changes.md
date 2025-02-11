@@ -1,4 +1,4 @@
-Added "Swap Mobile Buttons" setting
+Added "Swap Touchscreen Buttons" setting
 Removed "Hackerman" achievement
 Achievement spritework fixes
 Internal menu background fix
