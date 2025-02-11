@@ -1406,14 +1406,20 @@ function scene.draw()
     end
 
     if ShowMobileUI then
+        local thumbX = Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+96
+        local slashX = love.graphics.getWidth()-(Slashstick.radius*ViewScale*Settings.video.ui_scale+96)
+        if Settings.gameplay.swap_mobile_buttons then
+            thumbX = love.graphics.getWidth() - thumbX
+            slashX = love.graphics.getWidth() - slashX
+        end
         love.graphics.setColor(1,1,1)
         love.graphics.setLineWidth(8)
-        love.graphics.circle("line", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+96, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-96, Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
-        love.graphics.circle("fill", Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+96+Thumbstick.x, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-96+Thumbstick.y, Thumbstick.innerRad*ViewScale*Settings.video.ui_scale)
+        love.graphics.circle("line", thumbX, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-96, Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
+        love.graphics.circle("fill", thumbX+Thumbstick.x, love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*Settings.video.ui_scale-96+Thumbstick.y, Thumbstick.innerRad*ViewScale*Settings.video.ui_scale)
         love.graphics.setLineWidth(8)
         if not Spectating then
-            love.graphics.circle("line", love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, Slashstick.radius*ViewScale*Settings.video.ui_scale)
-            love.graphics.draw(SlashIcon, love.graphics.getWidth()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, 0, (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getWidth(), (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getHeight(), SlashIcon:getWidth()/2, SlashIcon:getHeight()/2)
+            love.graphics.circle("line", slashX, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, Slashstick.radius*ViewScale*Settings.video.ui_scale)
+            love.graphics.draw(SlashIcon, slashX, love.graphics.getHeight()-Slashstick.radius*ViewScale*Settings.video.ui_scale-96, 0, (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getWidth(), (Slashstick.radius*Settings.video.ui_scale*2)/SlashIcon:getHeight(), SlashIcon:getWidth()/2, SlashIcon:getHeight()/2)
         end
         love.graphics.rectangle("line", love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64, 64, Pausebutton.size*ViewScale*Settings.video.ui_scale, Pausebutton.size*ViewScale*Settings.video.ui_scale)
         love.graphics.draw(PauseIcon, love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64, 64, 0, Pausebutton.size/PauseIcon:getWidth()*Settings.video.ui_scale, Pausebutton.size/PauseIcon:getHeight()*Settings.video.ui_scale)
@@ -1573,12 +1579,18 @@ end
 function scene.touchpressed(id,x,y)
     if frame < 2 then return end
     if Paused then return end
-    local tx,ty = x-(Thumbstick.outerRad*ViewScale*ViewScale*Settings.video.ui_scale+64+Thumbstick.x),y-(love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*ViewScale*Settings.video.ui_scale-64+Thumbstick.y)
+    local thumbX = Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+64
+    local slashX = love.graphics.getWidth()-(Slashstick.radius*ViewScale*Settings.video.ui_scale+64)
+    if Settings.gameplay.swap_mobile_buttons then
+        thumbX = love.graphics.getWidth() - thumbX
+        slashX = love.graphics.getWidth() - slashX
+    end
+    local tx,ty = x-(thumbX+Thumbstick.x),y-(love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*ViewScale*Settings.video.ui_scale-64+Thumbstick.y)
     if math.sqrt(tx*tx+ty*ty) <= Thumbstick.outerRad*ViewScale*Settings.video.ui_scale then
         Thumbstick.pressed = id
         return
     end
-    local sx,sy = x-(love.graphics.getWidth()-Slashstick.radius*ViewScale*ViewScale*Settings.video.ui_scale-64),y-(love.graphics.getHeight()-Slashstick.radius*ViewScale*ViewScale*Settings.video.ui_scale-64)
+    local sx,sy = x-slashX,y-(love.graphics.getHeight()-Slashstick.radius*ViewScale*ViewScale*Settings.video.ui_scale-64)
     if math.sqrt(sx*sx+sy*sy) <= Slashstick.radius*ViewScale*Settings.video.ui_scale and player then
         local mx = Thumbstick.x/(Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
         local my = Thumbstick.y/(Thumbstick.outerRad*ViewScale*Settings.video.ui_scale)
@@ -1624,7 +1636,13 @@ function scene.touchreleased(id,x,y)
 end
 
 function scene.touchmoved(id,x,y)
-    local tx,ty = x-(Thumbstick.outerRad*ViewScale*ViewScale*Settings.video.ui_scale+64),y-(love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*ViewScale*Settings.video.ui_scale-64)
+    local thumbX = Thumbstick.outerRad*ViewScale*Settings.video.ui_scale+96
+    local slashX = love.graphics.getWidth()-(Slashstick.radius*ViewScale*Settings.video.ui_scale+96)
+    if Settings.gameplay.swap_mobile_buttons then
+        thumbX = love.graphics.getWidth() - thumbX
+        slashX = love.graphics.getWidth() - slashX
+    end
+    local tx,ty = x-(thumbX),y-(love.graphics.getHeight()-Thumbstick.outerRad*ViewScale*ViewScale*Settings.video.ui_scale-64)
     if Thumbstick.pressed == id then
         local m = math.sqrt(tx*tx+ty*ty)
         local n = math.min(Thumbstick.outerRad*ViewScale*Settings.video.ui_scale, m)

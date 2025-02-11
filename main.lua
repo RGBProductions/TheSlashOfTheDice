@@ -426,7 +426,8 @@ Settings = {
     gameplay = {
         dice_mode = 2,
         auto_aim_on = IsMobile,
-        auto_aim_limit = 45
+        auto_aim_limit = 45,
+        swap_mobile_buttons = false
     },
 
     controls = {},

@@ -1155,6 +1155,35 @@ local sGameplayMenu = UI.Element:new({
                         })
                     }
                 }),
+                UI.Toggle:new({
+                    id = "swap_mobile_buttons",
+                    scrollThrough = true,
+                    cursor = "hand",
+                    x = 112,
+                    y = 88,
+                    width = 32,
+                    height = 32,
+                    initWith = function() return Settings.gameplay.swap_mobile_buttons end,
+                    ontoggle = function(self,value) tempSettings.gameplay.swap_mobile_buttons = value end,
+                    children = {
+                        UI.Text:new({
+                            text = function() return Localize("settings.swap_mobile_buttons") end,
+                            font = lgfont_2x,
+                            fontScale = function(self)
+                                local text = (type(self.text) == "function" and self:text()) or (self.text or "")
+                                local font = (type(self.font) == "function" and self:font()) or (self.font or mdfont)
+                                local width = font:getWidth(text)
+                                return math.min(0.5,288/width)
+                            end,
+                            x = -288,
+                            y = 0,
+                            width = 288,
+                            height = 32,
+                            alignHoriz = "left",
+                            alignVert = "center"
+                        })
+                    }
+                }),
             }
         }),
         UI.Button:new({

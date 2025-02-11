@@ -1,3 +1,4 @@
+Added "Swap Mobile Buttons" setting
 Achievement spritework fixes
 Internal menu background fix
 Menu position no longer freezes when entering credits or achievements
