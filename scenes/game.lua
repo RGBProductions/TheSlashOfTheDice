@@ -1,4 +1,5 @@
--- this version, 1.2.1, is the last one i'm using this game scene in.
+-- this version, 1.2.2, is the last one i'm using this game scene in.
+-- YES I KNOW I'VE BUMPED THE VERSION NUMBER UP TWICE SHUT-
 -- for 1.3 i'm going to completely rewrite it.
 -- i just hate how long and bad it is.
 
