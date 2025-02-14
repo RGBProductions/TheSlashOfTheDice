@@ -301,6 +301,7 @@ function RecursiveDelete( item )
 end
 
 local curver = love.filesystem.read("version.txt"):split("\n")
+Version = {curver[1], tonumber(curver[2])}
 version = curver[1]
 version_number = curver[2]
 update = {false, version}
