@@ -774,7 +774,8 @@ end
 local saveTime = 0
 
 GlobalTime = 0
-local presenceTimer = 14
+PresenceTimer = 14
+SuppressPresenceUpdates = true
 
 function love.update(dt,step)
     if FrameStep and not step then
@@ -807,10 +808,12 @@ function love.update(dt,step)
         Achievements.Save("achievements.txt")
         saveTime = 0
     end
-    presenceTimer = presenceTimer + dt
-    if presenceTimer >= 15 then
-        if DiscordRPC then DiscordRPC.updatePresence(DiscordPresence) end
-        presenceTimer = 0
+    if not SuppressPresenceUpdates then
+        PresenceTimer = PresenceTimer + dt
+        if PresenceTimer >= 15 then
+            if DiscordRPC then DiscordRPC.updatePresence(DiscordPresence) end
+            PresenceTimer = 0
+        end
     end
     if Music then
         if Paused then

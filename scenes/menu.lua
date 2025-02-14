@@ -35,6 +35,7 @@ local isPress = false
 local isTouchHeld = false
 
 function scene.load(args)
+    SuppressPresenceUpdates = false
     StopMusic()
     InGame = false
     SusCombo = 0
