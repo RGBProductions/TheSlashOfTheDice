@@ -208,6 +208,11 @@ function Slash.Mod.Load(path,info)
         local s,r = pcall(json.decode, love.filesystem.read(path.."/assets/lang/"..file))
         if s then Slash.Localization.AddLanguage(name,r) end
     end
+    for _,file in ipairs(love.filesystem.getDirectoryItems(path.."/scenes")) do
+        if file:sub(-3,-1) == "lua" then
+            Slash.Scenes.Add(file:sub(1,-5))
+        end
+    end
     if love.filesystem.getInfo(path.."/init.lua") then
         local c,e = love.filesystem.load(path.."/init.lua")
         if c then
@@ -248,7 +253,7 @@ function Slash.Mod.LoadAllMods()
             if s and type(info.modid) == "string" then
                 local modCheck,modError = checkMod(info)
                 if not modCheck then
-                    print("can't load " .. info.modid .. ": " .. modError)
+                    print("Can't load " .. info.modid .. ": " .. modError)
                 else
                     valid[info.modid] = {id = info.modid, path = path, info = info}
                 end
@@ -283,7 +288,7 @@ function Slash.Mod.LoadAllMods()
     for id,data in pairs(valid) do
         local s,r = addMod(data)
         if not s then
-            print("could not load " .. id .. ": " .. r)
+            print("Could not load " .. id .. ": " .. r)
         end
     end
 
@@ -301,7 +306,7 @@ function Slash.Mod.LoadAllMods()
         if not failedDependency then
             local success,message = Slash.Mod.Load(mod.loaded.path, mod.loaded.info)
             if not success then
-                print("failed to load " .. mod.loaded.id .. ": " .. message)
+                print("Failed to load " .. mod.loaded.id .. ": " .. message)
             else
                 succeeded[mod.loaded.id] = true
             end
@@ -324,6 +329,18 @@ function Slash.Mod.GetModCount()
     return #mods
 end
 
+---Gets the number of loaded visible mods
+---@return integer
+function Slash.Mod.GetVisibleModCount()
+    local count = 0
+    for _,mod in pairs(mods) do
+        if not (mod.info or {}).hidden then
+            count = count + 1
+        end
+    end
+    return count
+end
+
 ---Gets a mod by its ID, or nil if it doesn't exist
 ---@param id string
 ---@return loadermod?
@@ -343,6 +360,13 @@ function Slash.Mod.GetMods()
         table.insert(retrieved, mod.info)
     end
     return retrieved
+end
+
+function Slash.Mod.GetPath(path)
+    if path then
+        return targetPath .. "/" .. path
+    end
+    return targetPath
 end
 
 function Slash.Mod.ReadFile(path)

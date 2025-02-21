@@ -194,3 +194,11 @@ function Slash.SettingsRules.Language()
         return Slash.Localization.HasLanguage(value)
     end
 end
+
+function Slash.Settings.Clear()
+    settingsData = {}
+    settingsRules = {}
+    settingsBehaviors = {}
+    settingsTypes = {}
+    settingsQueue = {}
+end

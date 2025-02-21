@@ -44,7 +44,7 @@ local playMenu = UI.Element:new({
                             alignVert = "center"
                         })
                     },
-                    onclick = function(self) SceneManager.LoadScene("scenes/game", {mode = self.id}) end
+                    onclick = function(self) Slash.Scenes.Load("default:game", {mode = self.id}) end
                 }),
                 UI.Button:new({
                     scrollThrough = true,
@@ -70,7 +70,7 @@ local playMenu = UI.Element:new({
                             alignVert = "center"
                         })
                     },
-                    onclick = function(self) SceneManager.LoadScene("scenes/game", {mode = self.id}) end
+                    onclick = function(self) Slash.Scenes.Load("default:game", {mode = self.id}) end
                 }),
                 UI.Button:new({
                     scrollThrough = true,
@@ -96,7 +96,7 @@ local playMenu = UI.Element:new({
                             alignVert = "center"
                         })
                     },
-                    onclick = function(self) SceneManager.LoadScene("scenes/game", {mode = self.id}) end
+                    onclick = function(self) Slash.Scenes.Load("default:game", {mode = self.id}) end
                 }),
                 UI.Button:new({
                     scrollThrough = true,
@@ -124,7 +124,7 @@ local playMenu = UI.Element:new({
                     },
                     onclick = function(self)
                         if Achievements.IsUnlocked("default_30_waves") then
-                            SceneManager.LoadScene("scenes/game", {mode = self.id})
+                            Slash.Scenes.Load("default:game", {mode = self.id})
                         else
                             local popup = UI.Panel:new({
                                 width = 480,

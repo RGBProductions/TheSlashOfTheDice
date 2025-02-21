@@ -75,7 +75,7 @@ local pauseMenu = UI.Element:new({
                 })
             },
             onclick = function(self)
-                SceneManager.LoadScene("scenes/game", {mode=Gamemode})
+                Slash.Scenes.Load("default:game", {mode=Gamemode})
                 frame = 0
             end
         }),
@@ -104,7 +104,7 @@ local pauseMenu = UI.Element:new({
             },
             onclick = function(self)
                 Net.Disconnect()
-                SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
+                Slash.Scenes.Load("default:menu", {resetLogoPos = true})
             end
         })
     }
@@ -172,7 +172,7 @@ local gameOverMenu = UI.Element:new({
                 elseif IsMultiplayer then
                     Spectating = true
                 else
-                    SceneManager.LoadScene("scenes/game", {mode=Gamemode})
+                    Slash.Scenes.Load("default:game", {mode=Gamemode})
                     frame = 0
                 end
             end
@@ -211,7 +211,7 @@ local gameOverMenu = UI.Element:new({
             },
             onclick = function(self)
                 Net.Disconnect()
-                SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
+                Slash.Scenes.Load("default:menu", {resetLogoPos = true})
             end
         })
     }
@@ -1090,7 +1090,7 @@ end
 function scene.keypressed(k)
     if table.index(MatchControl({type = "key", button = k}), "pause") then
         if Gamemode == "playtest" then
-            SceneManager.LoadScene("scenes/menu", {menu = "customize"})
+            Slash.Scenes.Load("default:menu", {menu = "customize"})
             return
         end
         if #GetEntitiesWithID("player") > 0 or Spectating then
@@ -1101,7 +1101,7 @@ function scene.keypressed(k)
             end
         else
             Net.Disconnect()
-            SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
+            Slash.Scenes.Load("default:menu", {resetLogoPos = true})
         end
     end
     if table.index(MatchControl({type = "key", button = k}), "advance_text") and not Paused and Gamemode == "tutorial" then
@@ -1516,7 +1516,7 @@ function scene.gamepadpressed(stick,b)
     end
     if table.index(controlMatches, "pause") then
         if Gamemode == "playtest" then
-            SceneManager.LoadScene("scenes/menu", {menu = "customize"})
+            Slash.Scenes.Load("default:menu", {menu = "customize"})
             return
         end
         if not (IsDead and not Spectating) then
@@ -1601,7 +1601,7 @@ function scene.touchpressed(id,x,y)
     end
     if x >= love.graphics.getWidth()-Pausebutton.size*ViewScale*Settings.video.ui_scale-64 and x < love.graphics.getWidth()-64 and y >= 64 and y < Pausebutton.size*ViewScale*Settings.video.ui_scale+64 then
         if Gamemode == "playtest" then
-            SceneManager.LoadScene("scenes/menu", {menu = "customize"})
+            Slash.Scenes.Load("default:menu", {menu = "customize"})
             return
         end
         Paused = not Paused

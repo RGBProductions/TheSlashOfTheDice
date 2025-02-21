@@ -3,6 +3,8 @@ hsx = require "lib.hsx"
 typingutil = require "lib.typingutil"
 json = require "json"
 
+require "slash"
+
 love.keyboard.setKeyRepeat(true)
 
 function utf8.sub(txt, i, j)
@@ -764,11 +766,15 @@ function love.load()
 
     Events.fire("modPreInit")
     Events.fire("modPostInit")
+
+    Slash.Mod.Load("default", json.decode(love.filesystem.read("default/mod.json")))
+    Slash.Log.Info("Successfully loaded " .. Slash.Mod.LoadAllMods() .. " mods.")
     
     if love.filesystem.getInfo("hidephotosensitivity") then
-        SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
+        Slash.Scenes.Load("default:menu", {resetLogoPos = true})
+        -- SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
     else
-        SceneManager.LoadScene("scenes/photosensitivity", {})
+        Slash.Scenes.Load("default:photosensitivity")
     end
 end
 
@@ -983,7 +989,7 @@ function love.draw()
 
     if ShowDebugInfo then
         love.graphics.setColor(0,0,0,0.5)
-        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), smfont:getHeight()*16)
+        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), smfont:getHeight()*24)
         love.graphics.setColor(1,1,1)
         love.graphics.setFont(smfont)
         love.graphics.print("The Slash of the Dice v" .. version, 0, smfont:getHeight()*0)
@@ -996,12 +1002,14 @@ function love.draw()
         love.graphics.print("Is Game Host: " .. tostring(IsHosting()), 0, smfont:getHeight()*7)
         love.graphics.print("Entities: " .. #(Entities or {}), 0, smfont:getHeight()*8)
         love.graphics.print("Particles: " .. #(Particles or {}), 0, smfont:getHeight()*9)
+        love.graphics.printf("Scenes: " .. table.concat(Slash.Scenes.GetAllIds(), ", "), 0, smfont:getHeight()*11, love.graphics.getWidth())
     end
 end
 
 function love.quit()
     Achievements.Save("achievements.txt")
     if DiscordRPC then DiscordRPC.shutdown() end
+    Slash.Log.Flush()
 end
 
 function love.lowmemory()

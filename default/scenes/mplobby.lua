@@ -107,7 +107,7 @@ function scene.keypressed(k)
             MPMenuState = states.home
         else
             Net.Disconnect()
-            SceneManager.LoadScene("scenes/menu")
+            Slash.Scenes.Load("default:menu")
         end
     end
 end
@@ -120,14 +120,14 @@ function scene.mousepressed(x, y)
     if y >= by and y < by+64 then
         if x >= (love.graphics.getWidth()-256)/2-256-32 and x < (love.graphics.getWidth()-256)/2-256-32+256 then
             Net.Send({type = "leave"})
-            SceneManager.LoadScene("scenes/mpmenu")
+            Slash.Scenes.Load("default:mpmenu")
         end
         if x >= (love.graphics.getWidth()-256)/2 and x < (love.graphics.getWidth()-256)/2+256 then
             local setup = {mode = "default", friendlyFire = false}
             local rlow,rhigh = love.math.getRandomSeed()
             local rstate = love.math.getRandomState()
             Net.Broadcast({type = "start_game", setup = setup, rlow = rlow, rhigh = rhigh, rstate = rstate})
-            SceneManager.LoadScene("scenes/game", {mode = setup.mode, multiplayer = {friendlyFire = setup.friendlyFire}})
+            Slash.Scenes.Load("default:game", {mode = setup.mode, multiplayer = {friendlyFire = setup.friendlyFire}})
         end
         if x >= (love.graphics.getWidth()-256)/2+256+32 and x < (love.graphics.getWidth()-256)/2+256+32+256 then
             print("setup game")

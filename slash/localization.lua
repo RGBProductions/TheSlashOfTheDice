@@ -39,3 +39,8 @@ function Slash.Localization.AddLanguage(language, data)
     if type(data) ~= "table" then return end
     languages[language] = table.merge(languages[language] or {}, data or {})
 end
+
+function Slash.Localization.Clear()
+    languages = {}
+    currentLanguage = ""
+end

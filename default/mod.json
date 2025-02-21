@@ -1,0 +1,10 @@
+{
+    "modid": "default",
+    "name": "The Slash of the Dice",
+    "description": "Base game content",
+    "author": "RGB Productions",
+    "version": "1.3",
+    "apiVersion": 1,
+    "gameVersion": 6,
+    "hidden": true
+}

@@ -27,7 +27,7 @@ local customizeMenu = UI.Element:new({
             height = 64,
             x = -240,
             y = 56,
-            onclick = function() SceneManager.LoadScene("scenes/game", {mode = "playtest"}) end,
+            onclick = function() Slash.Scenes.Load("default:game", {mode = "playtest"}) end,
             children = {
                 UI.Image:new({
                     x = 0,

@@ -35,7 +35,7 @@ local menu = UI.Element:new({
                 if self.parent:getChildById("dont_show_again").value then
                     love.filesystem.write("hidephotosensitivity", "")
                 end
-                SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
+                Slash.Scenes.Load("default:menu", {resetLogoPos = true})
             end
         }),
         UI.Button:new({

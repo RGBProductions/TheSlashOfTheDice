@@ -47,3 +47,8 @@ end
 function Slash.Assets.ClearAudio()
     audioCache = {}
 end
+
+function Slash.Assets.Clear()
+    Slash.Assets.ClearImages()
+    Slash.Assets.ClearAudio()
+end

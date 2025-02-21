@@ -3,6 +3,17 @@ SceneManager = {
     ActiveScene = nil
 }
 
+function SceneManager.LoadSceneDirect(scene, args)
+    if not scene then return false, "scene does not exist" end
+    SceneManager.ActiveScene = scene
+    if scene ~= nil then
+        if scene.load ~= nil then
+            scene.load(args or {})
+        end
+    end
+    return true, nil
+end
+
 function SceneManager.LoadScene(fn, args)
     local sceneLoadEvent = {
         path = fn,
@@ -13,11 +24,16 @@ function SceneManager.LoadScene(fn, args)
     if not sceneLoadEvent.cancelled then
         StopMusic()
         if love.filesystem.getInfo(fn .. ".lua") ~= nil then
-            SceneManager.ActiveScene = require(fn)
-            if SceneManager.ActiveScene ~= nil then
-                if SceneManager.ActiveScene.load ~= nil then
-                    SceneManager.ActiveScene.load(args or {})
+            local c,e = love.filesystem.load(fn..".lua")
+            if c then
+                local s,r = pcall(c)
+                if s then
+                    SceneManager.LoadSceneDirect(r, args)
+                else
+                    return false, r
                 end
+            else
+                return false, e
             end
         end
     end
@@ -25,6 +41,7 @@ function SceneManager.LoadScene(fn, args)
     if s then
         love.mouse.setCursor(r)
     end
+    return true, nil
 end
 
 function SceneManager.Update(dt)

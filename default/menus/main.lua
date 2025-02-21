@@ -47,7 +47,7 @@ local mainMenu = UI.Element:new({
             border = function() return GetTheme().button_secondary.border end,
             cursor = "hand",
             onclick = function()
-                SceneManager.LoadScene("scenes/achievements")
+                Slash.Scenes.Load("default:achievements")
             end,
             children = {
                 UI.Image:new({
@@ -85,7 +85,7 @@ local mainMenu = UI.Element:new({
             border = function() return GetTheme().button_secondary.border end,
             cursor = "hand",
             onclick = function()
-                SceneManager.LoadScene("scenes/credits")
+                Slash.Scenes.Load("default:credits")
             end,
             children = {
                 UI.Image:new({
@@ -187,9 +187,9 @@ local mainMenu = UI.Element:new({
 
         UI.Button:new({
             id = "exit",
-            x = 0,
+            x = -68,
             y = 136,
-            width = 256,
+            width = 120,
             height = 64,
             background = function() return GetTheme().button_back.background end,
             border = function() return GetTheme().button_back.border end,
@@ -199,7 +199,7 @@ local mainMenu = UI.Element:new({
                     clickThrough = true,
                     x = 0,
                     y = 0,
-                    width = 256,
+                    width = 120,
                     height = 64,
                     text = function() return Localize("button.quit") end,
                     color = function() return GetTheme().button_back.text end,
@@ -210,6 +210,33 @@ local mainMenu = UI.Element:new({
                 })
             },
             onclick = function() love.event.push("quit") end
+        }),
+
+        UI.Button:new({
+            id = "mods",
+            x = 68,
+            y = 136,
+            width = 120,
+            height = 64,
+            background = function() return GetTheme().button_other.background end,
+            border = function() return GetTheme().button_other.border end,
+            cursor = "hand",
+            children = {
+                UI.Text:new({
+                    clickThrough = true,
+                    x = 0,
+                    y = 0,
+                    width = 120,
+                    height = 64,
+                    text = function() return Localize("button.mods") end,
+                    color = function() return GetTheme().button_other.text end,
+                    font = lgfont_2x,
+                    fontScale = 0.5,
+                    alignHoriz = "center",
+                    alignVert = "center"
+                })
+            },
+            onclick = function() SetMenu("mods") end
         })
     }
 })

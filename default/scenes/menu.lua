@@ -91,17 +91,6 @@ function scene.load(args)
         table.insert(PlayModes, {"[DBG] MP - TDM", "tdm"})
     end
     Events.fire("gamemodeInit")
-
-    -- for _,mode in ipairs(PlayModes) do
-    --     table.insert(Menus.Singleplayer.buttons, #Menus.Singleplayer.buttons-1, {
-    --         label = mode[1],
-    --         callbacks = {
-    --             ["return"] = function()
-    --                 SceneManager.LoadScene("scenes/game", {mode=mode[2]})
-    --             end
-    --         }
-    --     })
-    -- end
     
     local major,minor,rev,name = love.getVersion()
     MenuVersions = {

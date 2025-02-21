@@ -34,7 +34,7 @@ end
 
 function scene.keypressed(k)
     if k == "escape" then
-        SceneManager.LoadScene("scenes/menu")
+        Slash.Scenes.Load("default:menu")
     end
     if k == "right" then
         cur = (cur%#music) + 1

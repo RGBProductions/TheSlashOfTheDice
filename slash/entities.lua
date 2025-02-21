@@ -7,3 +7,7 @@ function Slash.Entities.NewType(id, data)
     Slash.EntityTypes[id] = data
     return Slash.EntityTypes[id]
 end
+
+function Slash.Entities.Clear()
+    Slash.EntityTypes = {}
+end

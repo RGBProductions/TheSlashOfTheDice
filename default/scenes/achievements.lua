@@ -92,13 +92,13 @@ end
 
 function scene.keypressed(k)
     if k == "escape" then
-        SceneManager.LoadScene("scenes/menu")
+        Slash.Scenes.Load("default:menu")
     end
 end
 
 function scene.gamepadpressed(stick,b)
     if b == "b" then
-        SceneManager.LoadScene("scenes/menu")
+        Slash.Scenes.Load("default:menu")
     end
 end
 
@@ -115,7 +115,7 @@ end
 
 function scene.touchreleased(id,x,y)
     if x >= 64 and x < 64+64*Settings.video.ui_scale and y >= 64 and y < 64+64*Settings.video.ui_scale and ShowMobileUI then
-        SceneManager.LoadScene("scenes/menu")
+        Slash.Scenes.Load("default:menu")
     end
 end
 

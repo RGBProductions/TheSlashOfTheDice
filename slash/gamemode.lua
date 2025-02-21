@@ -27,3 +27,7 @@ end
 function Slash.Gamemode.Get(name)
     return gamemodes[name]
 end
+
+function Slash.Gamemode.Clear()
+    gamemodes = {}
+end

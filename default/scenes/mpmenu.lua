@@ -125,7 +125,7 @@ function scene.keypressed(k)
             MPMenuState = states.home
         else
             Net.Disconnect()
-            SceneManager.LoadScene("scenes/menu")
+            Slash.Scenes.Load("default:menu")
         end
     end
 end
@@ -147,7 +147,7 @@ function scene.mousepressed(x, y)
             end
             if y >= 128+love.graphics.getHeight()/2 and y < 128+love.graphics.getHeight()/2+48 then
                 Net.Disconnect()
-                SceneManager.LoadScene("scenes/menu")
+                Slash.Scenes.Load("default:menu")
             end
         end
     end
