@@ -35,6 +35,7 @@ local isPress = false
 local isTouchHeld = false
 
 function scene.load(args)
+    SuppressPresenceUpdates = false
     StopMusic()
     InGame = false
     SusCombo = 0
@@ -59,7 +60,9 @@ function scene.load(args)
         logoName = "logo-en"
     end
     Logo = GetLogo(logoName)
-    LogoPos = love.graphics.getHeight()
+    if args.resetLogoPos then
+        LogoPos = love.graphics.getHeight()
+    end
 
     SetMenu(args.menu or "main")
 
@@ -509,14 +512,7 @@ end
 
 function scene.draw()
     love.graphics.setColor(1,1,1)
-    if not IsMobile then
-        love.graphics.setShader(BGShader)
-        BGShader:send("time", GlobalTime*48)
-        love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
-        love.graphics.setShader()
-    else
-        love.graphics.draw(MenuBGMobile, -((GlobalTime*48)%192), -((GlobalTime*48)%192))
-    end
+    love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%MenuBG:getWidth()), -((GlobalTime*48)%MenuBG:getHeight()))
     love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos, 0, Settings.video.ui_scale, Settings.video.ui_scale, Logo:getWidth()/2, 0)
     love.graphics.setFont(xlfont)
     love.graphics.setFont(lrfont)

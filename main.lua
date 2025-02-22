@@ -426,7 +426,8 @@ Settings = {
     gameplay = {
         dice_mode = 2,
         auto_aim_on = IsMobile,
-        auto_aim_limit = 45
+        auto_aim_limit = 45,
+        swap_mobile_buttons = false
     },
 
     controls = {},
@@ -747,12 +748,16 @@ function love.load()
 
     MenuBG = love.graphics.newImage("assets/images/ui/background.png")
     MenuBG:setWrap("repeat", "repeat", "repeat")
-    BGShader = love.graphics.newShader("assets/shaders/menu.glsl")
-    BGShader:send("tex", MenuBG)
-    BGShader:send("texSize", {MenuBG:getDimensions()})
-    BGShader:send("time", (GlobalTime-600)*48)
-    MenuBGMobile = love.graphics.newImage("assets/images/ui/background-mobile.png")
-    MenuBGMobile:setWrap("repeat", "repeat", "repeat")
+    MenuBGMesh = love.graphics.newMesh({
+        {0,0,0,0},
+        {4000,0,4000/MenuBG:getWidth(),0},
+        {0,4000,0,4000/MenuBG:getHeight()},
+        
+        {0,4000,0,4000/MenuBG:getHeight()},
+        {4000,0,4000/MenuBG:getWidth(),0},
+        {4000,4000,4000/MenuBG:getWidth(),4000/MenuBG:getHeight()}
+    }, "triangles")
+    MenuBGMesh:setTexture(MenuBG)
     
     updateThread:start()
 
@@ -760,7 +765,7 @@ function love.load()
     Events.fire("modPostInit")
     
     if love.filesystem.getInfo("hidephotosensitivity") then
-        SceneManager.LoadScene("scenes/menu", {})
+        SceneManager.LoadScene("scenes/menu", {resetLogoPos = true})
     else
         SceneManager.LoadScene("scenes/photosensitivity", {})
     end
@@ -769,7 +774,8 @@ end
 local saveTime = 0
 
 GlobalTime = 0
-local presenceTimer = 14
+PresenceTimer = 14
+SuppressPresenceUpdates = true
 
 function love.update(dt,step)
     if FrameStep and not step then
@@ -802,10 +808,12 @@ function love.update(dt,step)
         Achievements.Save("achievements.txt")
         saveTime = 0
     end
-    presenceTimer = presenceTimer + dt
-    if presenceTimer >= 15 then
-        if DiscordRPC then DiscordRPC.updatePresence(DiscordPresence) end
-        presenceTimer = 0
+    if not SuppressPresenceUpdates then
+        PresenceTimer = PresenceTimer + dt
+        if PresenceTimer >= 15 then
+            if DiscordRPC then DiscordRPC.updatePresence(DiscordPresence) end
+            PresenceTimer = 0
+        end
     end
     if Music then
         if Paused then

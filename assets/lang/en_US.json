@@ -104,6 +104,7 @@
         "settings.auto_aim_on": "Auto Aim",
         "settings.auto_aim_limit": "Auto Aim Limit",
         "settings.controls": "Controls",
+        "settings.swap_mobile_buttons": "Swap Touchscreen Buttons",
 
         "edit_controls": "Edit Controls",
 
@@ -170,7 +171,6 @@
         "achievement.extreme_luck.name": "Rigged",
         "achievement.singularity.name": "Singularity",
         "achievement.default_50_waves.name": "Superhuman",
-        "achievement.hackerman.name": "Hackerman",
 
         "achievement.complete_tutorial.description": "Complete the tutorial.",
         "achievement.complete_tutorial_5.description": "Complete the tutorial 5 times.",
@@ -193,7 +193,6 @@
         "achievement.extreme_luck.description": "Roll a 6 five times in a row.",
         "achievement.singularity.description": "Wait long enough for 50 enemies to spawn.",
         "achievement.default_50_waves.description": "With all your strength, defeat 50 waves in Default.",
-        "achievement.hackerman.description": "Prove you're a skilled programmer by unlocking this achievement.",
 
         "achievement_unlocked": "Achievement Unlocked!",
 
