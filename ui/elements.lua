@@ -207,7 +207,7 @@ function UI.Image:drawInstance()
     if type(image) == "function" then image = image(self) end
 
     love.graphics.setColor(tint or {1,1,1})
-    love.graphics.draw(image, -w/2, -h/2, 0, w/self.image:getWidth(), h/self.image:getHeight())
+    love.graphics.draw(image, -w/2, -h/2, 0, w/image:getWidth(), h/image:getHeight())
 
     if ShowDebugInfo then
         local lw = love.graphics.getLineWidth()
