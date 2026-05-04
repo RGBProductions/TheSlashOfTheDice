@@ -40,9 +40,9 @@ function scene.load(args)
     InGame = false
     SusCombo = 0
     Sus = "sus"
-    EnterTheSus = love.audio.newSource("assets/music/SUS.ogg", "stream")
-    ExitTheSus = love.audio.newSource("assets/music/UNSUS.ogg", "stream")
-    SusKill = love.audio.newSource("assets/music/AKill.ogg", "stream")
+    EnterTheSus = Slash.Assets.GetAudio("default:music.SUS")
+    ExitTheSus = Slash.Assets.GetAudio("default:music.UNSUS")
+    SusKill = Slash.Assets.GetAudio("default:music.AKill")
     MenuTime = 0
 
     Conversion = {
@@ -59,7 +59,7 @@ function scene.load(args)
     else
         logoName = "logo-en"
     end
-    Logo = GetLogo(logoName)
+    Logo = Slash.Assets.GetImage("default:ui." .. logoName) or Slash.Assets.Missing
     if args.resetLogoPos then
         LogoPos = love.graphics.getHeight()
     end
@@ -113,6 +113,11 @@ function scene.load(args)
     }
 
     table.insert(MenuVersions, {name = "LÖVE", version = major .. "." .. minor .. " (" .. name .. ")"})
+
+    local modCount = Slash.Mod.GetModCount() - 1
+    if modCount > 0 then
+        table.insert(MenuVersions, {name = modCount .. " mod" .. (modCount == 1 and "" or "s") .. " enabled"})
+    end
 end
 
 local keyboardLayout = {
@@ -225,7 +230,7 @@ local function addKeyButton(object,letter,i)
                     height = letter[5],
                     text = function(self)
                         if letter[1] == string.char(0x01).."case" then
-                            return Localize("keyboard." .. (self.parent.parent.parent.case == 0 and "lowercase" or (self.parent.parent.parent.case == 1 and "uppercase" or "caps_lock")))
+                            return Slash.Localization.Localize("keyboard." .. (self.parent.parent.parent.case == 0 and "lowercase" or (self.parent.parent.parent.case == 1 and "uppercase" or "caps_lock")))
                         end
                         if letter[1] == string.char(0x01).."special" then
                             return self.parent.parent.parent.set == 1 and "ABC" or "123 !@#"
@@ -288,7 +293,7 @@ function OnScreenKeyboard(showKeyboard,input)
             height = lgfont:getHeight(),
             font = lgfont_2x,
             fontScale = 0.5,
-            text = function() return Localize("text_input") end,
+            text = function() return Slash.Localization.Localize("text_input") end,
             alignHoriz = "center",
             alignVert = "center"
         })
@@ -428,7 +433,7 @@ function OnScreenKeyboard(showKeyboard,input)
                 y = 0,
                 width = 184,
                 height = 24,
-                text = function() return Localize("button.confirm") end,
+                text = function() return Slash.Localization.Localize("button.confirm") end,
                 color = function() return GetTheme().button_secondary.text end,
                 font = mdfont_2x,
                 fontScale = 0.5,
@@ -566,24 +571,28 @@ function scene.draw()
     
     love.graphics.setFont(mdfont)
     for i,v in ipairs(MenuVersions) do
-        love.graphics.print(v.name .. " v" .. v.version .. (v.extra and (" - " .. table.concat(v.extra, ", "))or ""), 0, love.graphics.getHeight() - mdfont:getHeight()*(#MenuVersions-i+1))
+        local vtext = ""
+        if v.version then
+            vtext = " v" .. v.version .. (v.extra and (" - " .. table.concat(v.extra, ", "))or "")
+        end
+        love.graphics.print(v.name .. vtext, 0, love.graphics.getHeight() - mdfont:getHeight()*(#MenuVersions-i+1))
     end
 
     love.graphics.setFont(lgfont)
 
     if checkingUpdate then
         love.graphics.setColor(1,1,1,0.75)
-        love.graphics.printf(Localize("update.checking"), 0, love.graphics.getHeight() - lgfont:getHeight(), love.graphics.getWidth(), "center")
+        love.graphics.printf(Slash.Localization.Localize("update.checking"), 0, love.graphics.getHeight() - lgfont:getHeight(), love.graphics.getWidth(), "center")
     end
     if beta then
         love.graphics.setFont(lgfont)
         love.graphics.setColor(0,1,0)
-        love.graphics.printf(Localize("update.new"), 0, love.graphics.getHeight() - lgfont:getHeight(), love.graphics.getWidth(), "center")
+        love.graphics.printf(Slash.Localization.Localize("update.new"), 0, love.graphics.getHeight() - lgfont:getHeight(), love.graphics.getWidth(), "center")
     end
     if update[1] then
         love.graphics.setFont(lgfont)
-        love.graphics.printf(Localize("update.old"), 0, love.graphics.getHeight()-lgfont:getHeight()*2, love.graphics.getWidth(), "center")
-        love.graphics.printf(Localize("update.new_version"):format(update[2]), 0, love.graphics.getHeight()-lgfont:getHeight(), love.graphics.getWidth(), "center")
+        love.graphics.printf(Slash.Localization.Localize("update.old"), 0, love.graphics.getHeight()-lgfont:getHeight()*2, love.graphics.getWidth(), "center")
+        love.graphics.printf(Slash.Localization.Localize("update.new_version"):format(update[2]), 0, love.graphics.getHeight()-lgfont:getHeight(), love.graphics.getWidth(), "center")
     end
 end
 
@@ -623,14 +632,18 @@ function scene.keypressed(k)
             SusCombo = 0
             SusMode = not SusMode
             if SusMode then
-                EnterTheSus:setVolume(Settings.audio.sound_volume/100)
-                EnterTheSus:stop()
-                EnterTheSus:play()
+                if EnterTheSus then
+                    EnterTheSus:setVolume(Settings.audio.sound_volume/100)
+                    EnterTheSus:stop()
+                    EnterTheSus:play()
+                end
                 Achievements.Advance("sus")
             else
-                ExitTheSus:setVolume(Settings.audio.sound_volume/100)
-                ExitTheSus:stop()
-                ExitTheSus:play()
+                if ExitTheSus then
+                    ExitTheSus:setVolume(Settings.audio.sound_volume/100)
+                    ExitTheSus:stop()
+                    ExitTheSus:play()
+                end
             end
         end
     end

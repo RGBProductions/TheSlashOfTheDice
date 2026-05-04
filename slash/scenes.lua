@@ -3,10 +3,8 @@ Slash.Scenes = {}
 local scenes = {}
 local ids = {}
 
-function Slash.Scenes.Add(id)
-    local path = Slash.Mod.GetPath("scenes/" .. id)
-    id = Slash.Mod.GetID() .. ":" .. id
-    local c,e = love.filesystem.load(path .. ".lua")
+function Slash.Scenes.Add(id, path)
+    local c,e = love.filesystem.load(path)
     if c then
         local s,r = pcall(c)
         if s then

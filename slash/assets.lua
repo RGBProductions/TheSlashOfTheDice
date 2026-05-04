@@ -1,5 +1,7 @@
 Slash.Assets = {}
 
+Slash.Assets.Missing = love.graphics.newImage("slash/missing.png")
+
 local imagePointers = {}
 local imageCache = {}
 
@@ -20,10 +22,6 @@ function Slash.Assets.GetImage(name)
     return imageCache[name]
 end
 
-function Slash.Assets.ClearImages()
-    imageCache = {}
-end
-
 local audioPointers = {}
 local audioCache = {}
 
@@ -42,6 +40,10 @@ function Slash.Assets.GetAudio(name)
         audioCache[name] = love.audio.newSource(audioPointers[name], "stream")
     end
     return audioCache[name]
+end
+
+function Slash.Assets.ClearImages()
+    imageCache = {}
 end
 
 function Slash.Assets.ClearAudio()

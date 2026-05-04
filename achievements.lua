@@ -5,12 +5,12 @@ Achievements = {
 
 function Achievements.Register(id, maxProgress, hidden)
     table.insert(Achievements.Order, id)
-    Achievements.Achievements[id] = {maxProgress = maxProgress, progress = 0, hidden = hidden}
-    if love.filesystem.getInfo("assets/images/achievements/" .. id .. ".png") then
-        Achievements.Achievements[id].icon = love.graphics.newImage("assets/images/achievements/" .. id .. ".png")
-    else
-        Achievements.Achievements[id].icon = love.graphics.newImage("assets/images/achievements/missing.png")
-    end
+    Achievements.Achievements[id] = {maxProgress = maxProgress, progress = 0, hidden = hidden, icon = "default:achievements." .. id}
+    -- if love.filesystem.getInfo("assets/images/achievements/" .. id .. ".png") then
+    --     Achievements.Achievements[id].icon = love.graphics.newImage("assets/images/achievements/" .. id .. ".png")
+    -- else
+    --     Achievements.Achievements[id].icon = love.graphics.newImage("assets/images/achievements/missing.png")
+    -- end
 end
 
 function Achievements.Load(path)

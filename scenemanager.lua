@@ -11,6 +11,10 @@ function SceneManager.LoadSceneDirect(scene, args)
             scene.load(args or {})
         end
     end
+    local s,r = pcall(love.mouse.getSystemCursor,"arrow")
+    if s then
+        love.mouse.setCursor(r)
+    end
     return true, nil
 end
 

@@ -43,7 +43,7 @@ Slash.SetTimer = Slash.Network.SyncedMethod("Slash.SetTimer", function(timer, ma
 end)
 
 ---@type fun(uid: integer, entityType: string, x: number, y: number, ...: any)
-Slash.SpawnEntity = Slash.Network.SyncedMethod("Slash.SpawnEntity", function(uid,entityType,x,y,...)
+local spawnEntity = Slash.Network.SyncedMethod("Slash.SpawnEntity", function(uid,entityType,x,y,...)
     if type(entityType) ~= "string" then return end
     if type(Slash.EntityTypes[entityType]) ~= "table" then return end
     local entity = {
@@ -57,6 +57,15 @@ Slash.SpawnEntity = Slash.Network.SyncedMethod("Slash.SpawnEntity", function(uid
     end
     table.insert(Slash.Game.Entities, entity)
 end)
+
+---Spawns an entity into the world
+---@param entityType string
+---@param x number
+---@param y number
+---@param ... any
+function Slash.SpawnEntity(entityType, x, y, ...)
+    spawnEntity(Slash.UID(), entityType, x, y, ...)
+end
 
 function Slash.GetEntityByUID(uid)
     for _,entity in ipairs(Slash.Game.Entities) do

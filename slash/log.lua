@@ -78,3 +78,10 @@ function Slash.Log.Flush()
 end
 
 print = Slash.Log.Info
+
+-- Clean up old logs
+local items = love.filesystem.getDirectoryItems("logs")
+table.sort(items) -- for safety
+for i = 1, math.max(0,#items-19) do
+    love.filesystem.remove("logs/"..items[i])
+end

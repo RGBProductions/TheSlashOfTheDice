@@ -1,9 +1,5 @@
 local scene = {}
 
----@diagnostic disable-next-line: param-type-mismatch
-local photosensitivity = love.graphics.newText(lgfont_2x)
-photosensitivity:addf({{1,1,1}, Localize("photosensitivity1"), {1,0.5,0.4}, Localize("photosensitivity2"), {1,1,1}, Localize("photosensitivity3"), {1,0.5,0.4}, Localize("photosensitivity4"), {1,1,1}, Localize("photosensitivity5"), {1,0.5,0.4}, Localize("photosensitivity6")}, (1280-64)*2, "center", 0, 0)
-
 local menu = UI.Element:new({
     children = {
         UI.Button:new({
@@ -24,7 +20,7 @@ local menu = UI.Element:new({
                     y = 0,
                     width = 256,
                     height = 64,
-                    text = function(self) return Localize("photosensitivity."..self.parent.id) end,
+                    text = function(self) return Slash.Localization.Localize("photosensitivity."..self.parent.id) end,
                     font = lgfont_2x,
                     fontScale = 0.5,
                     alignHoriz = "center",
@@ -55,7 +51,7 @@ local menu = UI.Element:new({
                     y = 0,
                     width = 256,
                     height = 64,
-                    text = function(self) return Localize("photosensitivity."..self.parent.id) end,
+                    text = function(self) return Slash.Localization.Localize("photosensitivity."..self.parent.id) end,
                     font = lgfont_2x,
                     fontScale = 0.5,
                     alignHoriz = "center",
@@ -70,7 +66,7 @@ local menu = UI.Element:new({
             scrollThrough = true,
             cursor = "hand",
             x = function()
-                return -(32+lgfont_2x:getWidth(Localize("photosensitivity.dont_show_again"))/2)/2+16
+                return -(32+lgfont_2x:getWidth(Slash.Localization.Localize("photosensitivity.dont_show_again"))/2)/2+16
             end,
             y = 264,
             width = 32,
@@ -78,13 +74,13 @@ local menu = UI.Element:new({
             initWith = false,
             children = {
                 UI.Text:new({
-                    text = function() return Localize("photosensitivity.dont_show_again") end,
+                    text = function() return Slash.Localization.Localize("photosensitivity.dont_show_again") end,
                     font = lgfont_2x,
                     fontScale = 0.5,
-                    x = function() return lgfont_2x:getWidth(Localize("photosensitivity.dont_show_again"))/4+24 + 32 end,
+                    x = function() return lgfont_2x:getWidth(Slash.Localization.Localize("photosensitivity.dont_show_again"))/4+24 + 32 end,
                     y = 0,
                     width = function()
-                        return lgfont_2x:getWidth(Localize("photosensitivity.dont_show_again"))/2 + 64
+                        return lgfont_2x:getWidth(Slash.Localization.Localize("photosensitivity.dont_show_again"))/2 + 64
                     end,
                     height = 32,
                     alignHoriz = "left",
@@ -96,6 +92,11 @@ local menu = UI.Element:new({
 })
 
 local currentSelection = GetDefaultSelection(menu)
+
+function scene.load()
+    scene.photosensitivity = love.graphics.newText(lgfont_2x)
+    scene.photosensitivity:addf({{1,1,1}, Slash.Localization.Localize("photosensitivity1"), {1,0.5,0.4}, Slash.Localization.Localize("photosensitivity2"), {1,1,1}, Slash.Localization.Localize("photosensitivity3"), {1,0.5,0.4}, Slash.Localization.Localize("photosensitivity4"), {1,1,1}, Slash.Localization.Localize("photosensitivity5"), {1,0.5,0.4}, Slash.Localization.Localize("photosensitivity6")}, (1280-64)*2, "center", 0, 0)
+end
 
 function scene.draw()
     local screenWidth = 1280
@@ -116,9 +117,9 @@ function scene.draw()
 
     love.graphics.setFont(xlfont_2x)
     love.graphics.setColor(1,0,0)
-    love.graphics.printf(Localize("photosensitivity.warning"), -640, -200-xlfont:getHeight()/2, 1280*2, "center", 0, 0.5)
+    love.graphics.printf(Slash.Localization.Localize("photosensitivity.warning"), -640, -200-xlfont:getHeight()/2, 1280*2, "center", 0, 0.5)
     love.graphics.setColor(1,1,1)
-    love.graphics.draw(photosensitivity, 32-640, (720-photosensitivity:getHeight()/2)/2-360, 0, 0.5, 0.5)
+    love.graphics.draw(scene.photosensitivity, 32-640, (720-scene.photosensitivity:getHeight()/2)/2-360, 0, 0.5, 0.5)
     menu:draw()
     if Gamepads[1] then menu:drawSelected(currentSelection) end
     

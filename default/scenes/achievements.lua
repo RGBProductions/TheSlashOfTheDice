@@ -22,7 +22,7 @@ function scene.draw()
         end
         if (Achievements.Achievements[id].hidden and Achievements.Achievements[id].progress >= Achievements.Achievements[id].maxProgress) or not Achievements.Achievements[id].hidden then
             hidden = (wasHidden and hidden - 1) or hidden
-            local icon = Achievements.Achievements[id].icon
+            local icon = Slash.Assets.GetImage(Achievements.Achievements[id].icon) or Slash.Assets.Missing
             local y = LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*2+lgfont:getHeight() + pos*(iconScale+16)*ViewScale - AchievementScroll
             love.graphics.setColor(1,1,1)
             unlocked = unlocked + 1
@@ -34,9 +34,9 @@ function scene.draw()
             love.graphics.draw(icon, 0, y+ViewMargin, 0, (iconScale)/icon:getWidth()*ViewScale, (iconScale)/icon:getHeight()*ViewScale)
             love.graphics.setColor(1,1,1)
             love.graphics.setFont(lgfont)
-            love.graphics.print(Localize("achievement."..id..".name"), ((iconScale+16)*ViewScale), y+ViewMargin)
+            love.graphics.print(Slash.Localization.Localize("achievement."..id..".name"), ((iconScale+16)*ViewScale), y+ViewMargin)
             love.graphics.setFont(mdfont)
-            love.graphics.print(Localize("achievement."..id..".description"), ((iconScale+16)*ViewScale), y+lgfont:getHeight()+ViewMargin)
+            love.graphics.print(Slash.Localization.Localize("achievement."..id..".description"), ((iconScale+16)*ViewScale), y+lgfont:getHeight()+ViewMargin)
             if Achievements.Achievements[id].maxProgress > 1 then
                 love.graphics.print(Achievements.Achievements[id].progress .. " / " .. Achievements.Achievements[id].maxProgress, ((iconScale+16)*ViewScale), y+lgfont:getHeight()+mdfont:getHeight()+ViewMargin)
             end
@@ -46,10 +46,10 @@ function scene.draw()
 
     love.graphics.draw(Logo, love.graphics.getWidth()/2, LogoPos+ViewMargin, 0, Settings.video.ui_scale, Settings.video.ui_scale, Logo:getWidth()/2, 0)
     love.graphics.setFont(xlfont)
-    love.graphics.printf(Localize("title.achievements"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()+ViewMargin, love.graphics.getWidth(), "center")
+    love.graphics.printf(Slash.Localization.Localize("title.achievements"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()+ViewMargin, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)
     if not ShowMobileUI then
-        love.graphics.printf(Localize(Gamepads[1] ~= nil and "gamepad.goback" or "key.goback"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*2+ViewMargin, love.graphics.getWidth(), "center")
+        love.graphics.printf(Slash.Localization.Localize(Gamepads[1] ~= nil and "gamepad.goback" or "key.goback"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*2+ViewMargin, love.graphics.getWidth(), "center")
     else
         love.graphics.draw(BackIcon, 64, 64, 0, 64/BackIcon:getWidth()*Settings.video.ui_scale, 64/BackIcon:getHeight()*Settings.video.ui_scale)
     end

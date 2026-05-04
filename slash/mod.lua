@@ -2,150 +2,67 @@ Slash.Mod = {
     APIVersion = 1
 }
 
----@alias ModInfo {modid: string, name: string, version: string, author: string, description: string, gameVersion?: integer|{[1]: integer, [2]: integer}, apiVersion?: integer, dependencies?: {[integer]: string}, hidden?: boolean, clientSide?: boolean}
+---@alias ModInfo {modid: string, name: string, version: string, author: string, description: string, gameVersion?: integer|{[1]: integer, [2]: integer}, apiVersion?: integer, dependencies?: {[integer]: string}, hidden?: boolean, clientSide?: boolean, icon?: love.Image}
 
+---@class ModObject
+---@field path string
+---@field info ModInfo
 local modObject = {}
 modObject.__index = modObject
 
 local mods = {}
+local disabled = {}
 local targetId = "main"
 local targetPath = ""
 local targetInfo = nil
+local isMod = false
+
+local dirty = false
+
+local objects = {}
 
 ---Creates a new mod object
----@param data table?
----@return table
-function Slash.Mod.New(data)
-    if type(data) ~= "table" then data = {} end
-    if targetInfo then
-        data.info = targetInfo
-    end
-    return setmetatable(data, modObject)
+---@param path string
+---@param info ModInfo
+---@return ModObject
+function Slash.Mod.New(path,info)
+    if type(info) ~= "table" then info = {} end
+    if objects[info.modid] then error("cannot create duplicate mod", 2) end
+    objects[info.modid] = setmetatable({info = info, path = path}, modObject)
+    return objects[info.modid]
 end
 
-local function modLog(...)
-    local t = {...}
-    local s = "[" .. targetId:upper() .. "] "
-    for i = 1, select("#",t) do
-        s = s .. tostring(t[i]) .. "\t"
-    end
-    s = s:sub(1,-2)
-    print(s)
-end
-
-local modAdditions = {}
-local modGlobal = {
-    love = {
-        getVersion = love.getVersion,
-        isVersionCompatible = love.isVersionCompatible,
-        audio = love.audio,
-        data = love.data,
-        font = love.font,
-        graphics = love.graphics,
-        image = love.image,
-        joystick = love.joystick,
-        keyboard = love.keyboard,
-        math = love.math,
-        mouse = love.mouse,
-        sound = love.sound,
-        system = {
-            getClipboardText = love.system.getClipboardText,
-            getOS = love.system.getOS,
-            getPowerInfo = love.system.getPowerInfo,
-            getProcessorCount = love.system.getProcessorCount,
-            hasBackgroundMusic = love.system.hasBackgroundMusic,
-            setClipboardText = love.system.setClipboardText,
-            vibrate = love.system.vibrate
-        },
-        timer = love.timer,
-        touch = love.touch,
-        video = love.video
-    },
-    math = math,
-    print = modLog,
-    coroutine = coroutine,
-    string = string,
-    table = table,
-    tonumber = tonumber,
-    tostring = tostring,
-    type = type,
-    unpack = unpack,
-    setmetatable = setmetatable,
-    getmetatable = getmetatable,
-    pairs = pairs,
-    ipairs = ipairs,
-    next = next,
-    select = select,
-    error = error,
-    module = module,
-    newproxy = newproxy,
-    pcall = pcall,
-    Slash = Slash,
-    json = json
-}
-
-local modIndexer = setmetatable({}, {
-    __index = function (t, k)
-        return modAdditions[k] or modGlobal[k]
-    end,
-    __newindex = function (t, k, v)
-        if getmetatable(modAdditions[k]) == modObject then
-            error("cannot reassign mod '" .. tostring(k) .. "'", 2)
-        end
-        modAdditions[k] = v
-    end
-})
-
-modGlobal.require = function(path,...)
-    local paths = {
-        targetPath.."/?.lua",
-        targetPath.."/?/init.lua"
-    }
-    path = path:gsub("%.", "/")
-    local notfound = {}
-    for _,p in ipairs(paths) do
-        local newPath = p:gsub("%?",path)
-        if love.filesystem.getInfo(newPath) then
-            local c,e = love.filesystem.load(newPath)
-            setfenv(c,modIndexer)
-            return c(...)
-        else
-            table.insert(notfound, "\tno file '" .. newPath .. "'")
-        end
-    end
-    error("module '" .. path .. "' not found:\n" .. table.concat(notfound,"\n"), 2)
-end
-
-local function preloadImages(path,base)
+local function preloadImages(path,base,namespace)
     base = base or path
     for _,itm in ipairs(love.filesystem.getDirectoryItems(path)) do
         local itmPath = path.."/"..itm
         if love.filesystem.getInfo(itmPath).type == "file" then
-            local splitPath = itm:split("%.")
+            local splitPath = itm:split_plain(".")
             local ext = splitPath[#splitPath]
             if ext == "png" or ext == "jpg" or ext == "jpeg" then
-                local name = itmPath:sub(#base+2,-(#ext+2))
+                local name = namespace .. ":" .. itmPath:sub(#base+2,-(#ext+2)):gsub("/",".")
                 Slash.Assets.PreloadImage(name, itmPath)
             end
         else
-            preloadImages(itmPath,base)
+            preloadImages(itmPath,base,namespace)
         end
     end
 end
 
-local function preloadAudio(path,base)
+local function preloadAudio(path,base,namespace)
     base = base or path
     for _,itm in ipairs(love.filesystem.getDirectoryItems(path)) do
         local itmPath = path.."/"..itm
         if love.filesystem.getInfo(itmPath).type == "file" then
-            local splitPath = itm:split("%.")
+            local splitPath = itm:split_plain(".")
             local ext = splitPath[#splitPath]
             if ext == "wav" or ext == "ogg" or ext == "mp3" then
-                local name = itmPath:sub(#base+2,-(#ext+2))
+                local name = namespace .. ":" .. itmPath:sub(#base+2,-(#ext+2)):gsub("/",".")
+                -- print("AUD " .. name)
                 Slash.Assets.PreloadAudio(name, itmPath)
             end
         else
-            preloadAudio(itmPath,base)
+            preloadAudio(itmPath,base,namespace)
         end
     end
 end
@@ -169,7 +86,7 @@ local function checkMod(info)
 end
 
 ---Retrieves the info for the current mod
----@return ModInfo
+---@return ModInfo?
 function Slash.Mod.GetInfo()
     return targetInfo
 end
@@ -186,50 +103,52 @@ end
 ---@return boolean
 ---@return string|nil
 function Slash.Mod.Load(path,info)
+    if not info then return false, "missing mod info" end
+
     if info then
         local s,r = checkMod(info)
         if not s then
             return s,r
         end
     end
-    local saveId = targetId
-    local savePath = targetPath
-    local saveInfo = targetInfo
-    if info then
-        targetId = info.modid
-    end
-    targetPath = path
-    targetInfo = info
-    preloadImages(path.."/assets/images")
-    preloadAudio(path.."/assets/music", path.."/assets")
-    preloadAudio(path.."/assets/sounds", path.."/assets")
-    for _,file in ipairs(love.filesystem.getDirectoryItems(path.."/assets/lang")) do
-        local name = file:sub(1,-6)
-        local s,r = pcall(json.decode, love.filesystem.read(path.."/assets/lang/"..file))
-        if s then Slash.Localization.AddLanguage(name,r) end
+    
+    local assetPaths = love.filesystem.getDirectoryItems(path.."/assets")
+    for _,namespace in ipairs(assetPaths) do
+        preloadImages(path.."/assets/"..namespace.."/images", nil, namespace)
+        preloadAudio(path.."/assets/"..namespace.."/music", path.."/assets/"..namespace, namespace)
+        preloadAudio(path.."/assets/"..namespace.."/sounds", path.."/assets/"..namespace, namespace)
+        for _,file in ipairs(love.filesystem.getDirectoryItems(path.."/assets/"..namespace.."/lang")) do
+            local name = file:sub(1,-6)
+            local s,r = pcall(json.decode, love.filesystem.read(path.."/assets/"..namespace.."/lang/"..file))
+            if s then Slash.Localization.AddLanguage(name,r) end
+        end
     end
     for _,file in ipairs(love.filesystem.getDirectoryItems(path.."/scenes")) do
         if file:sub(-3,-1) == "lua" then
-            Slash.Scenes.Add(file:sub(1,-5))
+            local s,r = Slash.Scenes.Add(info.modid .. ":" .. file:sub(1,-5), path.."/scenes/"..file)
+            if not s then
+                Slash.Log.Error("Couldn't add scene " .. path.."/scenes/"..file .. ": " .. r)
+            end
         end
     end
     if love.filesystem.getInfo(path.."/init.lua") then
         local c,e = love.filesystem.load(path.."/init.lua")
         if c then
-            setfenv(c, modIndexer)
-            local s,r = pcall(c)
+            local s,r = pcall(c, path, info)
             if not s then
-                targetPath = savePath
-                targetId = saveId
-                targetInfo = saveInfo
+                print(debug.traceback(r))
                 return s,r
             end
         end
     end
-    table.insert(mods, {id = (info or {}).modid, info = info, path = path})
-    targetPath = savePath
-    targetId = saveId
-    targetInfo = saveInfo
+    if love.filesystem.getInfo(path.."/icon.png") then
+        info.icon = love.graphics.newImage(path.."/icon.png")
+    else
+        info.icon = Slash.Assets.Missing
+    end
+    local id = (info or {}).modid
+    mods[id] = {id = id, info = info, path = path}
+    table.insert(mods, mods[id])
     return true,nil
 end
 
@@ -238,6 +157,10 @@ end
 ---Loads all mods from the mods folder
 ---@return integer
 function Slash.Mod.LoadAllMods()
+    local S,disabledMods = pcall(json.decode, love.filesystem.read("mods/disabled.json"))
+    if not S then
+        disabledMods = {}
+    end
     local files = love.filesystem.getDirectoryItems("mods")
     local valid = {}
     for _,file in ipairs(files) do
@@ -251,11 +174,22 @@ function Slash.Mod.LoadAllMods()
         if love.filesystem.getInfo(path.."/mod.json") then
             local s,info = pcall(json.decode, love.filesystem.read(path.."/mod.json"))
             if s and type(info.modid) == "string" then
-                local modCheck,modError = checkMod(info)
-                if not modCheck then
-                    print("Can't load " .. info.modid .. ": " .. modError)
+                if love.filesystem.getInfo(path.."/icon.png") then
+                    info.icon = love.graphics.newImage(path.."/icon.png")
                 else
-                    valid[info.modid] = {id = info.modid, path = path, info = info}
+                    info.icon = Slash.Assets.Missing
+                end
+                if table.index(disabledMods, info.modid) then
+                    local id = info.modid
+                    disabled[id] = {id = info.modid, path = path, info = info}
+                    table.insert(disabled, disabled[id])
+                else
+                    local modCheck,modError = checkMod(info)
+                    if not modCheck then
+                        print("Can't load " .. info.modid .. ": " .. modError)
+                    else
+                        valid[info.modid] = {id = info.modid, path = path, info = info}
+                    end
                 end
             end
         end
@@ -316,6 +250,37 @@ function Slash.Mod.LoadAllMods()
     return Slash.Mod.GetModCount()
 end
 
+function Slash.Mod.RetrieveDisabledMods()
+    return disabled
+    -- local S,files = pcall(json.decode, love.filesystem.read("mods/disabled.json"))
+    -- if not S then return {} end
+    -- disabled = {}
+    -- for _,file in ipairs(files) do
+    --     local path = "mods/"..file
+    --     local basePath = path
+    --     if file:sub(-3,-1) == "zip" then
+    --         path = path:sub(1,-5)
+    --         local s = love.filesystem.mount(basePath, path)
+    --         table.insert(mounted, basePath)
+    --     end
+    --     if love.filesystem.getInfo(path.."/mod.json") then
+    --         local s,info = pcall(json.decode, love.filesystem.read(path.."/mod.json"))
+    --         if s and type(info.modid) == "string" then
+    --             local modCheck,modError = checkMod(info)
+    --             if modCheck then
+    --                 if love.filesystem.getInfo(path.."/icon.png") then
+    --                     info.icon = love.graphics.newImage(path.."/icon.png")
+    --                 else
+    --                     info.icon = Slash.Assets.Missing
+    --                 end
+    --                 table.insert(disabled, {id = info.modid, path = path, info = info})
+    --             end
+    --         end
+    --     end
+    -- end
+    -- return disabled
+end
+
 ---Unmounts all archives
 function Slash.Mod.UnmountArchives()
     while #mounted > 0 do
@@ -333,7 +298,7 @@ end
 ---@return integer
 function Slash.Mod.GetVisibleModCount()
     local count = 0
-    for _,mod in pairs(mods) do
+    for _,mod in ipairs(mods) do
         if not (mod.info or {}).hidden then
             count = count + 1
         end
@@ -345,45 +310,79 @@ end
 ---@param id string
 ---@return loadermod?
 function Slash.Mod.GetMod(id)
-    for _,mod in ipairs(mods) do
-        if mod.id == id then
-            return mod
-        end
-    end
+    return mods[id]
 end
 
 ---Gets a list of all mods in the order they were loaded
----@return {[integer]: ModInfo}
+---@return {id: string, path: string, info: ModInfo}[]
 function Slash.Mod.GetMods()
     local retrieved = {}
     for _,mod in ipairs(mods) do
-        table.insert(retrieved, mod.info)
+        table.insert(retrieved, mod)
     end
     return retrieved
 end
 
-function Slash.Mod.GetPath(path)
+function modObject:getPath(path)
     if path then
-        return targetPath .. "/" .. path
+        return self.path .. "/" .. path
     end
     return targetPath
 end
 
-function Slash.Mod.ReadFile(path)
+function modObject:readFile(path)
     path = path:gsub("%.%.","")
-    path = targetPath.."/"..path
+    path = self.path.."/"..path
     return love.filesystem.read(path)
 end
 
+---@deprecated This is a stub. This should be removed.
 function Slash.Mod.FlushGlobal()
-    for k,v in pairs(modGlobal) do
-        modAdditions[k] = nil
-    end
-    for k,v in pairs(modAdditions) do
-        _G[k] = v
+end
+
+---@deprecated This is a stub. This should be removed.
+function Slash.Mod.Additions()
+    return nil
+end
+
+function Slash.Mod.Disable(id)
+    if mods[id] then
+        table.insert(disabled, mods[id])
+        disabled[id] = mods[id]
+        for i = 1, #mods do
+            if mods[i] == mods[id] then
+                table.remove(mods, i)
+                break
+            end
+        end
+        mods[id] = nil
+        dirty = true
     end
 end
 
-function Slash.Mod.Additions()
-    return modAdditions
+function Slash.Mod.Enable(id)
+    if disabled[id] then
+        table.insert(mods, disabled[id])
+        mods[id] = disabled[id]
+        for i = 1, #disabled do
+            if disabled[i] == disabled[id] then
+                table.remove(disabled, i)
+                break
+            end
+        end
+        disabled[id] = nil
+        dirty = true
+    end
+end
+
+function Slash.Mod.RequiresRestart()
+    return dirty
+end
+
+function Slash.Mod.WriteDisabled()
+    local result = {}
+    for _,mod in ipairs(disabled) do
+        table.insert(result, mod.id)
+    end
+    love.filesystem.write("mods/disabled.json", json.encode(result))
 end

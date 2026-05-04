@@ -3,8 +3,6 @@ hsx = require "lib.hsx"
 typingutil = require "lib.typingutil"
 json = require "json"
 
-require "slash"
-
 love.keyboard.setKeyRepeat(true)
 
 function utf8.sub(txt, i, j)
@@ -32,15 +30,6 @@ UpdateTime = 0
 ViewScale = 1
 ViewMargin = 0
 FontScale = IsMobile and 1.5 or 1
-
-SlashIcon = love.graphics.newImage("assets/images/ui/slash.png")
-PauseIcon = love.graphics.newImage("assets/images/ui/pause.png")
-BackIcon = love.graphics.newImage("assets/images/ui/back.png")
-ForwardIcon = love.graphics.newImage("assets/images/ui/forward.png")
-FastBackIcon = love.graphics.newImage("assets/images/ui/fastback.png")
-FastForwardIcon = love.graphics.newImage("assets/images/ui/fastforward.png")
-
-Trophy = love.graphics.newImage("assets/images/ui/cubetrophy.png")
 
 function IsHosting()
     return InGame and ((not IsMultiplayer) or Net.Hosting)
@@ -87,26 +76,26 @@ else
     print("Discord RPC was not initialized.")
 end
 
-smfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12)
+smfont = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 12)
 
 function ResetFonts()
-    mdfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*FontScale*Settings.video.ui_scale/1.5)
-    lgfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*FontScale*Settings.video.ui_scale/1.5)
-    lrfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32*FontScale*Settings.video.ui_scale/1.5)
-    xlfont = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48*FontScale*Settings.video.ui_scale/1.5)
+    mdfont = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 16*FontScale*Settings.video.ui_scale/1.5)
+    lgfont = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 24*FontScale*Settings.video.ui_scale/1.5)
+    lrfont = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 32*FontScale*Settings.video.ui_scale/1.5)
+    xlfont = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 48*FontScale*Settings.video.ui_scale/1.5)
 end
 
-smfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12)
-mdfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16)
-lgfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24)
-lrfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32)
-xlfont_1x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48)
+smfont_1x = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 12)
+mdfont_1x = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 16)
+lgfont_1x = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 24)
+lrfont_1x = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 32)
+xlfont_1x = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 48)
 
-smfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 12*2)
-mdfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 16*2)
-lgfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 24*2)
-lrfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 32*2)
-xlfont_2x = love.graphics.newFont("assets/fonts/NotoSansJP-Regular.ttf", 48*2)
+smfont_2x = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 12*2)
+mdfont_2x = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 16*2)
+lgfont_2x = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 24*2)
+lrfont_2x = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 32*2)
+xlfont_2x = love.graphics.newFont("default/assets/default/fonts/NotoSansJP-Regular.ttf", 48*2)
 
 SusMode = false
 
@@ -331,15 +320,24 @@ function math.sign(x)
 end
 
 function LoadMusic(fn)
-    local s,r = pcall(love.audio.newSource, fn, "stream")
-    if not s then
-        return print("WARNING: Music " .. fn .. " not found; skipping")
+    local source = Slash.Assets.GetAudio(fn)
+    if not source then
+        return Slash.Log.Warn("Could not play music with ID '" .. fn .. "'")
     end
-    Music = r
+    Music = source
     CurrentMusic = fn
     Music:setLooping(true)
     Music:setVolume(Settings.audio.music_volume/100)
     Music:play()
+    -- local s,r = pcall(love.audio.newSource, fn, "stream")
+    -- if not s then
+    --     return print("WARNING: Music " .. fn .. " not found; skipping")
+    -- end
+    -- Music = r
+    -- CurrentMusic = fn
+    -- Music:setLooping(true)
+    -- Music:setVolume(Settings.audio.music_volume/100)
+    -- Music:play()
 end
 
 function StopMusic()
@@ -747,9 +745,11 @@ function GetTheme()
 end
 
 function love.load()
+    require "slash"
+    
     if DiscordRPC then DiscordRPC.initialize("1124036737413435502", true) end
 
-    MenuBG = love.graphics.newImage("assets/images/ui/background.png")
+    MenuBG = love.graphics.newImage("default/assets/default/images/ui/background.png")
     MenuBG:setWrap("repeat", "repeat", "repeat")
     MenuBGMesh = love.graphics.newMesh({
         {0,0,0,0},
@@ -767,8 +767,14 @@ function love.load()
     Events.fire("modPreInit")
     Events.fire("modPostInit")
 
-    Slash.Mod.Load("default", json.decode(love.filesystem.read("default/mod.json")))
+    local s,r = Slash.Mod.Load("default", json.decode(love.filesystem.read("default/mod.json")))
+    if not s then
+        Slash.Log.Error("Error while loading mod 'default': " .. r)
+    end
     Slash.Log.Info("Successfully loaded " .. Slash.Mod.LoadAllMods() .. " mods.")
+    -- Slash.Mod.FlushGlobal()
+
+    Slash.Localization.SetLanguage(Settings.language)
     
     if love.filesystem.getInfo("hidephotosensitivity") then
         Slash.Scenes.Load("default:menu", {resetLogoPos = true})
@@ -799,7 +805,9 @@ function love.update(dt,step)
     if updateChannel:getCount() > 0 then
         checkingUpdate = false
         local updateMessage = updateChannel:pop()
-        if updateMessage[1] then -- Update checking passed
+        if type(updateMessage) == "string" then -- Update failed with error
+            print(updateMessage)
+        elseif updateMessage[1] then -- Update checking passed
             beta = updateMessage[2]
             update = updateMessage[3]
         end
@@ -947,7 +955,7 @@ function love.draw()
 
     SceneManager.Draw()
     if #AchievementUnlocks >= 1 then
-        local txt = Localize("achievement."..AchievementUnlocks[1].achievement..".name")
+        local txt = Slash.Localization.Localize("achievement."..AchievementUnlocks[1].achievement..".name")
         local w = math.max(lrfont:getWidth(Localize(AchievementUnlocks[1].titleText or "achievement_unlocked")), lgfont:getWidth(txt))
         local h = lrfont:getHeight()+lgfont:getHeight()
         local icon = Achievements.Achievements[AchievementUnlocks[1].achievement].icon
@@ -1009,6 +1017,7 @@ end
 function love.quit()
     Achievements.Save("achievements.txt")
     if DiscordRPC then DiscordRPC.shutdown() end
+    Slash.Mod.WriteDisabled()
     Slash.Log.Flush()
 end
 

@@ -1,3 +1,5 @@
+local channel = love.thread.getChannel("update")
+
 function split(text, delimiter)
     local result = {}
     for match in (text..delimiter):gmatch("(.-)"..delimiter) do
@@ -46,7 +48,7 @@ function check()
     local https
     local s,r = pcall(require, "https")
     if not s then
-        print("Failed to load HTTPS module, ignoring")
+        channel:push("Failed to load HTTPS module, ignoring")
         return false
     else
         https = r
@@ -79,5 +81,4 @@ function check()
     return true,beta,update
 end
 
-local channel = love.thread.getChannel("update")
 channel:push({check()})

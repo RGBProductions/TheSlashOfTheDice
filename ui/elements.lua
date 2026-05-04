@@ -700,8 +700,9 @@ end
 
 UI.ColorPicker = UI.Element:new({canSelect = true})
 
-local colorPick = love.graphics.newShader("assets/shaders/color.glsl")
-local blank = love.graphics.newImage("assets/images/ui/blank.png")
+-- TODO: these should probably be in the default mod - make an asset manager method for shaders
+local colorPick = love.graphics.newShader("shaders/color.glsl")
+local blank = love.graphics.newImage("blank.png")
 
 function UI.ColorPicker:drawInstance()
     local w = (type(self.width) == "function" and self.width(self)) or (self.width or 0)

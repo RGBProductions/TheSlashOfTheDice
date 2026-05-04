@@ -101,7 +101,7 @@ local customizeMenu = UI.Element:new({
                                     y = -196,
                                     width = 480,
                                     height = 64,
-                                    text = function() return Localize("title.customization.color") end,
+                                    text = function() return Slash.Localization.Localize("title.customization.color") end,
                                     font = xlfont_2x,
                                     fontScale = function(me)
                                         local text = (type(me.text) == "function" and me:text()) or (me.text or "")
@@ -180,7 +180,7 @@ local customizeMenu = UI.Element:new({
                                             y = 0,
                                             width = 256,
                                             height = 64,
-                                            text = function() return Localize("button.ok") end,
+                                            text = function() return Slash.Localization.Localize("button.ok") end,
                                             color = function() return GetTheme().button_secondary.text end,
                                             font = lgfont_2x,
                                             fontScale = 0.5,
@@ -227,7 +227,7 @@ local customizeMenu = UI.Element:new({
                             y = 0,
                             width = 192,
                             height = 64,
-                            text = function(self) return Localize(Settings.customization.trail == nil and "customization.none" or ("customization.trails."..Settings.customization.trail..".name")) end,
+                            text = function(self) return Slash.Localization.Localize(Settings.customization.trail == nil and "customization.none" or ("customization.trails."..Settings.customization.trail..".name")) end,
                             color = function() return GetTheme().button_secondary.text end,
                             font = lgfont_2x,
                             fontScale = 0.5,
@@ -268,7 +268,7 @@ local customizeMenu = UI.Element:new({
                                     y = 60,
                                     width = 96,
                                     height = 24,
-                                    text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.trails."..me.parent.id..".name")) end,
+                                    text = function(me) return Slash.Localization.Localize(me.parent.id == nil and "customization.none" or ("customization.trails."..me.parent.id..".name")) end,
                                     color = function() return GetTheme().button_secondary.text end,
                                     font = mdfont_2x,
                                     fontScale = function(me)
@@ -291,7 +291,7 @@ local customizeMenu = UI.Element:new({
                                         clickThrough = true,
                                         width = 96,
                                         height = 96,
-                                        text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.trails."..me.parent.id..".name")) end,
+                                        text = function(me) return Slash.Localization.Localize(me.parent.id == nil and "customization.none" or ("customization.trails."..me.parent.id..".name")) end,
                                         color = function() return GetTheme().button_secondary.text end,
                                         font = mdfont_2x,
                                         fontScale = 0.5,
@@ -323,7 +323,7 @@ local customizeMenu = UI.Element:new({
                                     y = -192,
                                     width = 464,
                                     height = 64,
-                                    text = function() return Localize("title.customization.trail") end,
+                                    text = function() return Slash.Localization.Localize("title.customization.trail") end,
                                     font = xlfont_2x,
                                     fontScale = function(me)
                                         local text = (type(me.text) == "function" and me:text()) or (me.text or "")
@@ -354,7 +354,7 @@ local customizeMenu = UI.Element:new({
                                             y = 0,
                                             width = 256,
                                             height = 64,
-                                            text = function() return Localize("button.ok") end,
+                                            text = function() return Slash.Localization.Localize("button.ok") end,
                                             color = function() return GetTheme().button_secondary.text end,
                                             font = lgfont_2x,
                                             fontScale = 0.5,
@@ -401,7 +401,7 @@ local customizeMenu = UI.Element:new({
                             y = 0,
                             width = 192,
                             height = 64,
-                            text = function(self) return Localize(Settings.customization.death_effect == nil and "customization.none" or ("customization.effects."..Settings.customization.death_effect..".name")) end,
+                            text = function(self) return Slash.Localization.Localize(Settings.customization.death_effect == nil and "customization.none" or ("customization.effects."..Settings.customization.death_effect..".name")) end,
                             color = function() return GetTheme().button_secondary.text end,
                             font = lgfont_2x,
                             fontScale = 0.5,
@@ -442,7 +442,7 @@ local customizeMenu = UI.Element:new({
                                     y = 60,
                                     width = 96,
                                     height = 24,
-                                    text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.effects."..me.parent.id..".name")) end,
+                                    text = function(me) return Slash.Localization.Localize(me.parent.id == nil and "customization.none" or ("customization.effects."..me.parent.id..".name")) end,
                                     color = function() return GetTheme().button_secondary.text end,
                                     font = mdfont_2x,
                                     fontScale = function(me)
@@ -465,7 +465,7 @@ local customizeMenu = UI.Element:new({
                                         clickThrough = true,
                                         width = 96,
                                         height = 96,
-                                        text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.effects."..me.parent.id..".name")) end,
+                                        text = function(me) return Slash.Localization.Localize(me.parent.id == nil and "customization.none" or ("customization.effects."..me.parent.id..".name")) end,
                                         color = function() return GetTheme().button_secondary.text end,
                                         font = mdfont_2x,
                                         fontScale = 0.5,
@@ -497,7 +497,7 @@ local customizeMenu = UI.Element:new({
                                     y = -192,
                                     width = 464,
                                     height = 64,
-                                    text = function() return Localize("title.customization.death_effect") end,
+                                    text = function() return Slash.Localization.Localize("title.customization.death_effect") end,
                                     font = xlfont_2x,
                                     fontScale = function(me)
                                         local text = (type(me.text) == "function" and me:text()) or (me.text or "")
@@ -528,7 +528,7 @@ local customizeMenu = UI.Element:new({
                                             y = 0,
                                             width = 256,
                                             height = 64,
-                                            text = function() return Localize("button.ok") end,
+                                            text = function() return Slash.Localization.Localize("button.ok") end,
                                             color = function() return GetTheme().button_secondary.text end,
                                             font = lgfont_2x,
                                             fontScale = 0.5,
@@ -575,7 +575,7 @@ local customizeMenu = UI.Element:new({
                             y = 0,
                             width = 192,
                             height = 64,
-                            text = function(self) return Localize(Settings.customization.hat == nil and "customization.none" or ("customization.hats."..Settings.customization.hat..".name")) end,
+                            text = function(self) return Slash.Localization.Localize(Settings.customization.hat == nil and "customization.none" or ("customization.hats."..Settings.customization.hat..".name")) end,
                             color = function() return GetTheme().button_secondary.text end,
                             font = lgfont_2x,
                             fontScale = 0.5,
@@ -616,7 +616,7 @@ local customizeMenu = UI.Element:new({
                                     y = 60,
                                     width = 96,
                                     height = 24,
-                                    text = function(me) return Localize(me.parent.id == nil and "customization.none" or ("customization.hats."..me.parent.id..".name")) end,
+                                    text = function(me) return Slash.Localization.Localize(me.parent.id == nil and "customization.none" or ("customization.hats."..me.parent.id..".name")) end,
                                     color = function() return GetTheme().button_secondary.text end,
                                     font = mdfont_2x,
                                     fontScale = function(me)
@@ -659,7 +659,7 @@ local customizeMenu = UI.Element:new({
                                     y = -192,
                                     width = 464,
                                     height = 64,
-                                    text = function() return Localize("title.customization.hat") end,
+                                    text = function() return Slash.Localization.Localize("title.customization.hat") end,
                                     font = xlfont_2x,
                                     fontScale = function(me)
                                         local text = (type(me.text) == "function" and me:text()) or (me.text or "")
@@ -690,7 +690,7 @@ local customizeMenu = UI.Element:new({
                                             y = 0,
                                             width = 256,
                                             height = 64,
-                                            text = function() return Localize("button.ok") end,
+                                            text = function() return Slash.Localization.Localize("button.ok") end,
                                             color = function() return GetTheme().button_secondary.text end,
                                             font = lgfont_2x,
                                             fontScale = 0.5,
@@ -776,7 +776,7 @@ local customizeMenu = UI.Element:new({
                             alignVert = "center",
                             font = lgfont_2x,
                             fontScale = 0.5,
-                            text = function() return Localize("customization.help.color") end
+                            text = function() return Slash.Localization.Localize("customization.help.color") end
                         }),
                         UI.Image:new({
                             clickThrough = true,
@@ -796,7 +796,7 @@ local customizeMenu = UI.Element:new({
                             alignVert = "center",
                             font = lgfont_2x,
                             fontScale = 0.5,
-                            text = function() return Localize("customization.help.trail") end
+                            text = function() return Slash.Localization.Localize("customization.help.trail") end
                         }),
                         UI.Image:new({
                             clickThrough = true,
@@ -816,7 +816,7 @@ local customizeMenu = UI.Element:new({
                             alignVert = "center",
                             font = lgfont_2x,
                             fontScale = 0.5,
-                            text = function() return Localize("customization.help.death_effect") end
+                            text = function() return Slash.Localization.Localize("customization.help.death_effect") end
                         }),
                         UI.Image:new({
                             clickThrough = true,
@@ -836,7 +836,7 @@ local customizeMenu = UI.Element:new({
                             alignVert = "center",
                             font = lgfont_2x,
                             fontScale = 0.5,
-                            text = function() return Localize("customization.help.hat") end
+                            text = function() return Slash.Localization.Localize("customization.help.hat") end
                         }),
                         UI.Button:new({
                             defaultSelected = true,
@@ -857,7 +857,7 @@ local customizeMenu = UI.Element:new({
                                     y = 0,
                                     width = 256,
                                     height = 64,
-                                    text = function() return Localize("button.ok") end,
+                                    text = function() return Slash.Localization.Localize("button.ok") end,
                                     color = function() return GetTheme().button_secondary.text end,
                                     font = lgfont_2x,
                                     fontScale = 0.5,

@@ -52,6 +52,11 @@
         "title.menu.singleplayer": "Play Game",
         "title.menu.multiplayer": "Multiplayer",
         "title.menu.customization": "Player Customization",
+        "title.menu.mods": "Mods",
+
+        "title.mods.enabled": "Enabled",
+        "title.mods.disabled": "Disabled",
+        "title.mods.requires_restart": "The game will restart to apply changes.",
 
         "title.customization.color": "Change Color",
         "title.customization.trail": "Select Trail",
@@ -64,6 +69,9 @@
 
         "title.credits": "Credits",
         "title.achievements": "Achievements",
+
+        "nomods.enabled": "No mods enabled",
+        "nomods.disabled": "No mods disabled",
         
         "key.goback": "Press escape to go back",
         "gamepad.goback": "Press B to go back",
@@ -92,6 +100,9 @@
         "button.settings.video": "Video",
         "button.settings.audio": "Audio",
         "button.settings.gameplay": "Gameplay",
+
+        "button.mods.disable": "Disable",
+        "button.mods.enable": "Enable",
 
         "settings.color_by_operator": "Color by Operator",
         "settings.smooth_timer": "Smooth Timer",

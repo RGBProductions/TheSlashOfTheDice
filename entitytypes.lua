@@ -1,4 +1,4 @@
-RocketSprite = love.graphics.newImage("assets/images/entities/rocket.png")
+-- RocketSprite = love.graphics.newImage("assets/images/entities/rocket.png")
 
 local blendAmt = 1/((5/4)^60)
 local tutorialBounds = 1024
@@ -378,7 +378,7 @@ EntityTypes = {
             local y = self.y-Camera.y+(love.graphics.getHeight()-scale)/2+ViewMargin
             if x >= -scale and x < love.graphics.getWidth() and y >= -scale and y < love.graphics.getHeight() then
                 love.graphics.setColor(1,1,1)
-                love.graphics.draw(RocketSprite, x, y, self.angle, 2, 2, 16, 16)
+                love.graphics.draw(Slash.Assets.GetImage("default:entities.rocket") or Slash.Assets.Missing, x, y, self.angle, 2, 2, 16, 16)
             end
         end,
         update = function(self, dt)

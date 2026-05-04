@@ -1,7 +1,6 @@
 local scene = {}
 
 function scene.load()
-    Credits = json.decode(love.filesystem.read("assets/text/credits.json"))
     CreditScroll = 0
 end
 
@@ -9,10 +8,10 @@ function scene.draw()
     love.graphics.setColor(1,1,1)
     love.graphics.draw(MenuBGMesh, -((GlobalTime*48)%MenuBG:getWidth()), -((GlobalTime*48)%MenuBG:getHeight()))
     love.graphics.setFont(xlfont)
-    love.graphics.printf(Localize("title.credits"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight() - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
+    love.graphics.printf(Slash.Localization.Localize("title.credits"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight() - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     love.graphics.setFont(lgfont)
     if not ShowMobileUI then
-        love.graphics.printf(Localize(Gamepads[1] ~= nil and "gamepad.goback" or "key.goback"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*2+ViewMargin - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
+        love.graphics.printf(Slash.Localization.Localize(Gamepads[1] ~= nil and "gamepad.goback" or "key.goback"), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*2+ViewMargin - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
     else
         love.graphics.draw(BackIcon, 64, 64, 0, 64/BackIcon:getWidth()*Settings.video.ui_scale, 64/BackIcon:getHeight()*Settings.video.ui_scale)
     end
@@ -27,7 +26,7 @@ function scene.draw()
         if Credits[i]["type"] == "name" then
             love.graphics.setFont(lrfont)
         end
-        love.graphics.printf(Localize(Credits[i]["label"]), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*3 + pos - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
+        love.graphics.printf(Slash.Localization.Localize(Credits[i]["label"]), 0, LogoPos + Logo:getHeight()*Settings.video.ui_scale + xlfont:getHeight()*3 + pos - CreditScroll+ViewMargin, love.graphics.getWidth(), "center")
         pos = pos + love.graphics.getFont():getHeight()
         lastType = Credits[i]["type"]
     end

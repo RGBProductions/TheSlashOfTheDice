@@ -20,7 +20,7 @@ local pauseMenu = UI.Element:new({
             font = xlfont_2x,
             fontScale = 0.5,
             alignHoriz = "center",
-            text = function() return Localize("paused.title") end
+            text = function() return Slash.Localization.Localize("paused.title") end
         }),
         UI.Button:new({
             id = "resume",
@@ -39,7 +39,7 @@ local pauseMenu = UI.Element:new({
                     y = 0,
                     width = 256,
                     height = 64,
-                    text = function(self) return Localize("paused.resume") end,
+                    text = function(self) return Slash.Localization.Localize("paused.resume") end,
                     font = lgfont_2x,
                     fontScale = 0.5,
                     alignHoriz = "center",
@@ -67,7 +67,7 @@ local pauseMenu = UI.Element:new({
                     y = 0,
                     width = 256,
                     height = 64,
-                    text = function(self) return Localize("paused.restart") end,
+                    text = function(self) return Slash.Localization.Localize("paused.restart") end,
                     font = lgfont_2x,
                     fontScale = 0.5,
                     alignHoriz = "center",
@@ -95,7 +95,7 @@ local pauseMenu = UI.Element:new({
                     y = 0,
                     width = 256,
                     height = 64,
-                    text = function(self) return Localize("paused.exit") end,
+                    text = function(self) return Slash.Localization.Localize("paused.exit") end,
                     font = lgfont_2x,
                     fontScale = 0.5,
                     alignHoriz = "center",
@@ -120,7 +120,7 @@ local gameOverMenu = UI.Element:new({
             font = xlfont_2x,
             fontScale = 0.5,
             alignHoriz = "center",
-            text = function() return Localize("gameover.title") end
+            text = function() return Slash.Localization.Localize("gameover.title") end
         }),
         UI.Text:new({
             x = 0,
@@ -130,7 +130,7 @@ local gameOverMenu = UI.Element:new({
             font = lgfont_2x,
             fontScale = 0.5,
             alignHoriz = "center",
-            text = function() return Localize("score"):format(Score) end
+            text = function() return Slash.Localization.Localize("score"):format(Score) end
         }),
         UI.Button:new({
             id = "restart",
@@ -149,7 +149,7 @@ local gameOverMenu = UI.Element:new({
                     y = 0,
                     width = 256,
                     height = 64,
-                    text = function(self) return Localize(GameSetups[Gamemode].canRespawn and "gameover.respawn" or (IsMultiplayer and "gameover.spectate" or "gameover.retry")) end,
+                    text = function(self) return Slash.Localization.Localize(GameSetups[Gamemode].canRespawn and "gameover.respawn" or (IsMultiplayer and "gameover.spectate" or "gameover.retry")) end,
                     font = lgfont_2x,
                     fontScale = 0.5,
                     alignHoriz = "center",
@@ -193,7 +193,7 @@ local gameOverMenu = UI.Element:new({
                     y = 0,
                     width = 256,
                     height = 64,
-                    text = function(self) return Localize("gameover.exit") end,
+                    text = function(self) return Slash.Localization.Localize("gameover.exit") end,
                     font = lgfont_2x,
                     fontScale = 0.5,
                     alignHoriz = "center",
@@ -397,12 +397,12 @@ function scene.load(args)
     IsMultiplayer = args.multiplayer ~= nil
     MultiplayerSetup = args.multiplayer or {}
 
-    LoadMusic(Gamemode == "tutorial" and "assets/music/Tutorial.ogg" or ("assets/music/Fight" .. (SusMode and "Sus" or "") .. ".ogg"))
+    LoadMusic(Gamemode == "tutorial" and "default:music.Tutorial" or ("default:music.Fight" .. (SusMode and "Sus" or "")))
     -- Load die images
-    DieImages = {}
-    for _,itm in pairs(love.filesystem.getDirectoryItems("assets/images/die")) do
-        DieImages[tonumber(itm:sub(1,-5))] = love.graphics.newImage("assets/images/die/" .. itm)
-    end
+    -- DieImages = {}
+    -- for _,itm in pairs(love.filesystem.getDirectoryItems("assets/images/die")) do
+    --     DieImages[tonumber(itm:sub(1,-5))] = love.graphics.newImage("assets/images/die/" .. itm)
+    -- end
 
     Dice = {}
     DiceDisplayPosition = 0
@@ -787,7 +787,7 @@ function AttemptTutorialAdvance(fromKey)
     end
     local stageText = TutorialStages[Stage].messages[Message].text
     if type(stageText) == "function" then stageText = stageText() end
-    local txt = Localize(stageText):format(unpack(format))
+    local txt = Slash.Localization.Localize(stageText):format(unpack(format))
     if MessageProgress < utf8.len(txt) and fromKey then
         MessageProgress = utf8.len(txt)
         return
@@ -818,7 +818,7 @@ function scene.update(dt)
             end
             local stageText = TutorialStages[Stage].messages[Message].text
             if type(stageText) == "function" then stageText = stageText() end
-            local txt = Localize(stageText):format(unpack(format))
+            local txt = Slash.Localization.Localize(stageText):format(unpack(format))
             local beeped = false
             while CharTime >= GetTextDelay() do
                 if MessageProgress < utf8.len(txt) then
@@ -1308,13 +1308,14 @@ function scene.draw()
         if die.die:getNumber() then
             love.graphics.setColor(r,g,b)
             love.graphics.setFont(smfont)
-            love.graphics.printf(Localize("dice."..die.operation):format(Localize("stat." .. (die.stat or ""):lower()), die.die.number), x, y+32*Settings.video.ui_scale/s-love.graphics.getFont():getHeight()*Settings.video.ui_scale/s/2-ny*48*Settings.video.ui_scale/s, 64, "center", 0, Settings.video.ui_scale/s*ds, Settings.video.ui_scale/s*ds, 32, 32)
+            love.graphics.printf(Slash.Localization.Localize("dice."..die.operation):format(Slash.Localization.Localize("stat." .. (die.stat or ""):lower()), die.die.number), x, y+32*Settings.video.ui_scale/s-love.graphics.getFont():getHeight()*Settings.video.ui_scale/s/2-ny*48*Settings.video.ui_scale/s, 64, "center", 0, Settings.video.ui_scale/s*ds, Settings.video.ui_scale/s*ds, 32, 32)
         end
         love.graphics.setColor(r,g,b,1)
         if not die.die:getNumber() then
             love.graphics.setColor(r,g,b,0.5)
         end
-        love.graphics.draw(DieImages[die.die.number], x, y, 0, Settings.video.ui_scale/s*ds, Settings.video.ui_scale/s*ds, 32, 32)
+        local dieImage = Slash.Assets.GetImage("default:die." .. die.die.number) or Slash.Assets.Missing
+        love.graphics.draw(dieImage, x, y, 0, Settings.video.ui_scale/s*ds*(64/dieImage:getWidth()), Settings.video.ui_scale/s*ds*(64/dieImage:getHeight()), 32, 32)
     end
 
     love.graphics.setColor(1,1,1)
@@ -1328,17 +1329,17 @@ function scene.draw()
             "Luck"
         }
         for _,name in ipairs(order) do
-            love.graphics.print(Localize("stat.display"):format(Localize("stat." .. name:lower()),math.round(Stats[name]*100)/100), 0, pos)
+            love.graphics.print(Slash.Localization.Localize("stat.display"):format(Slash.Localization.Localize("stat." .. name:lower()),math.round(Stats[name]*100)/100), 0, pos)
             pos = pos + lgfont:getHeight()
         end
     end
     
-    love.graphics.print(Localize("score"):format(Score), 0, love.graphics.getHeight()-lgfont:getHeight())
+    love.graphics.print(Slash.Localization.Localize("score"):format(Score), 0, love.graphics.getHeight()-lgfont:getHeight())
 
     love.graphics.setFont(lgfont)
     local pos = 0
     if showTimer then
-        love.graphics.printf(Localize(TimerDisplay[timerType] or ""):format(timerString(math.ceil((SpawnDelay - SpawnTimer)))), 0, 0, love.graphics.getWidth(), "center")
+        love.graphics.printf(Slash.Localization.Localize(TimerDisplay[timerType] or ""):format(timerString(math.ceil((SpawnDelay - SpawnTimer)))), 0, 0, love.graphics.getWidth(), "center")
         local fill = 1-((Settings.video.smooth_timer and VisualSpawnTimer or SpawnTimer)/SpawnDelay)
         love.graphics.setColor(0.25,0.25,0.25)
         local barWidth = IsMobile and 1024 or 512
@@ -1354,7 +1355,7 @@ function scene.draw()
 
     if Gamemode == "playtest" then
         love.graphics.setColor(0,0,0)
-        local txt = Localize("playtesting" .. (IsMobile and "_mobile" or "")):format(GetControlStrings("pause")[(Gamepads[1] ~= nil) and "gamepad" or "desktop"])
+        local txt = Slash.Localization.Localize("playtesting" .. (IsMobile and "_mobile" or "")):format(GetControlStrings("pause")[(Gamepads[1] ~= nil) and "gamepad" or "desktop"])
         pcall(love.graphics.printf, txt, 0, pos-2, love.graphics.getWidth(), "center")
         pcall(love.graphics.printf, txt, 0, pos-2, love.graphics.getWidth(), "center")
         pcall(love.graphics.printf, txt, 0, pos+2, love.graphics.getWidth(), "center")
@@ -1382,11 +1383,11 @@ function scene.draw()
         end
         local stageText = TutorialStages[Stage].messages[Message].text
         if type(stageText) == "function" then stageText = stageText() end
-        local txt = Localize(stageText):format(unpack(format))
+        local txt = Slash.Localization.Localize(stageText):format(unpack(format))
         if MessageProgress >= utf8.len(txt) and TutorialStages[Stage].messages[Message].pause then
             local w,l = lgfont:getWrap(txt, love.graphics.getWidth()-300)
             local h = #l*lgfont:getHeight()
-            local advance = Localize("tutorial.advance." .. (ShowMobileUI and "mobile" or ((Gamepads[1] ~= nil) and "gamepad" or "desktop")))
+            local advance = Slash.Localization.Localize("tutorial.advance." .. (ShowMobileUI and "mobile" or ((Gamepads[1] ~= nil) and "gamepad" or "desktop")))
             if not ShowMobileUI then
                 local strings = GetControlStrings("advance_text")
                 advance = advance:format(strings[(Gamepads[1] ~= nil) and "gamepad" or "desktop"])

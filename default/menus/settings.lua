@@ -11,7 +11,7 @@ local sVideoMenu = UI.Element:new({
             fontScale = 0.5,
             alignHoriz = "center",
             alignVert = "center",
-            text = function() return Localize("title.menu.video_settings") end
+            text = function() return Slash.Localization.Localize("title.menu.video_settings") end
         }),
         UI.ScrollablePanel:new({
             id = "options",
@@ -34,7 +34,7 @@ local sVideoMenu = UI.Element:new({
                     ontoggle = function(self,value) tempSettings.video.color_by_operator = value end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.color_by_operator") end,
+                            text = function() return Slash.Localization.Localize("settings.color_by_operator") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -63,7 +63,7 @@ local sVideoMenu = UI.Element:new({
                     ontoggle = function(self,value) tempSettings.video.smooth_timer = value end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.smooth_timer") end,
+                            text = function() return Slash.Localization.Localize("settings.smooth_timer") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -96,7 +96,7 @@ local sVideoMenu = UI.Element:new({
                     end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.ui_scale") end,
+                            text = function() return Slash.Localization.Localize("settings.ui_scale") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -158,7 +158,7 @@ local sVideoMenu = UI.Element:new({
                     end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.background_brightness") end,
+                            text = function() return Slash.Localization.Localize("settings.background_brightness") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -289,7 +289,7 @@ local sVideoMenu = UI.Element:new({
                                     y = -192,
                                     width = 464,
                                     height = 64,
-                                    text = function() return Localize("title.language") end,
+                                    text = function() return Slash.Localization.Localize("title.language") end,
                                     font = xlfont_2x,
                                     fontScale = function(me)
                                         local text = (type(me.text) == "function" and me:text()) or (me.text or "")
@@ -320,7 +320,7 @@ local sVideoMenu = UI.Element:new({
                                             y = 0,
                                             width = 256,
                                             height = 64,
-                                            text = function() return Localize("button.ok") end,
+                                            text = function() return Slash.Localization.Localize("button.ok") end,
                                             color = function() return GetTheme().button_secondary.text end,
                                             font = lgfont_2x,
                                             fontScale = 0.5,
@@ -335,7 +335,7 @@ local sVideoMenu = UI.Element:new({
                     end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.language") end,
+                            text = function() return Slash.Localization.Localize("settings.language") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -387,7 +387,7 @@ local sVideoMenu = UI.Element:new({
                     y = 0,
                     width = 120,
                     height = 64,
-                    text = function() return Localize("button.apply") end,
+                    text = function() return Slash.Localization.Localize("button.apply") end,
                     color = function() return GetTheme().button_back.text end,
                     font = lgfont_2x,
                     fontScale = 0.5,
@@ -417,7 +417,7 @@ local sVideoMenu = UI.Element:new({
                     y = 0,
                     width = 120,
                     height = 64,
-                    text = function() return Localize("button.cancel") end,
+                    text = function() return Slash.Localization.Localize("button.cancel") end,
                     color = function() return GetTheme().button_back.text end,
                     font = lgfont_2x,
                     fontScale = 0.5,
@@ -443,7 +443,7 @@ local sAudioMenu = UI.Element:new({
             fontScale = 0.5,
             alignHoriz = "center",
             alignVert = "center",
-            text = function() return Localize("title.menu.audio_settings") end
+            text = function() return Slash.Localization.Localize("title.menu.audio_settings") end
         }),
         UI.ScrollablePanel:new({
             id = "options",
@@ -470,7 +470,7 @@ local sAudioMenu = UI.Element:new({
                     end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.music_volume") end,
+                            text = function() return Slash.Localization.Localize("settings.music_volume") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -532,7 +532,7 @@ local sAudioMenu = UI.Element:new({
                     end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.sound_volume") end,
+                            text = function() return Slash.Localization.Localize("settings.sound_volume") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -596,7 +596,7 @@ local sAudioMenu = UI.Element:new({
                     y = 0,
                     width = 120,
                     height = 64,
-                    text = function() return Localize("button.apply") end,
+                    text = function() return Slash.Localization.Localize("button.apply") end,
                     color = function() return GetTheme().button_back.text end,
                     font = lgfont_2x,
                     fontScale = 0.5,
@@ -625,7 +625,7 @@ local sAudioMenu = UI.Element:new({
                     y = 0,
                     width = 120,
                     height = 64,
-                    text = function() return Localize("button.cancel") end,
+                    text = function() return Slash.Localization.Localize("button.cancel") end,
                     color = function() return GetTheme().button_back.text end,
                     font = lgfont_2x,
                     fontScale = 0.5,
@@ -651,7 +651,7 @@ local sGameplayMenu = UI.Element:new({
             fontScale = 0.5,
             alignHoriz = "center",
             alignVert = "center",
-            text = function() return Localize("title.menu.gameplay_settings") end
+            text = function() return Slash.Localization.Localize("title.menu.gameplay_settings") end
         }),
         UI.ScrollablePanel:new({
             id = "options",
@@ -707,7 +707,7 @@ local sGameplayMenu = UI.Element:new({
                                     y = 0,
                                     width = 256,
                                     height = 24,
-                                    text = function(me) return Localize("dice_mode."..me.parent.id) end,
+                                    text = function(me) return Slash.Localization.Localize("dice_mode."..me.parent.id) end,
                                     color = function() return GetTheme().button_secondary.text end,
                                     font = lgfont_2x,
                                     fontScale = function(self)
@@ -740,7 +740,7 @@ local sGameplayMenu = UI.Element:new({
                                     y = -192,
                                     width = 464,
                                     height = 64,
-                                    text = function() return Localize("title.dice_mode") end,
+                                    text = function() return Slash.Localization.Localize("title.dice_mode") end,
                                     font = xlfont_2x,
                                     fontScale = function(me)
                                         local text = (type(me.text) == "function" and me:text()) or (me.text or "")
@@ -770,7 +770,7 @@ local sGameplayMenu = UI.Element:new({
                                             y = 0,
                                             width = 256,
                                             height = 64,
-                                            text = function() return Localize("button.ok") end,
+                                            text = function() return Slash.Localization.Localize("button.ok") end,
                                             color = function() return GetTheme().button_secondary.text end,
                                             font = lgfont_2x,
                                             fontScale = 0.5,
@@ -785,7 +785,7 @@ local sGameplayMenu = UI.Element:new({
                     end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.dice_mode") end,
+                            text = function() return Slash.Localization.Localize("settings.dice_mode") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -801,7 +801,7 @@ local sGameplayMenu = UI.Element:new({
                             alignVert = "center"
                         }),
                         UI.Text:new({
-                            text = function() return Localize("dice_mode."..tempSettings.gameplay.dice_mode) end,
+                            text = function() return Slash.Localization.Localize("dice_mode."..tempSettings.gameplay.dice_mode) end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -831,7 +831,7 @@ local sGameplayMenu = UI.Element:new({
                     ontoggle = function(self,value) tempSettings.gameplay.auto_aim_on = value end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.auto_aim_on") end,
+                            text = function() return Slash.Localization.Localize("settings.auto_aim_on") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -864,7 +864,7 @@ local sGameplayMenu = UI.Element:new({
                     end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.auto_aim_limit") end,
+                            text = function() return Slash.Localization.Localize("settings.auto_aim_limit") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -1033,7 +1033,7 @@ local sGameplayMenu = UI.Element:new({
                                     y = y-128,
                                     width = 128,
                                     height = 24,
-                                    text = function(me) return Localize("control."..id) end,
+                                    text = function(me) return Slash.Localization.Localize("control."..id) end,
                                     color = function() return GetTheme().button_secondary.text end,
                                     font = lgfont_2x,
                                     fontScale = function(self)
@@ -1075,7 +1075,7 @@ local sGameplayMenu = UI.Element:new({
                                     y = -192,
                                     width = 464,
                                     height = 64,
-                                    text = function() return Localize("title.controls") end,
+                                    text = function() return Slash.Localization.Localize("title.controls") end,
                                     font = xlfont_2x,
                                     fontScale = function(me)
                                         local text = (type(me.text) == "function" and me:text()) or (me.text or "")
@@ -1106,7 +1106,7 @@ local sGameplayMenu = UI.Element:new({
                                             y = 0,
                                             width = 256,
                                             height = 64,
-                                            text = function() return Localize("button.ok") end,
+                                            text = function() return Slash.Localization.Localize("button.ok") end,
                                             color = function() return GetTheme().button_secondary.text end,
                                             font = lgfont_2x,
                                             fontScale = 0.5,
@@ -1121,7 +1121,7 @@ local sGameplayMenu = UI.Element:new({
                     end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.controls") end,
+                            text = function() return Slash.Localization.Localize("settings.controls") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -1137,7 +1137,7 @@ local sGameplayMenu = UI.Element:new({
                             alignVert = "center"
                         }),
                         UI.Text:new({
-                            text = function() return Localize("edit_controls") end,
+                            text = function() return Slash.Localization.Localize("edit_controls") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -1167,7 +1167,7 @@ local sGameplayMenu = UI.Element:new({
                     ontoggle = function(self,value) tempSettings.gameplay.swap_mobile_buttons = value end,
                     children = {
                         UI.Text:new({
-                            text = function() return Localize("settings.swap_mobile_buttons") end,
+                            text = function() return Slash.Localization.Localize("settings.swap_mobile_buttons") end,
                             font = lgfont_2x,
                             fontScale = function(self)
                                 local text = (type(self.text) == "function" and self:text()) or (self.text or "")
@@ -1202,7 +1202,7 @@ local sGameplayMenu = UI.Element:new({
                     y = 0,
                     width = 120,
                     height = 64,
-                    text = function() return Localize("button.apply") end,
+                    text = function() return Slash.Localization.Localize("button.apply") end,
                     color = function() return GetTheme().button_back.text end,
                     font = lgfont_2x,
                     fontScale = 0.5,
@@ -1232,7 +1232,7 @@ local sGameplayMenu = UI.Element:new({
                     y = 0,
                     width = 120,
                     height = 64,
-                    text = function() return Localize("button.cancel") end,
+                    text = function() return Slash.Localization.Localize("button.cancel") end,
                     color = function() return GetTheme().button_back.text end,
                     font = lgfont_2x,
                     fontScale = 0.5,
@@ -1258,7 +1258,7 @@ local settingsMenu = UI.Element:new({
             fontScale = 0.5,
             alignHoriz = "center",
             alignVert = "center",
-            text = function() return Localize("title.menu.settings") end
+            text = function() return Slash.Localization.Localize("title.menu.settings") end
         }),
         UI.ScrollablePanel:new({
             id = "tabs",
@@ -1287,7 +1287,7 @@ local settingsMenu = UI.Element:new({
                             y = 0,
                             width = 256,
                             height = 64,
-                            text = function(self) return Localize("button.settings.video") end,
+                            text = function(self) return Slash.Localization.Localize("button.settings.video") end,
                             color = function() return GetTheme().button_secondary.text end,
                             font = lgfont_2x,
                             fontScale = 0.5,
@@ -1322,7 +1322,7 @@ local settingsMenu = UI.Element:new({
                             y = 0,
                             width = 256,
                             height = 64,
-                            text = function(self) return Localize("button.settings.audio") end,
+                            text = function(self) return Slash.Localization.Localize("button.settings.audio") end,
                             color = function() return GetTheme().button_secondary.text end,
                             font = lgfont_2x,
                             fontScale = 0.5,
@@ -1357,7 +1357,7 @@ local settingsMenu = UI.Element:new({
                             y = 0,
                             width = 256,
                             height = 64,
-                            text = function(self) return Localize("button.settings.gameplay") end,
+                            text = function(self) return Slash.Localization.Localize("button.settings.gameplay") end,
                             color = function() return GetTheme().button_secondary.text end,
                             font = lgfont_2x,
                             fontScale = 0.5,
@@ -1393,7 +1393,7 @@ local settingsMenu = UI.Element:new({
                     y = 0,
                     width = 120,
                     height = 64,
-                    text = function() return Localize("button.back") end,
+                    text = function() return Slash.Localization.Localize("button.back") end,
                     color = function() return GetTheme().button_back.text end,
                     font = lgfont_2x,
                     fontScale = 0.5,
