@@ -380,6 +380,9 @@ function Slash.Mod.RequiresRestart()
 end
 
 function Slash.Mod.WriteDisabled()
+    if not love.filesystem.getInfo("mods") then
+        love.filesystem.createDirectory("mods")
+    end
     local result = {}
     for _,mod in ipairs(disabled) do
         table.insert(result, mod.id)
